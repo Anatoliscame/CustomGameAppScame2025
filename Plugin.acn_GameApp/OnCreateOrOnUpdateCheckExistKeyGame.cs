@@ -2,6 +2,8 @@
 using Microsoft.Xrm.Sdk.Query;
 using Plugin.acn_GameApp.Core;
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Metadata;
 
 namespace Plugin.acn_GameApp
 {
@@ -40,6 +42,8 @@ namespace Plugin.acn_GameApp
         public void ExecuteAcquisto(IOrganizationService service, Entity target, ITracingService trace)
         {
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
+            KeyGameHelper _keyGameHelper = new KeyGameHelper();
+
             if (target.TryGetAttributeValue("statuscode", out OptionSetValue statuscodeValue) && statuscodeValue != null && statuscodeValue.Value != 0)
             {
 
@@ -53,14 +57,17 @@ namespace Plugin.acn_GameApp
                     trace.Trace($"videogameToTo is null: {videogameTo}");
                     throw new Exception("videogameToTo is not valued");
                 }
+                List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo);
 
-                var keyGameArray = _acquistoHelper.ExistKeyGame(service, target, videogameTo);
-
-                if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: KeyGame non esistono chiavi"); }
+                if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
 
                 int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
                 target["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
-            }
+
+                target["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+
+                _keyGameHelper.CreateKeyGame(service, keyGameArray);
+            } 
         }
     }
 }

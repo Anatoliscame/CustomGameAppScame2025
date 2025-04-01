@@ -21,25 +21,5 @@ namespace Plugin.acn_GameApp.Core
             acquistiQ.Criteria.AddCondition("acn_acquistoid", ConditionOperator.NotEqual, targetNew.Id);
             return service.RetrieveMultiple(acquistiQ);
         }
-
-        public List<Entity> ExistKeyGame(IOrganizationService service, Entity targetNew, EntityReference videogameTo)
-        {
-
-            QueryExpression query = new QueryExpression("acn_keygame")
-            {
-                ColumnSet = new ColumnSet("acn_keygameid"),
-                Criteria = new FilterExpression()
-            };
-            query.Criteria.AddCondition("acn_videogame", ConditionOperator.Equal, videogameTo.Id);
-            query.NoLock = true;
-            query.TopCount = 1;
-
-            var result = service.RetrieveMultiple(query);
-            if (result.Entities.Count == 0)
-            {
-                return new List<Entity>();
-            }
-            return result.Entities.ToList();
-        }
     }
 }

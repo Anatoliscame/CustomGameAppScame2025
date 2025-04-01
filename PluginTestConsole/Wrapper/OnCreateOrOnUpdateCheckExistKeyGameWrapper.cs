@@ -24,7 +24,7 @@ namespace PluginTestConsole.Wrapper
 
         private Entity GetTarget(IOrganizationService service, string guid)
         {
-            var targetEntity = service.Retrieve("acn_Acquisto", new Guid(guid), new Microsoft.Xrm.Sdk.Query.ColumnSet(true));
+            var targetEntity = service.Retrieve("acn_acquisto", new Guid(guid), new Microsoft.Xrm.Sdk.Query.ColumnSet(true));
             return targetEntity;
         }
     }
