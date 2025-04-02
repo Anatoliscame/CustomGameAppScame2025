@@ -31,7 +31,7 @@ namespace PluginTestConsole
 
             OnCreateOrOnUpdateCheckExistKeyGameWrapper wrapper = new OnCreateOrOnUpdateCheckExistKeyGameWrapper();
 
-            string guid = "8ff0fae2-fcf4-ef11-be1f-6045bd95a7f9";
+            string guid = "c3869d87-140f-f011-9989-000d3abdaa8d";
 
             wrapper.Execute(service, guid);
 

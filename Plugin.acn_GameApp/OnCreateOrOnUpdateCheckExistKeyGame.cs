@@ -4,6 +4,7 @@ using Plugin.acn_GameApp.Core;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
+using System.Linq;
 
 namespace Plugin.acn_GameApp
 {
@@ -27,9 +28,13 @@ namespace Plugin.acn_GameApp
 
                 if (context.MessageName.ToLower() == "create")
                 {
-                    target = (Entity)context.InputParameters["Target"];
-                    ExecuteAcquisto(service, target, trace);
+                    target = (Entity)context.InputParameters["Target"];               
                 }
+                if (context.MessageName.ToLower() == "update")
+                {
+                    target = context.PostEntityImages.Values?.FirstOrDefault();
+                }
+                ExecuteAcquisto(service, target, trace);
 
                 trace.Trace("End Plugin OnCreateOrOnUpdateCheckExistKeyGame");
             }
@@ -44,9 +49,12 @@ namespace Plugin.acn_GameApp
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
 
+            Entity entityUpdate = new Entity("acn_acquisto");
+            entityUpdate.Id = target.Id;
+
             if (target.TryGetAttributeValue("statuscode", out OptionSetValue statuscodeValue) && statuscodeValue != null && statuscodeValue.Value != 0)
             {
-
+                //746200001
                 if (!target.TryGetAttributeValue("acn_account", out EntityReference accountTo) || accountTo == null)
                 {
                     trace.Trace($"accountTo is null: {target}");
@@ -57,16 +65,22 @@ namespace Plugin.acn_GameApp
                     trace.Trace($"videogameToTo is null: {videogameTo}");
                     throw new Exception("videogameToTo is not valued");
                 }
-                List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo);
 
-                if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
+                if (statuscodeValue.Value == 746200001) // Effetuato
+                {
+                    List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo);
 
-                int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
-                target["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
+                    if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
 
-                target["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+                    int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
+                    entityUpdate["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
 
-                _keyGameHelper.CreateKeyGame(service, keyGameArray);
+                    entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+                    service.Update(entityUpdate);
+                    trace.Trace($"Acquisto has been updated");
+
+                    _keyGameHelper.CreateKeyGame(service, keyGameArray);
+                }
             } 
         }
     }
