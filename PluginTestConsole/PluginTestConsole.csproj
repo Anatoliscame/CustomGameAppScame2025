@@ -177,7 +177,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Wrapper\OnCreateOrOnUpdateCheckExistKeyGameWrapper.cs" />
+    <Compile Include="Wrapper\OnCreateOnUpdateCheckExistOrderAcquistoWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

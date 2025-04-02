@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Plugin.acn_GameApp
 {
-    public class OnCreateOrOnUpdateCheckExistKeyGame : IPlugin
+    public class OnCreateOnUpdateCheckExistOrderAcquisto : IPlugin
     {
         public void Execute(IServiceProvider serviceProvider)
         {
@@ -26,14 +26,14 @@ namespace Plugin.acn_GameApp
 
                 var target = new Entity();
 
-                if (context.MessageName.ToLower() == "create")
+                if (context.MessageName.ToLower() == "create") 
                 {
                     target = (Entity)context.InputParameters["Target"];               
                 }
-                if (context.MessageName.ToLower() == "update")
+                /*if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                }
+                }*/
                 ExecuteAcquisto(service, target, trace);
 
                 trace.Trace("End Plugin OnCreateOrOnUpdateCheckExistKeyGame");
@@ -60,26 +60,14 @@ namespace Plugin.acn_GameApp
                     trace.Trace($"accountTo is null: {target}");
                     throw new Exception("accountTo is not valued");
                 }
-                if (!target.TryGetAttributeValue("acn_videogame", out EntityReference videogameTo) || videogameTo == null)
-                {
-                    trace.Trace($"videogameToTo is null: {videogameTo}");
-                    throw new Exception("videogameToTo is not valued");
-                }
 
                 if (statuscodeValue.Value == 746200001) // Effetuato
                 {
-                    List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo);
-
-                    if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
-
                     int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
                     entityUpdate["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
-
-                    entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+                    //entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
                     service.Update(entityUpdate);
                     trace.Trace($"Acquisto has been updated");
-
-                    _keyGameHelper.CreateKeyGame(service, keyGameArray);
                 }
             } 
         }

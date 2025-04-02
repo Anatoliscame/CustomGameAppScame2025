@@ -29,7 +29,7 @@ namespace PluginTestConsole
         {
             var service = CrmRepository("DEV");
 
-            OnCreateOrOnUpdateCheckExistKeyGameWrapper wrapper = new OnCreateOrOnUpdateCheckExistKeyGameWrapper();
+            OnCreateOnUpdateCheckExistOrderAcquistoWrapper wrapper = new OnCreateOnUpdateCheckExistOrderAcquistoWrapper();
 
             string guid = "c3869d87-140f-f011-9989-000d3abdaa8d";
 

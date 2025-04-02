@@ -98,7 +98,8 @@
   <ItemGroup>
     <Compile Include="Core\AcquistoHelper.cs" />
     <Compile Include="Core\KeyGameHelper.cs" />
-    <Compile Include="OnCreateOrOnUpdateCheckExistKeyGame.cs" />
+    <Compile Include="OnCreateOnUpdateOrderAcquistoCheckExistKeyGame.cs" />
+    <Compile Include="OnCreateOnUpdateCheckExistOrderAcquisto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

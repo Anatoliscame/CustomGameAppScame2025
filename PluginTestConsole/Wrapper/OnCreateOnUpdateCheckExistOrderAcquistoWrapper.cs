@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PluginTestConsole.Wrapper
 {
-    class OnCreateOrOnUpdateCheckExistKeyGameWrapper
+    class OnCreateOnUpdateCheckExistOrderAcquistoWrapper
     {
         public void Execute(IOrganizationService service, string guid)
         {
@@ -16,7 +16,7 @@ namespace PluginTestConsole.Wrapper
 
             ITracingService tracingService = service as ITracingService;
 
-            OnCreateOrOnUpdateCheckExistKeyGame plugin = new OnCreateOrOnUpdateCheckExistKeyGame();
+            OnCreateOnUpdateCheckExistOrderAcquisto plugin = new OnCreateOnUpdateCheckExistOrderAcquisto();
 
             plugin.ExecuteAcquisto(service, target, tracingService);
 
