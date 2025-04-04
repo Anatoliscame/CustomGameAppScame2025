@@ -98,13 +98,13 @@
   <ItemGroup>
     <Compile Include="Core\AcquistoHelper.cs" />
     <Compile Include="Core\KeyGameHelper.cs" />
+    <Compile Include="Entities\Acquisto.cs" />
     <Compile Include="OnCreateOnUpdateOrderAcquistoCheckExistKeyGame.cs" />
     <Compile Include="OnCreateOnUpdateCheckExistOrderAcquisto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Acquisto\" />
-    <Folder Include="Entities\" />
     <Folder Include="Steam\" />
     <Folder Include="VideoGame\" />
   </ItemGroup>

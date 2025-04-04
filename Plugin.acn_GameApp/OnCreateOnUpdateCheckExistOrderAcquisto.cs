@@ -19,7 +19,7 @@ namespace Plugin.acn_GameApp
 
             try
             {
-                trace.Trace("Start Plugin OnCreateOrOnUpdateBloccaAcquisteRipetitive");
+                trace.Trace("Start Plugin OnCreateOnUpdateCheckExistOrderAcquisto");
                 context = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
                 if (trace == null)
                     throw new InvalidPluginExecutionException("Failed to retrieve the tracing service.");
@@ -34,17 +34,19 @@ namespace Plugin.acn_GameApp
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
                 }*/
-                ExecuteAcquisto(service, target, trace);
 
-                trace.Trace("End Plugin OnCreateOrOnUpdateCheckExistKeyGame");
+                var targetPost = context.PostEntityImages.Values?.FirstOrDefault();
+                ExecuteAcquisto(service, target, targetPost,trace);
+
+                trace.Trace("End Plugin OnCreateOnUpdateCheckExistOrderAcquisto");
             }
             catch (Exception ex)
             {
-                trace.Trace($"Error in Plugin OnCreateOrOnUpdateCheckExistKeyGame {ex.Message}. \n\r {ex.StackTrace}");
+                trace.Trace($"Error in Plugin OnCreateOnUpdateCheckExistOrderAcquisto {ex.Message}. \n\r {ex.StackTrace}");
                 throw new InvalidPluginExecutionException(ex.Message);
             }
         }
-        public void ExecuteAcquisto(IOrganizationService service, Entity target, ITracingService trace)
+        public void ExecuteAcquisto(IOrganizationService service, Entity target, Entity targetPost, ITracingService trace)
         {
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
@@ -61,14 +63,20 @@ namespace Plugin.acn_GameApp
                     throw new Exception("accountTo is not valued");
                 }
 
-                if (statuscodeValue.Value == 746200001) // Effetuato
+                /*if (statuscodeValue.Value == 746200001) // Effetuato
                 {
-                    int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
-                    entityUpdate["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
-                    //entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
-                    service.Update(entityUpdate);
-                    trace.Trace($"Acquisto has been updated");
+                }*/
+
+                List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoTargetAndInAttesa(service, target);
+                if (acquistiInattesa.Count > 0)
+                {
+                    throw new Exception("Non e' possibile creare nuovo Acquisto in attesa, perche esiste un'altro non e' Effetuato");
                 }
+                int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
+                entityUpdate["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
+                //entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+                service.Update(entityUpdate);
+                trace.Trace($"Acquisto has been updated");
             } 
         }
     }

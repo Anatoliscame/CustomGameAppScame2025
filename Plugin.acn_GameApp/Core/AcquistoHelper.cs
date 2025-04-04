@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Plugin.acn_GameApp.Entities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IdentityModel.Metadata;
@@ -20,6 +22,41 @@ namespace Plugin.acn_GameApp.Core
             acquistiQ.ColumnSet = new ColumnSet(true);
             acquistiQ.Criteria.AddCondition("acn_acquistoid", ConditionOperator.NotEqual, targetNew.Id);
             return service.RetrieveMultiple(acquistiQ);
+        }
+
+        public List<Entity> GetAcquistoTargetAndInAttesa(IOrganizationService service, Entity entity)
+        {
+            QueryExpression query = new QueryExpression("acn_acquisto")
+            {
+                ColumnSet = new ColumnSet(true),
+                Criteria = new FilterExpression()
+            };
+            query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, 746200002); // In Attesa
+            query.Criteria.AddCondition("acn_acquistoid", ConditionOperator.NotEqual, entity.Id);
+            query.NoLock = true;
+            var result = service.RetrieveMultiple(query);
+            if (result.Entities.Count == 0)
+            {
+                return new List<Entity>();
+            }
+            return result.Entities.ToList();
+        }
+
+        public List<Entity> GetAcquistoInAttesa(IOrganizationService service)
+        {
+            QueryExpression query = new QueryExpression("acn_acquisto")
+            {
+                ColumnSet = new ColumnSet(true),
+                Criteria = new FilterExpression()
+            };
+            query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, 746200002); // In Attesa
+            query.NoLock = true;
+            var result = service.RetrieveMultiple(query);
+            if (result.Entities.Count == 0)
+            {
+                return new List<Entity>();
+            }
+            return result.Entities.ToList();
         }
     }
 }

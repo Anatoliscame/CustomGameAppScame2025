@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.acn_GameApp", "Plugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginTestConsole", "PluginTestConsole\PluginTestConsole.csproj", "{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAppScame_WebResource", "CustomAppScame_WebResource\CustomAppScame_WebResource.csproj", "{87B73995-D376-4B11-9F57-8C74C5AEBC72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87B73995-D376-4B11-9F57-8C74C5AEBC72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87B73995-D376-4B11-9F57-8C74C5AEBC72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87B73995-D376-4B11-9F57-8C74C5AEBC72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87B73995-D376-4B11-9F57-8C74C5AEBC72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
