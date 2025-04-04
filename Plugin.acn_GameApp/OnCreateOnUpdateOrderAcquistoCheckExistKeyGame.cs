@@ -91,7 +91,8 @@ namespace Plugin.acn_GameApp
 
             List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo);
 
-           if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
+           //if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
+           //if (keyGameArray.Count <= 0) { return; }
 
 
             /*Entity eAcquistoTo = service.Retrieve(Acquisto.LogicalName, acquistoIdRetrive.Id, new ColumnSet(new string[] { Acquisto.StatusReason }));

@@ -31,6 +31,19 @@
                     "acn_accountid@odata.bind": "/accounts(" + accountId + ")"
                 };
 
+                Xrm.WebApi.retrieveMultipleRecords("acn_keygame", "?$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)").then(
+                    function success(results) {
+                        if (results.entities.length <= 0) {
+                            Xrm.Navigation.openAlertDialog({
+                                text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono."
+                            });
+                        }
+                    },
+                    function (error) {
+                        console.error("Errore nel recupero delle chiavi: " + error.message);
+                    }
+                );
+
                 // Step 1: crea OrderAcquisto
                 Xrm.WebApi.createRecord("acn_ordineacquisto", newOrder).then(
                     function (result) {
@@ -48,6 +61,7 @@
                                         entityId: acquistoId
                                     });
                                     Xrm.Navigation.openAlertDialog({ text: "Ordine creato" });
+
                                 } else {
                                     Xrm.Navigation.openAlertDialog({ text: "Ordine creato, ma non è stato possibile identificare l'Acquisto associato." });
                                 }
