@@ -36,7 +36,7 @@ namespace Plugin.acn_GameApp
                 }*/
 
                 var targetPost = context.PostEntityImages.Values?.FirstOrDefault();
-                ExecuteAcquisto(service, target, targetPost,trace);
+                ExecuteAcquisto(service, target, trace);
 
                 trace.Trace("End Plugin OnCreateOnUpdateCheckExistOrderAcquisto");
             }
@@ -46,7 +46,7 @@ namespace Plugin.acn_GameApp
                 throw new InvalidPluginExecutionException(ex.Message);
             }
         }
-        public void ExecuteAcquisto(IOrganizationService service, Entity target, Entity targetPost, ITracingService trace)
+        public void ExecuteAcquisto(IOrganizationService service, Entity target, ITracingService trace)
         {
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
