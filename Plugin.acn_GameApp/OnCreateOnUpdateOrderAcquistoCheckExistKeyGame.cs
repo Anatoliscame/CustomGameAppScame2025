@@ -89,25 +89,19 @@ namespace Plugin.acn_GameApp
             }
 
 
-            List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo);
-
-           //if (keyGameArray.Count <= 0) { throw new Exception("keyGameArray: Chiavi disponibili con un video gioco non ci sono"); }
-           //if (keyGameArray.Count <= 0) { return; }
-
+            //List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
 
             /*Entity eAcquistoTo = service.Retrieve(Acquisto.LogicalName, acquistoIdRetrive.Id, new ColumnSet(new string[] { Acquisto.StatusReason }));
             if (eAcquistoTo.Contains(Acquisto.StatusReason) && eAcquistoTo[Acquisto.StatusReason] is OptionSetValue statusReasonValue)
             {
                 if (statusReasonValue.Value != 746200001)// Effetuato
                 {
-                    _keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200002);// Temporaneamente 
-
-                    //_keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200003);// Inattesa
+                    //_keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200003);// Temporaneamente Acquistato
                 }
             }*/
-            _keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200002);// Temporaneamente 
+           // _keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200002);// Temporaneamente 
 
-            entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+           // entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
             service.Update(entityUpdate);
             trace.Trace($"OrderAcquisto has been updated");
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Plugin.acn_GameApp.Core;
+using Plugin.acn_GameApp.Entities;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Metadata;
@@ -28,15 +29,14 @@ namespace Plugin.acn_GameApp
 
                 if (context.MessageName.ToLower() == "create") 
                 {
-                    target = (Entity)context.InputParameters["Target"];               
+                    target = (Entity)context.InputParameters["Target"];
+                    ExecuteAcquisto(service, target, trace);
                 }
-                /*if (context.MessageName.ToLower() == "update")
+                if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                }*/
-
-                var targetPost = context.PostEntityImages.Values?.FirstOrDefault();
-                ExecuteAcquisto(service, target, trace);
+                    ExecuteAcquistoPost(service, target, trace);
+                }
 
                 trace.Trace("End Plugin OnCreateOnUpdateCheckExistOrderAcquisto");
             }
@@ -78,6 +78,41 @@ namespace Plugin.acn_GameApp
                 service.Update(entityUpdate);
                 trace.Trace($"Acquisto has been updated");
             } 
+        }
+
+        public void ExecuteAcquistoPost(IOrganizationService service, Entity targetPost, ITracingService trace)
+        {
+            AcquistoHelper _acquistoHelper = new AcquistoHelper();
+            KeyGameHelper _keyGameHelper = new KeyGameHelper();
+
+            if (targetPost.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo) || acquistoTo != null)
+            {
+                if (targetPost.Attributes.Contains(Acquisto.StatusReason) && targetPost.Attributes[Acquisto.StatusReason] != null)
+                {
+                    int? optionSetValue = ((OptionSetValue)targetPost.Attributes[Acquisto.StatusReason]).Value;
+
+                    switch (optionSetValue)
+                    {
+                        case 746200001:// Effetuato
+
+                           /* List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
+                            foreach
+                            Entity updateKeyGame = new Entity("acn_keygame");
+                            updateKeyGame.Id = */
+                            break;
+
+                        case 746200002:// In attesa
+                            throw new ApplicationException("il valore di stato ordine selezionato 'Completato', acquisto non puo essere eliminato");
+
+                        //case 746200003:// Annullato
+
+                        //    break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
         }
     }
 }
