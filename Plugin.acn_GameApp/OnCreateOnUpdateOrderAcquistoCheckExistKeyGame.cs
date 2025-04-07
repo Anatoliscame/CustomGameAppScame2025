@@ -50,6 +50,7 @@ namespace Plugin.acn_GameApp
         {
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
+            VideoGameHelper _videoGameHelper = new VideoGameHelper();
             Entity entityUpdate = new Entity("acn_ordineacquisto");
             entityUpdate.Id = target.Id;
             Guid acquistoIdRetrive = Guid.Empty;
@@ -68,9 +69,12 @@ namespace Plugin.acn_GameApp
                 {
                     int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
 
+                    List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
+                    Guid accountId = getVideoGames[0].GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
+
                     Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
                     nuovoAcquisto["acn_name"] = "acquisto" + quantitaAcquisto.ToString() + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                    //nuovoAcquisto["acn_account"] = target.GetAttributeValue<EntityReference>("acn_accountid"); // Associa l'account
+                    nuovoAcquisto["acn_account"] = new EntityReference("account", accountId); // Associa l'account
                     nuovoAcquisto["statuscode"] = new OptionSetValue(746200002); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
                     nuovoAcquisto["acn_code"] = GeneraCodiceAcquisto();
                     Guid acquistoId = service.Create(nuovoAcquisto);
