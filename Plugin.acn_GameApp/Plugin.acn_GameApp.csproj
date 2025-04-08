@@ -98,10 +98,11 @@
   <ItemGroup>
     <Compile Include="Core\AcquistoHelper.cs" />
     <Compile Include="Core\KeyGameHelper.cs" />
+    <Compile Include="Core\OrderAcquistoHelper.cs" />
     <Compile Include="Core\VideoGameHelper.cs" />
     <Compile Include="Entities\Acquisto.cs" />
-    <Compile Include="OnCreateOnUpdateOrderAcquistoCheckExistKeyGame.cs" />
-    <Compile Include="OnCreateOnUpdateCheckExistOrderAcquisto.cs" />
+    <Compile Include="OnCreateOnUpdateOnOrderAcquistoCheckExistKeyGame.cs" />
+    <Compile Include="OnUpdateCheckExistOrderAcquisto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

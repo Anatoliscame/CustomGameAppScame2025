@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Plugin.acn_GameApp
 {
-    public class OnCreateOnUpdateCheckExistOrderAcquisto : IPlugin
+    public class OnUpdateCheckExistOrderAcquisto : IPlugin
     {
         public void Execute(IServiceProvider serviceProvider)
         {
@@ -30,23 +30,23 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "create") 
                 {
                     target = (Entity)context.InputParameters["Target"];
-                    ExecuteAcquisto(service, target, trace);
+                    
                 }
                 if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                    ExecuteAcquistoPost(service, target, trace);
+                    ExecuteAcquistoUpdate(service, target, trace);
                 }
 
                 trace.Trace("End Plugin OnCreateOnUpdateCheckExistOrderAcquisto");
             }
-            catch (Exception ex)
+            catch (Exception ex) 
             {
                 trace.Trace($"Error in Plugin OnCreateOnUpdateCheckExistOrderAcquisto {ex.Message}. \n\r {ex.StackTrace}");
                 throw new InvalidPluginExecutionException(ex.Message);
             }
         }
-        public void ExecuteAcquisto(IOrganizationService service, Entity target, ITracingService trace)
+        public void ExecuteAcquistoUpdate(IOrganizationService service, Entity target, ITracingService trace)
         {
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
@@ -54,14 +54,6 @@ namespace Plugin.acn_GameApp
             Entity entityUpdate = new Entity("acn_acquisto");
             entityUpdate.Id = target.Id;
 
-            if (target.TryGetAttributeValue("statuscode", out OptionSetValue statuscodeValue) && statuscodeValue != null && statuscodeValue.Value != 0)
-            {
-                //746200001
-                if (!target.TryGetAttributeValue("acn_account", out EntityReference accountTo) || accountTo == null)
-                {
-                    trace.Trace($"accountTo is null: {target}");
-                    throw new Exception("accountTo is not valued");
-                }
 
                 /*if (statuscodeValue.Value == 746200001) // Effetuato
                 {
@@ -77,7 +69,7 @@ namespace Plugin.acn_GameApp
                 //entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
                 service.Update(entityUpdate);
                 trace.Trace($"Acquisto has been updated");
-            } 
+            
         }
 
         public void ExecuteAcquistoPost(IOrganizationService service, Entity targetPost, ITracingService trace)

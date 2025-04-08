@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Plugin.acn_GameApp
 {
-    public class OnCreateOnUpdateOrderAcquistoCheckExistKeyGame : IPlugin
+    public class OnCreateOnUpdateOnOrderAcquistoCheckExistKeyGame : IPlugin
     {
         public void Execute(IServiceProvider serviceProvider)
         {
@@ -31,12 +31,13 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "create")
                 {
                     target = (Entity)context.InputParameters["Target"];
+                    ExecuteOrderAcquistoCreate(service, target, trace);
                 }
-                /*if (context.MessageName.ToLower() == "update")
+                if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                }*/
-                ExecuteAcquisto(service, target, trace);
+                    ExecuteOrderAcquistoUpdate(service, target, trace);
+                }
 
                 trace.Trace("End Plugin OnCreateOnUpdateOrderAcquistoCheckExistKeyGame");
             }
@@ -46,7 +47,7 @@ namespace Plugin.acn_GameApp
                 throw new InvalidPluginExecutionException(ex.Message);
             }
         }
-        public void ExecuteAcquisto(IOrganizationService service, Entity target, ITracingService trace)
+        public void ExecuteOrderAcquistoCreate(IOrganizationService service, Entity target, ITracingService trace)
         {
             AcquistoHelper _acquistoHelper = new AcquistoHelper();
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
@@ -117,6 +118,12 @@ namespace Plugin.acn_GameApp
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return  "ACQ-" + new string(Enumerable.Repeat(chars, 6)
                                               .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+
+        public void ExecuteOrderAcquistoUpdate(IOrganizationService service, Entity target, ITracingService trace)
+        {
+            
         }
     }
 }

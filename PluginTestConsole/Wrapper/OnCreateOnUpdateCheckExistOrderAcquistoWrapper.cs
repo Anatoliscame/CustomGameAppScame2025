@@ -16,7 +16,7 @@ namespace PluginTestConsole.Wrapper
 
             ITracingService tracingService = service as ITracingService;
 
-            OnCreateOnUpdateCheckExistOrderAcquisto plugin = new OnCreateOnUpdateCheckExistOrderAcquisto();
+            OnUpdateCheckExistOrderAcquisto plugin = new OnUpdateCheckExistOrderAcquisto();
 
             plugin.ExecuteAcquisto(service, target, tracingService);
 
