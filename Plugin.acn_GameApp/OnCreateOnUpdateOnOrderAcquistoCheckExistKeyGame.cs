@@ -36,7 +36,6 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                    ExecuteOrderAcquistoUpdate(service, target, trace);
                 }
 
                 trace.Trace("End Plugin OnCreateOnUpdateOrderAcquistoCheckExistKeyGame");
@@ -93,20 +92,11 @@ namespace Plugin.acn_GameApp
                 throw new Exception("videogameToTo is not valued");
             }
 
+            List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
 
-            //List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
+            _keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200002);// Temporaneamente 
 
-            /*Entity eAcquistoTo = service.Retrieve(Acquisto.LogicalName, acquistoIdRetrive.Id, new ColumnSet(new string[] { Acquisto.StatusReason }));
-            if (eAcquistoTo.Contains(Acquisto.StatusReason) && eAcquistoTo[Acquisto.StatusReason] is OptionSetValue statusReasonValue)
-            {
-                if (statusReasonValue.Value != 746200001)// Effetuato
-                {
-                    //_keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200003);// Temporaneamente Acquistato
-                }
-            }*/
-           // _keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200002);// Temporaneamente 
-
-           // entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+            entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
             service.Update(entityUpdate);
             trace.Trace($"OrderAcquisto has been updated");
 
@@ -118,12 +108,6 @@ namespace Plugin.acn_GameApp
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return  "ACQ-" + new string(Enumerable.Repeat(chars, 6)
                                               .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-
-        public void ExecuteOrderAcquistoUpdate(IOrganizationService service, Entity target, ITracingService trace)
-        {
-            
         }
     }
 }

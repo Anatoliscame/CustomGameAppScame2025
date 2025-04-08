@@ -18,7 +18,7 @@ namespace PluginTestConsole.Wrapper
 
             OnUpdateCheckExistOrderAcquisto plugin = new OnUpdateCheckExistOrderAcquisto();
 
-            plugin.ExecuteAcquisto(service, target, tracingService);
+            plugin.ExecuteAcquistoUpdate(service, target, tracingService);
 
         }
 

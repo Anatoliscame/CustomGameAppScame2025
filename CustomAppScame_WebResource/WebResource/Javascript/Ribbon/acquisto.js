@@ -22,13 +22,10 @@ function completaAcquistoFattura(formContext) {
 
     if (!accountidLookup || !accountidLookup.getValue() || accountidLookup.getValue().length === 0) { Xrm.Navigation.openAlertDialog({ text: "accountidLookup è nullo o vuoto" }); return; }
 
-    var acquistoIdForm = formContext.data.entity.getId();
-    acquistoIdForm = acquistoIdForm.replace("{", "").replace("}", "");
-    //if (!ControlExistRelatedKeGameOrderAcquisto(acquistoIdForm)) { Xrm.Navigation.openAlertDialog({ text: "il name di KeyGame non e' valorizzato" });  return; }
     var fetchUrl = "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false' >" +
         "<entity name='acn_ordineacquisto'>" +
         "<filter type='and'>" +
-        "<condition attribute='acn_acquistoid' operator='eq' value='" + acquistoIdForm + "' />" +
+        "<condition attribute='acn_acquistoid' operator='eq' value='" + acquistoId + "' />" +
         "</filter>" +
         "<attribute name='acn_keygamecode' />" +
         "</entity>" +
@@ -77,7 +74,7 @@ function completaAcquistoFattura(formContext) {
                     }
                 }
             } else {
-                console.log("Nessun ordine di acquisto trovato per l'Acquisto ID: " + acquistoIdForm);
+                console.log("Nessun ordine di acquisto trovato per l'Acquisto ID: " + acquistoId);
             }
         },
         function (error) {

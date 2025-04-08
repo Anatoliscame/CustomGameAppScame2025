@@ -48,28 +48,26 @@ namespace Plugin.acn_GameApp
         }
         public void ExecuteAcquistoUpdate(IOrganizationService service, Entity target, ITracingService trace)
         {
-            AcquistoHelper _acquistoHelper = new AcquistoHelper();
-            KeyGameHelper _keyGameHelper = new KeyGameHelper();
+            OrderAcquistoHelper _oderAcquistoHelper = new OrderAcquistoHelper();
 
-            Entity entityUpdate = new Entity("acn_acquisto");
-            entityUpdate.Id = target.Id;
+            var arrayOrderAcquisto = _oderAcquistoHelper.GetOrderAcquisto(service, target);
+            if (arrayOrderAcquisto.Count <= 0) { return; }
 
+            Guid keygameIdGuid = Guid.Empty;
+            Entity keyGameUpdate = null;
+            foreach (var crmOrderAcquisto in arrayOrderAcquisto)
+            {
+                var keygameId = crmOrderAcquisto.GetAttributeValue<AliasedValue>("OrderAcquistoKeyGame.acn_keygameid");
+                //var statusKeyGame = crmOrderAcquisto.GetAttributeValue<AliasedValue>("OrderAcquistoKeyGame.acn_statuspresentkeygame");
+                keygameIdGuid = (Guid)keygameId.Value;
 
-                /*if (statuscodeValue.Value == 746200001) // Effetuato
-                {
-                }*/
-
-                List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoTargetAndInAttesa(service, target);
-                if (acquistiInattesa.Count > 0)
-                {
-                    throw new Exception("Non e' possibile creare nuovo Acquisto in attesa, perche esiste un'altro non e' Effetuato");
-                }
-                int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
-                entityUpdate["acn_name"] = "acquisto" + quantitaAcquisto.ToString();
-                //entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
-                service.Update(entityUpdate);
-                trace.Trace($"Acquisto has been updated");
-            
+                keyGameUpdate = new Entity("acn_keygame");
+                keyGameUpdate.Id = keygameIdGuid;
+                keyGameUpdate["acn_statuspresentkeygame"] = new OptionSetValue(746200003); // Temporaneamente Acquistato
+                service.Update(keyGameUpdate);              
+            }
+            trace.Trace($"Acquisto has been updated");
+            return;
         }
 
         public void ExecuteAcquistoPost(IOrganizationService service, Entity targetPost, ITracingService trace)

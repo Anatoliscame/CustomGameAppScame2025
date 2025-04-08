@@ -34,6 +34,8 @@ namespace Plugin.acn_GameApp.Core
                 Columns = new ColumnSet("acn_keygameid", "acn_statuspresentkeygame"),
                 EntityAlias = "OrderAcquistoKeyGame"
             };
+            keyGameeLink.LinkCriteria.AddCondition("acn_statuspresentkeygame", ConditionOperator.Equal, 746200002); //Temporaneamente
+
 
             query.LinkEntities.Add(keyGameeLink);// KeyGame
 
