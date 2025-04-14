@@ -35,7 +35,18 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                    ExecuteAcquistoUpdate(service, target, trace);
+                    int? optionSetValue = ((OptionSetValue)target.Attributes["statuscode"]).Value;
+
+                    switch (optionSetValue)
+                    {
+                        case 746200001: //Effetuato
+                            //if (optionSetValue != 746200002) { throw new ApplicationException("Non sai ancora esprimere la parola 'Mamma'  3+"); }
+                            ExecuteAcquistoUpdate(service, target, trace);
+                            break;
+                        default:
+                            return;
+                    }
+
                 }
 
                 trace.Trace("End Plugin OnCreateOnUpdateCheckExistOrderAcquisto");
@@ -52,6 +63,7 @@ namespace Plugin.acn_GameApp
 
             var arrayOrderAcquisto = _oderAcquistoHelper.GetOrderAcquisto(service, target);
             if (arrayOrderAcquisto.Count <= 0) { return; }
+
 
             Guid keygameIdGuid = Guid.Empty;
             Entity keyGameUpdate = null;

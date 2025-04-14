@@ -21,7 +21,7 @@ namespace Plugin.acn_GameApp.Core
             };
             query.Criteria.AddCondition("acn_acquistoid", ConditionOperator.Equal, targetUpdateAcquisto.Id);
             query.NoLock = true;
-            query.TopCount = 1;
+            //query.TopCount = 1;
 
             // Collega l'entità KeyGame alla query (join)
             LinkEntity keyGameeLink = new LinkEntity

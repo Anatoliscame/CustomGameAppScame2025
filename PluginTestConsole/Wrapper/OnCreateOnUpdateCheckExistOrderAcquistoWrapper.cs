@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
 using Plugin.acn_GameApp;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,8 @@ namespace PluginTestConsole.Wrapper
     {
         public void Execute(IOrganizationService service, string guid)
         {
-            var target = GetTarget(service, guid);
+
+            Entity target = GetTarget(service, guid);
 
             ITracingService tracingService = service as ITracingService;
 

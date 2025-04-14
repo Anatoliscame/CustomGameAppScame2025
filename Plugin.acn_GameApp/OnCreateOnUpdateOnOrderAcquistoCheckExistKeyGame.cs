@@ -57,8 +57,10 @@ namespace Plugin.acn_GameApp
             if (!target.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo) || acquistoTo == null)
             {
                 trace.Trace($"acquistoTo is null: {acquistoTo}");
+                List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
+                Guid accountId = getVideoGames[0].GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
 
-                List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoInAttesa(service);
+                List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoInAttesa(service, accountId);
                 if (acquistiInattesa.Count > 0)
                 {
                     Guid acquistoId = acquistiInattesa[0].GetAttributeValue<Guid>("acn_acquistoid");
@@ -68,9 +70,6 @@ namespace Plugin.acn_GameApp
                 else
                 {
                     int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
-
-                    List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
-                    Guid accountId = getVideoGames[0].GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
 
                     Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
                     nuovoAcquisto["acn_name"] = "acquisto" + quantitaAcquisto.ToString() + DateTime.Now.ToString("dd/MM/yyyy HH:mm");

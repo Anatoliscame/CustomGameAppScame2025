@@ -1,5 +1,6 @@
 ﻿using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Tooling.Connector;
 using PluginTestConsole.Wrapper;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Services.Description;
 
 namespace PluginTestConsole
 {
@@ -27,13 +29,25 @@ namespace PluginTestConsole
 
         static void Main(string[] args)
         {
-            var service = CrmRepository("DEV");
+            // var service = CrmRepository("CRM_CREDENTIALS");
+
+            var connectionString = System.Configuration.ConfigurationManager.AppSettings["CRM_CustomeAppScameCDKeysVersion2"];
+            CrmServiceClient crmServiceClient = new CrmServiceClient(connectionString);
+             // string connectionString = ConfigurationManager.ConnectionStrings["CRM_CREDENTIALS"].ConnectionString;
+
+             //CrmServiceClient crmServiceClient = new CrmServiceClient(connectionString);
+
+            if (!crmServiceClient.IsReady)
+            {
+                throw new Exception("cannot instantiate service");
+            }
+
 
             OnCreateOnUpdateCheckExistOrderAcquistoWrapper wrapper = new OnCreateOnUpdateCheckExistOrderAcquistoWrapper();
 
-            string guid = "c3869d87-140f-f011-9989-000d3abdaa8d";
-
-            wrapper.Execute(service, guid);
+            string guid = "45d11387-e916-f011-998a-000d3abdaa8d";
+            
+            wrapper.Execute(crmServiceClient, guid);
 
         }
     }
