@@ -90,8 +90,10 @@ namespace Plugin.acn_GameApp
                 trace.Trace($"videogameToTo is null: {videogameTo}");
                 throw new Exception("videogameToTo is not valued");
             }
-
-            List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
+            Entity eVideogameTo = service.Retrieve(videogameTo.LogicalName, videogameTo.Id, new ColumnSet(new string[] { "acn_typepiattaforma" }));
+            int? typePiattaforma = ((OptionSetValue)eVideogameTo.Attributes["acn_typepiattaforma"]).Value;
+             
+            List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000, typePiattaforma); // Disponibile
             Guid keyGameGuid = keyGameArray[0].Id;
             _keyGameHelper.UpdateKeyGame(service, keyGameGuid, 746200002);// Temporaneamente 
 

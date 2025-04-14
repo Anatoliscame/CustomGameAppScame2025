@@ -1,5 +1,12 @@
 ﻿function apriOrderAcquisto(formContext) {
 
+    var statuscodeVG = formContext.getAttribute("statuscode").getValue();
+    if (statuscodeVG !== 746200003) { Xrm.Navigation.openAlertDialog({ text: "Video Game non acquistabile" }); return; }
+
+    var typePiattaformaVG = formContext.getAttribute("acn_typepiattaforma").getValue();
+    if (typePiattaformaVG === 746200006) { Xrm.Navigation.openAlertDialog({ text: "Scegli prima una piattaforma d'acquistare" }); return; }
+
+
     if (formContext.data.entity.getEntityName() !== "acn_videogame") {
         alert("Questo pulsante funziona solo su VideoGame.");
         return;
@@ -34,15 +41,29 @@
     Xrm.WebApi.retrieveMultipleRecords("acn_keygame", "?$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)").then(
         function success(results) {
             if (results.entities.length <= 0) {
-                Xrm.Navigation.openAlertDialog({
-                    text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono."
-                });
+                Xrm.Navigation.openAlertDialog({text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono."});
+            }
+            // Aggiungi qua la logica di acn_typepiattaforma
+            var keyTrovata = null;
+
+            for (var i = 0; i < results.entities.length; i++) {
+                var keyGame = results.entities[i];
+                if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
+                    keyTrovata = keyGame;
+                    break;
+                }
+            }
+
+            if (!keyTrovata) {
+                Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+                return;
             }
         },
         function (error) {
             console.error("Errore nel recupero delle chiavi: " + error.message);
         }
     );
+
 
     // Step 1: crea OrderAcquisto
     Xrm.WebApi.createRecord("acn_ordineacquisto", newOrder).then(

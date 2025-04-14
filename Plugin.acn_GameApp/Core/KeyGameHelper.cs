@@ -12,7 +12,7 @@ namespace Plugin.acn_GameApp.Core
     {
         public KeyGameHelper() {}
 
-        public List<Entity> ExistKeyGame(IOrganizationService service, EntityReference videogameTo, int statusKeyGame)
+        public List<Entity> ExistKeyGame(IOrganizationService service, EntityReference videogameTo, int statusKeyGame, int? typePiattaforma)
         {
 
             QueryExpression query = new QueryExpression("acn_keygame")
@@ -22,6 +22,7 @@ namespace Plugin.acn_GameApp.Core
             };
             query.Criteria.AddCondition("acn_videogame", ConditionOperator.Equal, videogameTo.Id);
             query.Criteria.AddCondition("acn_statuspresentkeygame", ConditionOperator.Equal, statusKeyGame);
+            query.Criteria.AddCondition("acn_typepiattaforma", ConditionOperator.Equal, typePiattaforma.Value);
             query.NoLock = true;
             query.TopCount = 1;
             // query.AddOrder("createdon", OrderType.Descending);
