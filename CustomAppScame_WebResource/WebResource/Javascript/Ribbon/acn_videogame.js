@@ -41,22 +41,23 @@
     Xrm.WebApi.retrieveMultipleRecords("acn_keygame", "?$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)").then(
         function success(results) {
             if (results.entities.length <= 0) {
-                Xrm.Navigation.openAlertDialog({text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono."});
-            }
-            // Aggiungi qua la logica di acn_typepiattaforma
-            var keyTrovata = null;
+                Xrm.Navigation.openAlertDialog({ text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono." });
+            } else {
+                // Aggiungi qua la logica di acn_typepiattaforma
+                var keyTrovata = null;
 
-            for (var i = 0; i < results.entities.length; i++) {
-                var keyGame = results.entities[i];
-                if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
-                    keyTrovata = keyGame;
-                    break;
+                for (var i = 0; i < results.entities.length; i++) {
+                    var keyGame = results.entities[i];
+                    if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
+                        keyTrovata = keyGame;
+                        break;
+                    }
                 }
-            }
 
-            if (!keyTrovata) {
-                Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
-                return;
+                if (!keyTrovata) {
+                    Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+                    return;
+                }
             }
         },
         function (error) {

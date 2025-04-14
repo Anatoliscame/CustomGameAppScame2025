@@ -54,12 +54,13 @@ namespace Plugin.acn_GameApp
             Entity entityUpdate = new Entity("acn_ordineacquisto");
             entityUpdate.Id = target.Id;
             Guid acquistoIdRetrive = Guid.Empty;
+            Guid videogameIdRetrive = Guid.Empty;
             if (!target.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo) || acquistoTo == null)
             {
                 trace.Trace($"acquistoTo is null: {acquistoTo}");
                 List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
                 Guid accountId = getVideoGames[0].GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
-
+                videogameIdRetrive = getVideoGames[0].GetAttributeValue<Guid>("acn_videogameid");
                 List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoInAttesa(service, accountId);
                 if (acquistiInattesa.Count > 0)
                 {
@@ -82,6 +83,7 @@ namespace Plugin.acn_GameApp
                 }
 
                 entityUpdate["acn_acquistoid"] = new EntityReference(Acquisto.LogicalName, acquistoIdRetrive);
+
             }
             trace.Trace($"AssignTo {acquistoTo}");
 
@@ -100,6 +102,12 @@ namespace Plugin.acn_GameApp
             entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
             service.Update(entityUpdate);
             trace.Trace($"OrderAcquisto has been updated");
+
+            if (videogameIdRetrive != Guid.Empty)
+            {
+                _videoGameHelper.UpdateVideoGame(service, videogameIdRetrive, 746200006); //Scegliere Piattaforma
+                trace.Trace($"VideoGame has been updated");
+            }
 
         }
 

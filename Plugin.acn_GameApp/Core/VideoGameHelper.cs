@@ -30,5 +30,13 @@ namespace Plugin.acn_GameApp.Core
             }
             return result.Entities.ToList();
         }
+
+        public void UpdateVideoGame(IOrganizationService service, Guid keyVideoGame, int typePiattaforma)
+        {
+            Entity entityUpdateVG = new Entity("acn_videogame");
+            entityUpdateVG.Id = keyVideoGame;
+            entityUpdateVG["acn_typepiattaforma"] = new OptionSetValue(typePiattaforma);
+            service.Update(entityUpdateVG); 
+        }
     }
 }
