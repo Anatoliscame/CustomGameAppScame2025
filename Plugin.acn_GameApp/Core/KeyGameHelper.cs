@@ -33,10 +33,10 @@ namespace Plugin.acn_GameApp.Core
             return result.Entities.ToList();
         }
 
-        public void UpdateKeyGame(IOrganizationService service, List<Entity> keyGameArray, int StatusKeyGame)
+        public void UpdateKeyGame(IOrganizationService service, Guid keyGameArray, int StatusKeyGame)
         {
             Entity keyGame = new Entity("acn_keygame");
-            keyGame.Id = keyGameArray[0].Id;
+            keyGame.Id = keyGameArray;
             keyGame["acn_statuspresentkeygame"] = new OptionSetValue(StatusKeyGame);
             service.Update(keyGame);
         }

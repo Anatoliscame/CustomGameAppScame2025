@@ -92,8 +92,8 @@ namespace Plugin.acn_GameApp
             }
 
             List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
-
-            _keyGameHelper.UpdateKeyGame(service, keyGameArray, 746200002);// Temporaneamente 
+            Guid keyGameGuid = keyGameArray[0].Id;
+            _keyGameHelper.UpdateKeyGame(service, keyGameGuid, 746200002);// Temporaneamente 
 
             entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
             service.Update(entityUpdate);

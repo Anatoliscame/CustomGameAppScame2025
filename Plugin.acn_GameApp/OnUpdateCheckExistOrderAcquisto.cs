@@ -60,23 +60,21 @@ namespace Plugin.acn_GameApp
         public void ExecuteAcquistoUpdate(IOrganizationService service, Entity target, ITracingService trace)
         {
             OrderAcquistoHelper _oderAcquistoHelper = new OrderAcquistoHelper();
+            KeyGameHelper _keyGameHelper = new KeyGameHelper();
 
             var arrayOrderAcquisto = _oderAcquistoHelper.GetOrderAcquisto(service, target);
             if (arrayOrderAcquisto.Count <= 0) { return; }
 
 
-            Guid keygameIdGuid = Guid.Empty;
-            Entity keyGameUpdate = null;
+            Guid keyGameGuid = Guid.Empty;
+
             foreach (var crmOrderAcquisto in arrayOrderAcquisto)
             {
                 var keygameId = crmOrderAcquisto.GetAttributeValue<AliasedValue>("OrderAcquistoKeyGame.acn_keygameid");
                 //var statusKeyGame = crmOrderAcquisto.GetAttributeValue<AliasedValue>("OrderAcquistoKeyGame.acn_statuspresentkeygame");
-                keygameIdGuid = (Guid)keygameId.Value;
+                keyGameGuid = (Guid)keygameId.Value;
 
-                keyGameUpdate = new Entity("acn_keygame");
-                keyGameUpdate.Id = keygameIdGuid;
-                keyGameUpdate["acn_statuspresentkeygame"] = new OptionSetValue(746200003); // Temporaneamente Acquistato
-                service.Update(keyGameUpdate);              
+               _keyGameHelper.UpdateKeyGame(service, keyGameGuid, 746200003); // Temporaneamente Acquistato
             }
             trace.Trace($"Acquisto has been updated");
             return;
