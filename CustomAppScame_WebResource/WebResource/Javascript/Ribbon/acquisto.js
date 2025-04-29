@@ -1,8 +1,8 @@
 ﻿function checkAcquistoStatusVisibility(formContext) {
-        var statuscode = formContext.getAttribute("statuscode").getValue(); // Stato dell'acquisto
+    var kestatusacquisto = formContext.getAttribute("acn_kestatusacquisto").getValue(); // Stato dell'acquisto
 
         // Verifica se lo stato è "In attesa" (746200002) e rende visibile il pulsante
-        if (statuscode === 746200002) { // 746200002 è "In attesa"
+        if (kestatusacquisto === 746200001) { // 746200002 è "In attesa"
             return true;  // Rende visibile il pulsante
         }
         return false;  // Rende invisibile il pulsante se lo stato è diverso
@@ -13,10 +13,10 @@ function completaAcquistoFattura(formContext) {
     acquistoId = acquistoId.replace("{", "").replace("}", "");
     // Esempio: cambiamo lo statuscode a "Effettuato"
 
-    var statusAcquisto = formContext.getAttribute("statuscode").getValue();
+    var statusAcquisto = formContext.getAttribute("acn_kestatusacquisto").getValue();
 
     // 746200002 è "In attesa"
-    if (statusAcquisto !== 746200002) { Xrm.Navigation.openAlertDialog({ text: "Acquisto Carrello non deve essere manuelmente cambiato per rispettare le regole" }); return; }
+    if (statusAcquisto !== 746200001) { Xrm.Navigation.openAlertDialog({ text: "Acquisto Carrello non deve essere manuelmente cambiato per rispettare le regole" }); return; }
 
     var accountidLookup = formContext.getAttribute("acn_account");
 
@@ -53,7 +53,7 @@ function completaAcquistoFattura(formContext) {
                         console.log("KeyGame Name: " + keygamecode);
                         Xrm.Navigation.openAlertDialog({ text: "KeyGame Name:" });
                         var updateData = {
-                            "statuscode": 746200001 // Metti il valore corretto per "Effettuato"
+                            "acn_kestatusacquisto": 746200000 // Metti il valore corretto per "Effettuato"
                         };
 
                         Xrm.WebApi.updateRecord("acn_acquisto", acquistoId, updateData).then(
@@ -64,6 +64,13 @@ function completaAcquistoFattura(formContext) {
                                 if (prodottobrand) {
                                     prodottobrand.setDisabled(true);
                                 }
+                                formContext.getControl("acn_name").setDisabled(true);
+                                formContext.getControl("acn_code").setDisabled(true);
+                                formContext.getControl("acn_account").setDisabled(true);
+                                formContext.getControl("acn_iva").setDisabled(true);
+                                formContext.getControl("acn_fattura").setDisabled(true);
+                                formContext.getControl("acn_dataacquisto").setDisabled(true);
+                                formContext.getControl("acn_totale").setDisabled(true);
                                 Xrm.Navigation.openAlertDialog({ text: "Acquisto completato." });
                             },
                             function (error) {

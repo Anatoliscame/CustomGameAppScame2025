@@ -75,7 +75,7 @@ namespace Plugin.acn_GameApp
                     Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
                     nuovoAcquisto["acn_name"] = "acquisto" + quantitaAcquisto.ToString() + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
                     nuovoAcquisto["acn_account"] = new EntityReference("account", accountId); // Associa l'account
-                    nuovoAcquisto["statuscode"] = new OptionSetValue(746200002); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
+                    nuovoAcquisto["acn_kestatusacquisto"] = new OptionSetValue(746200001); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
                     nuovoAcquisto["acn_code"] = GeneraCodiceAcquisto();
                     Guid acquistoId = service.Create(nuovoAcquisto);
                     acquistoIdRetrive = acquistoId;

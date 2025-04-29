@@ -35,12 +35,12 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                    int? optionSetValue = ((OptionSetValue)target.Attributes["statuscode"]).Value;
+                    int? optionSetValue = ((OptionSetValue)target.Attributes["acn_kestatusacquisto"]).Value;
 
                     switch (optionSetValue)
                     {
-                        case 746200001: //Effetuato
-                            //if (optionSetValue != 746200002) { throw new ApplicationException("Non sai ancora esprimere la parola 'Mamma'  3+"); }
+                        case 746200000: //Effetuato
+                            //if (optionSetValue != 746200001) { throw new ApplicationException("Non sai ancora esprimere la parola 'Mamma'  3+"); }
                             ExecuteAcquistoUpdate(service, target, trace);
                             break;
                         default:
@@ -87,13 +87,13 @@ namespace Plugin.acn_GameApp
 
             if (targetPost.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo) || acquistoTo != null)
             {
-                if (targetPost.Attributes.Contains(Acquisto.StatusReason) && targetPost.Attributes[Acquisto.StatusReason] != null)
+                if (targetPost.Attributes.Contains("acn_kestatusacquisto") && targetPost.Attributes["acn_kestatusacquisto"] != null)
                 {
-                    int? optionSetValue = ((OptionSetValue)targetPost.Attributes[Acquisto.StatusReason]).Value;
+                    int? optionSetValue = ((OptionSetValue)targetPost.Attributes["acn_kestatusacquisto"]).Value;
 
                     switch (optionSetValue)
                     {
-                        case 746200001:// Effetuato
+                        case 746200000:// Effetuato
 
                            /* List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000); // Disponibile
                             foreach
@@ -101,7 +101,7 @@ namespace Plugin.acn_GameApp
                             updateKeyGame.Id = */
                             break;
 
-                        case 746200002:// In attesa
+                        case 746200001:// In attesa
                             throw new ApplicationException("il valore di stato ordine selezionato 'Completato', acquisto non puo essere eliminato");
 
                         //case 746200003:// Annullato

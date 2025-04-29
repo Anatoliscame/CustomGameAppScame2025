@@ -31,7 +31,7 @@ namespace Plugin.acn_GameApp.Core
                 ColumnSet = new ColumnSet(true),
                 Criteria = new FilterExpression()
             };
-            query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, 746200002); // In Attesa
+            query.Criteria.AddCondition("acn_kestatusacquisto", ConditionOperator.Equal, 746200001); // In Attesa
             query.Criteria.AddCondition("acn_acquistoid", ConditionOperator.NotEqual, entity.Id);
             query.NoLock = true;
             var result = service.RetrieveMultiple(query);
@@ -49,7 +49,7 @@ namespace Plugin.acn_GameApp.Core
                 ColumnSet = new ColumnSet(true),
                 Criteria = new FilterExpression()
             };
-            query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, 746200002); // In Attesa
+            query.Criteria.AddCondition("acn_kestatusacquisto", ConditionOperator.Equal, 746200001); // In Attesa
             query.Criteria.AddCondition("acn_account", ConditionOperator.Equal, accountId);
             query.NoLock = true;
             var result = service.RetrieveMultiple(query);
