@@ -35,7 +35,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>CDKeysScame.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>acn_GameApp.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -120,6 +120,7 @@
     <Compile Include="Core\VideoGameHelper.cs" />
     <Compile Include="Entities\Acquisto.cs" />
     <Compile Include="OnCreateOnUpdateOnOrderAcquistoCheckExistKeyGame.cs" />
+    <Compile Include="OnDeleteExistAcquistoCarello.cs" />
     <Compile Include="OnUpdateCheckExistOrderAcquisto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -129,6 +130,7 @@
     <Folder Include="VideoGame\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="acn_GameApp.pfx" />
     <None Include="app.config" />
     <None Include="CDKeysScame.snk" />
     <None Include="packages.config" />

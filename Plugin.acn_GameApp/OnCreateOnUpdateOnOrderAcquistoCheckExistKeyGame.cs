@@ -58,9 +58,10 @@ namespace Plugin.acn_GameApp
             if (!target.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo) || acquistoTo == null)
             {
                 trace.Trace($"acquistoTo is null: {acquistoTo}");
-                List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
-                Guid accountId = getVideoGames[0].GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
-                videogameIdRetrive = getVideoGames[0].GetAttributeValue<Guid>("acn_videogameid");
+                //List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
+                Entity getVideoGameTo = service.Retrieve("acn_videogame", target.GetAttributeValue<EntityReference>("acn_videogameid").Id, new ColumnSet(true));
+                Guid accountId = getVideoGameTo.GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
+                videogameIdRetrive = getVideoGameTo.GetAttributeValue<Guid>("acn_videogameid");
                 List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoInAttesa(service, accountId);
                 if (acquistiInattesa.Count > 0)
                 {
@@ -79,7 +80,7 @@ namespace Plugin.acn_GameApp
                     nuovoAcquisto["acn_code"] = GeneraCodiceAcquisto();
                     Guid acquistoId = service.Create(nuovoAcquisto);
                     acquistoIdRetrive = acquistoId;
-                    trace.Trace($"Nuovo Acquisto creato: {acquistoId}");
+                    trace.Trace($"Nuovo Acquisto creato: {acquistoTo}");
                 }
 
                 entityUpdate["acn_acquistoid"] = new EntityReference(Acquisto.LogicalName, acquistoIdRetrive);

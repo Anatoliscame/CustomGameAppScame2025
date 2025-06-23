@@ -35,18 +35,20 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                    int? optionSetValue = ((OptionSetValue)target.Attributes["acn_kestatusacquisto"]).Value;
-
-                    switch (optionSetValue)
+                    if (target.Attributes.Contains("acn_kestatusacquisto") && target["acn_kestatusacquisto"] != null)
                     {
-                        case 746200000: //Effetuato
-                            //if (optionSetValue != 746200001) { throw new ApplicationException("Non sai ancora esprimere la parola 'Mamma'  3+"); }
-                            ExecuteAcquistoUpdate(service, target, trace);
-                            break;
-                        default:
-                            return;
-                    }
+                        int? optionSetValue = ((OptionSetValue)target.Attributes["acn_kestatusacquisto"]).Value;
 
+                        switch (optionSetValue)
+                        {
+                            case 746200000: //Effetuato
+                                            //if (optionSetValue != 746200001) { throw new ApplicationException("Non sai ancora esprimere la parola 'Mamma'  3+"); }
+                                ExecuteAcquistoUpdate(service, target, trace);
+                                break;
+                            default:
+                                return;
+                        }
+                    }
                 }
 
                 trace.Trace("End Plugin OnCreateOnUpdateCheckExistOrderAcquisto");

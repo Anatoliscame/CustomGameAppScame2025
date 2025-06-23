@@ -49,7 +49,7 @@
                 for (var i = 0; i < results.entities.length; i++) {
                     var keyGame = results.entities[i];
                     if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
-                        keyTrovata = keyGame;
+                        keyTrovata = true;
                         break;
                     }
                 }
@@ -58,44 +58,41 @@
                     Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
                     return;
                 }
+                // Step 1: crea OrderAcquisto
+                Xrm.WebApi.createRecord("acn_ordineacquisto", newOrder).then(
+                    function (result) {
+                        var orderId = result.id;
+
+                        // Step 2: recupera l’OrderAcquisto appena creato (con il campo acn_acquistoid popolato dal plugin)
+                        Xrm.WebApi.retrieveRecord("acn_ordineacquisto", orderId, "?$select=acn_ordineacquistoid&$expand=acn_acquistoid($select=acn_acquistoid)").then(
+                            function (order) {
+                                if (order.acn_acquistoid && order.acn_acquistoid.acn_acquistoid) {
+                                    var acquistoId = order.acn_acquistoid.acn_acquistoid;
+
+                                    // Step 3: naviga verso la pagina dell’Acquisto
+                                    Xrm.Navigation.openForm({
+                                        entityName: "acn_acquisto",
+                                        entityId: acquistoId
+                                    });
+                                    Xrm.Navigation.openAlertDialog({ text: "Ordine creato" });
+
+                                } else {
+                                    Xrm.Navigation.openAlertDialog({ text: "Ordine creato, ma non è stato possibile identificare l'Acquisto associato." });
+                                }
+                            },
+                            function (error) {
+                                console.error("Errore nel recupero dell’OrderAcquisto: " + error.message);
+                            }
+                        );
+                    },
+                    function (error) {
+                        console.error("Errore nella creazione dell'OrderAcquisto: " + error.message);
+                    }
+                );
             }
         },
         function (error) {
             console.error("Errore nel recupero delle chiavi: " + error.message);
         }
     );
-
-
-    // Step 1: crea OrderAcquisto
-    Xrm.WebApi.createRecord("acn_ordineacquisto", newOrder).then(
-        function (result) {
-            var orderId = result.id;
-
-            // Step 2: recupera l’OrderAcquisto appena creato (con il campo acn_acquistoid popolato dal plugin)
-            Xrm.WebApi.retrieveRecord("acn_ordineacquisto", orderId, "?$select=acn_ordineacquistoid&$expand=acn_acquistoid($select=acn_acquistoid)").then(
-                function (order) {
-                    if (order.acn_acquistoid && order.acn_acquistoid.acn_acquistoid) {
-                        var acquistoId = order.acn_acquistoid.acn_acquistoid;
-
-                        // Step 3: naviga verso la pagina dell’Acquisto
-                        Xrm.Navigation.openForm({
-                            entityName: "acn_acquisto",
-                            entityId: acquistoId
-                        });
-                        Xrm.Navigation.openAlertDialog({ text: "Ordine creato" });
-
-                    } else {
-                        Xrm.Navigation.openAlertDialog({ text: "Ordine creato, ma non è stato possibile identificare l'Acquisto associato." });
-                    }
-                },
-                function (error) {
-                    console.error("Errore nel recupero dell’OrderAcquisto: " + error.message);
-                }
-            );
-        },
-        function (error) {
-            console.error("Errore nella creazione dell'OrderAcquisto: " + error.message);
-        }
-    );
-
 }

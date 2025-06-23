@@ -40,7 +40,7 @@ function completaAcquistoFattura(formContext) {
                 // Cicla attraverso i record di ordineacquisto recuperati
                 for (var i = 0; i < result.entities.length; i++) {
                     var ordineAcquisto = result.entities[i];
-                    console.log("Ordine Acquisto ID: " + ordineAcquisto.acn_ordineacquistoid);
+                    //console.log("Ordine Acquisto ID: " + ordineAcquisto.acn_ordineacquistoid);
                     keygamecode = ordineAcquisto.acn_keygamecode;
 
                     // Verifica se 'acn_keygamecode' è vuoto o nullo
@@ -50,8 +50,8 @@ function completaAcquistoFattura(formContext) {
                         //return;
                         // break; // Esci dal ciclo se la condizione è soddisfatta
                     } else {
-                        console.log("KeyGame Name: " + keygamecode);
-                        Xrm.Navigation.openAlertDialog({ text: "KeyGame Name:" });
+                        //console.log("KeyGame Name: " + keygamecode);
+                        Xrm.Navigation.openAlertDialog({ text: "KeyGame Name:", keygamecode });
                         var updateData = {
                             "acn_kestatusacquisto": 746200000 // Metti il valore corretto per "Effettuato"
                         };
@@ -64,13 +64,13 @@ function completaAcquistoFattura(formContext) {
                                 if (prodottobrand) {
                                     prodottobrand.setDisabled(true);
                                 }
-                                formContext.getControl("acn_name").setDisabled(true);
+                               /* formContext.getControl("acn_name").setDisabled(true);
                                 formContext.getControl("acn_code").setDisabled(true);
                                 formContext.getControl("acn_account").setDisabled(true);
                                 formContext.getControl("acn_iva").setDisabled(true);
                                 formContext.getControl("acn_fattura").setDisabled(true);
                                 formContext.getControl("acn_dataacquisto").setDisabled(true);
-                                formContext.getControl("acn_totale").setDisabled(true);
+                                formContext.getControl("acn_totale").setDisabled(true);*/
                                 Xrm.Navigation.openAlertDialog({ text: "Acquisto completato." });
                             },
                             function (error) {

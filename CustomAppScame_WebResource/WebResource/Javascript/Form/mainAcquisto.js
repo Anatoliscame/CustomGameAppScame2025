@@ -27,12 +27,10 @@ CustomAppVideoGame.mainAcquisto = new function () {
 
         } if (formContext.ui.getFormType() == FormType.Update) {
 
-            var acquistoId = formContext.data.entity.getId().replace("{", "").replace("}", "");
-            if (acquistoId == null) {
-                alert("Id non presente");
-            }
-            formContext.getAttribute("acn_kestatusacquisto").addOnChange(function () { _self.StatusHideEffettuato(executionContext) });
+            //var acquistoId = formContext.data.entity.getId().replace("{", "").replace("}", "");
 
+            //formContext.getAttribute("acn_kestatusacquisto").addOnChange(function () { _self.StatusHideEffettuato(executionContext) });
+           // _self.StatusHideEffettuato(executionContext);
           //  _self.StatusHideEffettuato(executionContext);
 
             //formContext.getAttribute("acn_kestatusacquisto").addOnChange(_self.OnChangeAcquistoDisableEffetuato);
@@ -71,17 +69,17 @@ CustomAppVideoGame.mainAcquisto = new function () {
 
     _self.StatusHideEffettuato = function (executionContext) {
         var formContext = executionContext.getFormContext();
-
-        var StatusOptionSet = formContext.ui.controls.get("acn_kestatusacquisto");
         var status = formContext.getAttribute("acn_kestatusacquisto").getValue();
 
-        if (StatusOptionSet !== null) {
+        if (status !== null) {
+            var StatusOptionSet = formContext.getControl("acn_kestatusacquisto");
+
             if (status !== typeAcquisto.Effetuato) {
                 StatusOptionSet.removeOption(typeAcquisto.Effetuato);
-                StatusOptionSet.addOption({ text: 'Annulato', value: typeAcquisto.Annulato }, 3);
+                StatusOptionSet.addOption({ text: 'Annullato', value: typeAcquisto.Annullato }, 3);
             } else {
                 StatusOptionSet.addOption({ text: 'Effetuato', value: typeAcquisto.Effetuato }, 1);
-                StatusOptionSet.removeOption(typeAcquisto.Annullato)
+                StatusOptionSet.removeOption(typeAcquisto.Annullato);
             }
         }
     }
