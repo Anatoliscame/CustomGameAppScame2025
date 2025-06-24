@@ -31,6 +31,26 @@ namespace Plugin.acn_GameApp.Core
             return result.Entities.ToList();
         }
 
+        public List<Entity> GeVideoGameWithEspansion(IOrganizationService service, Entity target, int statuscode)
+        {
+
+            QueryExpression query = new QueryExpression("acn_videogame")
+            {
+                ColumnSet = new ColumnSet(true),
+                Criteria = new FilterExpression()
+            };
+            query.Criteria.AddCondition("acn_parentvideogameid", ConditionOperator.Equal, target.GetAttributeValue<EntityReference>("acn_videogameid").Id);
+            query.Criteria.AddCondition("acn_videogameid", ConditionOperator.NotEqual);
+            query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, statuscode);
+            query.NoLock = true;
+            var result = service.RetrieveMultiple(query);
+            if (result.Entities.Count == 0)
+            {
+                return new List<Entity>();
+            }
+            return result.Entities.ToList();
+        }
+
         public void UpdateVideoGame(IOrganizationService service, Guid keyVideoGame, int typePiattaforma)
         {
             Entity entityUpdateVG = new Entity("acn_videogame");

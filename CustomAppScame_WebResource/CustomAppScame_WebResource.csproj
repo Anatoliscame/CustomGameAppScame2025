@@ -64,6 +64,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="WebResource\Javascript\Form\mainAcquisto.js" />
+    <Content Include="WebResource\Javascript\Form\mainVideoGame.js" />
     <Content Include="WebResource\Javascript\TEST\acn_videogameTest.js" />
     <Content Include="WebResource\Javascript\TEST\acn_videogameVersion1.js" />
     <Content Include="WebResource\Javascript\Ribbon\acquisto.js" />

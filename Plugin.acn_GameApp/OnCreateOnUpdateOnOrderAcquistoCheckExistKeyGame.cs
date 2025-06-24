@@ -5,6 +5,7 @@ using Plugin.acn_GameApp.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Services;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,8 +37,9 @@ namespace Plugin.acn_GameApp
                 if (context.MessageName.ToLower() == "update")
                 {
                     target = context.PostEntityImages.Values?.FirstOrDefault();
-                }
 
+                }
+                 
                 trace.Trace("End Plugin OnCreateOnUpdateOrderAcquistoCheckExistKeyGame");
             }
             catch (Exception ex)
@@ -60,6 +62,9 @@ namespace Plugin.acn_GameApp
                 trace.Trace($"acquistoTo is null: {acquistoTo}");
                 //List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
                 Entity getVideoGameTo = service.Retrieve("acn_videogame", target.GetAttributeValue<EntityReference>("acn_videogameid").Id, new ColumnSet(true));
+                //TypeVideoGame(service, getVideoGameTo);
+                //var geEspansion = _videoGameHelper.GeVideoGameWithEspansion(service, getVideoGameTo, 746200003); // 746200003 -> Disponibile
+                //if (geEspansion.Count == 0) { return; }
                 Guid accountId = getVideoGameTo.GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
                 videogameIdRetrive = getVideoGameTo.GetAttributeValue<Guid>("acn_videogameid");
                 List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoInAttesa(service, accountId);
@@ -118,6 +123,41 @@ namespace Plugin.acn_GameApp
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return  "ACQ-" + new string(Enumerable.Repeat(chars, 6)
                                               .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+
+        public void TypeVideoGame(IOrganizationService service, Entity target)
+        {
+            if (!target.TryGetAttributeValue("acn_tipovideogioco", out OptionSetValue tipovideogioco))
+            {
+                throw new InvalidPluginExecutionException("Error: the VideoGame record has empty VideoGame Step field.");
+            }
+
+            switch (tipovideogioco.Value)
+            {
+                case 133280000: //Base Game
+
+                    break;
+
+                case 133280001: //DLC
+                    break;
+
+                case 133280002: //Remastered
+
+                    break;
+
+                case 133280003: //Espansione
+
+                    break;
+
+                case 133280004: //Altro
+
+                    break;
+
+                default:
+                    break;
+            }
+
         }
     }
 }

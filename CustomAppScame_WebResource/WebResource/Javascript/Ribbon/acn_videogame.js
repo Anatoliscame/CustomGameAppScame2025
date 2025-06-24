@@ -27,7 +27,6 @@
     }
     var accountId = account[0].id.replace("{", "").replace("}", "");
 
-
     function generaNumeroCasuale() {
         return Math.floor(Math.random() * 1000000) + 100000;
     }
@@ -37,62 +36,125 @@
         "acn_videogameid@odata.bind": "/acn_videogames(" + videoGameId + ")",
         "acn_accountid@odata.bind": "/accounts(" + accountId + ")"
     };
+    var typeStatusCode = formContext.getAttribute("acn_tipovideogioco").getValue();
+    if (typeStatusCode !== null && typeof typeStatusCode !== "undefined") {
 
-    Xrm.WebApi.retrieveMultipleRecords("acn_keygame", "?$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)").then(
-        function success(results) {
-            if (results.entities.length <= 0) {
-                Xrm.Navigation.openAlertDialog({ text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono." });
-            } else {
-                // Aggiungi qua la logica di acn_typepiattaforma
-                var keyTrovata = null;
+        Xrm.WebApi.retrieveMultipleRecords("acn_keygame", "?$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)").then(
+            function success(results) {
+                if (results.entities.length <= 0) {
+                    Xrm.Navigation.openAlertDialog({ text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono." });
+                } else {
+                    // Aggiungi qua la logica di acn_typepiattaforma
+                    var keyTrovata = false;
 
-                for (var i = 0; i < results.entities.length; i++) {
-                    var keyGame = results.entities[i];
-                    if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
-                        keyTrovata = true;
+                    for (var i = 0; i < results.entities.length; i++) {
+                        var keyGame = results.entities[i];
+                        if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
+                            keyTrovata = true;
+                            break;
+                        }
+                    }
+
+                    if (!keyTrovata) {
+                        Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+                        return;
+                    }
+
+
+                    if (typeStatusCode == 746200000) { // Base Game
+                        creaOrdineAcquisto(newOrder);
+                    }
+
+                }
+            },
+            function (error) {
+                console.error("Errore nel recupero delle chiavi: " + error.message);
+            }
+        );
+        if (typeStatusCode == 746200003) { // Espansione
+            CheckExistParentChildVideoGame(videoGameId, statuscodeVG, newOrder);
+
+        }
+    }
+}
+
+function CheckExistParentChildVideoGame(videoGameId,statuscodeVG,newOrder) {
+
+
+    var fetchUrl = "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false' >" +
+        "<entity name='acn_videogame'>" +
+        "<filter type='and'>" +
+        "<condition attribute='acn_parentvideogameid' operator='eq' value='" + videoGameId + "' />" +
+        "</filter>" +
+        "<attribute name='acn_videogameid' />" +
+        "<attribute name='acn_typepiattaforma' />" +
+        "<attribute name='statuscode' />" +
+        "</entity>" +
+        "</fetch>";
+    var path = "?fetchXml=" + encodeURIComponent(fetchUrl);
+
+
+    Xrm.WebApi.retrieveMultipleRecords("acn_videogame", path).then(
+        function success(result) {
+            if (result.entities.length > 0) {
+                var estensionV = false;
+                for (var i = 0; i < result.entities.length; i++) {
+                    var videoGames = result.entities[i];
+                    var statuscodeParentChild = videoGames.statuscode;
+                    if (statuscodeParentChild !== statuscodeVG) {
+                        estensionV = true;
                         break;
                     }
                 }
-
-                if (!keyTrovata) {
-                    Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+                if (estensionV) {
+                    Xrm.Navigation.openAlertDialog({
+                        text: "Piattaforma non corrispondente o mancante per le espansioni."
+                    });
                     return;
                 }
-                // Step 1: crea OrderAcquisto
-                Xrm.WebApi.createRecord("acn_ordineacquisto", newOrder).then(
-                    function (result) {
-                        var orderId = result.id;
+                creaOrdineAcquisto(newOrder);
 
-                        // Step 2: recupera l’OrderAcquisto appena creato (con il campo acn_acquistoid popolato dal plugin)
-                        Xrm.WebApi.retrieveRecord("acn_ordineacquisto", orderId, "?$select=acn_ordineacquistoid&$expand=acn_acquistoid($select=acn_acquistoid)").then(
-                            function (order) {
-                                if (order.acn_acquistoid && order.acn_acquistoid.acn_acquistoid) {
-                                    var acquistoId = order.acn_acquistoid.acn_acquistoid;
-
-                                    // Step 3: naviga verso la pagina dell’Acquisto
-                                    Xrm.Navigation.openForm({
-                                        entityName: "acn_acquisto",
-                                        entityId: acquistoId
-                                    });
-                                    Xrm.Navigation.openAlertDialog({ text: "Ordine creato" });
-
-                                } else {
-                                    Xrm.Navigation.openAlertDialog({ text: "Ordine creato, ma non è stato possibile identificare l'Acquisto associato." });
-                                }
-                            },
-                            function (error) {
-                                console.error("Errore nel recupero dell’OrderAcquisto: " + error.message);
-                            }
-                        );
-                    },
-                    function (error) {
-                        console.error("Errore nella creazione dell'OrderAcquisto: " + error.message);
-                    }
-                );
-            }
+            } else {
+                console.log("Nessuna espansione trovata.");
+            }// // acn_typepiattaforma (OptionSet)
         },
         function (error) {
-            console.error("Errore nel recupero delle chiavi: " + error.message);
+            console.error("Errore fetch espansioni: " + error.message);
+        }
+    );
+}
+
+function creaOrdineAcquisto(newOrder) {
+
+    // Step 1: crea OrderAcquisto
+    Xrm.WebApi.createRecord("acn_ordineacquisto", newOrder).then(
+        function (result) {
+            var orderId = result.id;
+
+            // Step 2: recupera l’OrderAcquisto appena creato (con il campo acn_acquistoid popolato dal plugin)
+            Xrm.WebApi.retrieveRecord("acn_ordineacquisto", orderId, "?$select=acn_ordineacquistoid&$expand=acn_acquistoid($select=acn_acquistoid)").then(
+                function (order) {
+                    if (order.acn_acquistoid && order.acn_acquistoid.acn_acquistoid) {
+                        var acquistoId = order.acn_acquistoid.acn_acquistoid;
+
+                        // Step 3: naviga verso la pagina dell’Acquisto
+                        Xrm.Navigation.openForm({
+                            entityName: "acn_acquisto",
+                            entityId: acquistoId
+                        });
+                        Xrm.Navigation.openAlertDialog({ text: "Ordine creato" });
+
+                    } else {
+                        Xrm.Navigation.openAlertDialog({ text: "Ordine creato, ma non è stato possibile identificare l'Acquisto associato." });
+                    }
+                },
+                function (error) {
+                    console.error("Errore nel recupero dell’OrderAcquisto: " + error.message);
+                }
+            );
+        },
+        function (error) {
+            console.error("Errore nella creazione dell'OrderAcquisto: " + error.message);
         }
     );
 }
