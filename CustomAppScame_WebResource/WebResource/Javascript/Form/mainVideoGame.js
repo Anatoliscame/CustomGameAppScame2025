@@ -38,7 +38,9 @@ CustomAppVideoGame.mainVideoGame = new function () {
 
         var typeStatusCode = formContext.getAttribute("acn_tipovideogioco").getValue();
 
-        if (typeStatusCode == typeVideogioco.BaseGame) {
+        if (typeStatusCode == typeVideogioco.BaseGame
+            || typeStatusCode == typeVideogioco.Espansione
+            || typeStatusCode == typeVideogioco.Remastered) {
 
             formContext.getControl("acn_parentvideogameid").setVisible(false);
         } else {
@@ -61,6 +63,11 @@ CustomAppVideoGame.mainVideoGame = new function () {
                 StatusOptionSet.removeOption(typeVideogioco.Remastered);
                 StatusOptionSet.removeOption(typeVideogioco.Altro);
                 break;
+            case typeVideogioco.Espansione:
+                StatusOptionSet.removeOption(typeVideogioco.DLC);
+                StatusOptionSet.removeOption(typeVideogioco.Remastered);
+                StatusOptionSet.removeOption(typeVideogioco.Altro);
+                break;
             case typeVideogioco.DLC:
                 StatusOptionSet.removeOption(typeVideogioco.BaseGame);
                 StatusOptionSet.removeOption(typeVideogioco.Remastered);
@@ -70,7 +77,6 @@ CustomAppVideoGame.mainVideoGame = new function () {
             default:
                 break;
         }
-            //if (typeStatusCode !== typeVideogioco.BaseGame) 
         }
     }
 }

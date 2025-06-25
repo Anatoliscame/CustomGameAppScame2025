@@ -59,12 +59,9 @@
                         Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
                         return;
                     }
-
-
-                    if (typeStatusCode == 746200000) { // Base Game
+                    if (typeStatusCode == 746200000 || typeStatusCode == 746200001) { // Base Game o DLC
                         creaOrdineAcquisto(newOrder);
                     }
-
                 }
             },
             function (error) {
@@ -73,7 +70,6 @@
         );
         if (typeStatusCode == 746200003) { // Espansione
             CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statuscodeVG, newOrder);
-
         }
     }
 }
@@ -130,15 +126,13 @@ function CheckExistParentChildVideoGame(videoGameId,typePiattaformaVG,statuscode
 
             } else {
                 console.log("Nessuna espansione trovata.");
-            }// // acn_typepiattaforma (OptionSet)
+            }
         },
         function (error) {
             console.error("Errore fetch espansioni: " + error.message);
         }
     );
 }
-
-
 
 function creaOrdineAcquisto(newOrder) {
 
