@@ -72,13 +72,13 @@
             }
         );
         if (typeStatusCode == 746200003) { // Espansione
-            CheckExistParentChildVideoGame(videoGameId, statuscodeVG, newOrder);
+            CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statuscodeVG, newOrder);
 
         }
     }
 }
 
-function CheckExistParentChildVideoGame(videoGameId,statuscodeVG,newOrder) {
+function CheckExistParentChildVideoGame(videoGameId,typePiattaformaVG,statuscodeVG,newOrder) {
 
 
     var fetchUrl = "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false' >" +
@@ -97,22 +97,34 @@ function CheckExistParentChildVideoGame(videoGameId,statuscodeVG,newOrder) {
     Xrm.WebApi.retrieveMultipleRecords("acn_videogame", path).then(
         function success(result) {
             if (result.entities.length > 0) {
-                var estensionV = false;
+                var estensionVStatus = false;
+                var estensionVTypePiattaf = false;
                 for (var i = 0; i < result.entities.length; i++) {
                     var videoGames = result.entities[i];
                     var statuscodeParentChild = videoGames.statuscode;
+                    var typepiattaformaParentChild = videoGames.acn_typepiattaforma;
                     if (statuscodeParentChild !== statuscodeVG) {
-                        estensionV = true;
+                        estensionVStatus = true;
+                        break;
+                    }
+                    if (typepiattaformaParentChild !== typePiattaformaVG) {
+                        estensionVTypePiattaf = true;
                         break;
                     }
                 }
-                if (estensionV) {
+                if (estensionVStatus) {
                     Xrm.Navigation.openAlertDialog({
-                        text: "Piattaforma non corrispondente o mancante per le espansioni."
+                        text: "I contenuti di epsansioni o uno solo non e' presente nella 'DISPONIBILITA'."
                     });
                     return;
+                } else if (estensionVTypePiattaf) {
+                        Xrm.Navigation.openAlertDialog({
+                            text: "Piattaforma non corrispondente o mancante per le espansioni di Parent Child."
+                        });
+                        return;
+                } else {
+                    creaOrdineAcquisto(newOrder);
                 }
-                creaOrdineAcquisto(newOrder);
 
             } else {
                 console.log("Nessuna espansione trovata.");
@@ -123,6 +135,8 @@ function CheckExistParentChildVideoGame(videoGameId,statuscodeVG,newOrder) {
         }
     );
 }
+
+
 
 function creaOrdineAcquisto(newOrder) {
 
