@@ -117,11 +117,13 @@ function CheckExistParentChildVideoGame(videoGameId,typePiattaformaVG,statuscode
                         text: "I contenuti di epsansioni o uno solo non e' presente nella 'DISPONIBILITA'."
                     });
                     return;
+
                 } else if (estensionVTypePiattaf) {
-                        Xrm.Navigation.openAlertDialog({
-                            text: "Piattaforma non corrispondente o mancante per le espansioni di Parent Child."
-                        });
-                        return;
+                    Xrm.Navigation.openAlertDialog({
+                        text: "Piattaforma non corrispondente o mancante per le espansioni di Parent Child."
+                    });
+                    return;
+
                 } else {
                     creaOrdineAcquisto(newOrder);
                 }
