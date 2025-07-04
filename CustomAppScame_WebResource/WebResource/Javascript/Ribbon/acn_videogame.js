@@ -36,45 +36,34 @@
         "acn_videogameid@odata.bind": "/acn_videogames(" + videoGameId + ")",
         "acn_accountid@odata.bind": "/accounts(" + accountId + ")"
     };
-    var typeStatusCode = formContext.getAttribute("acn_tipovideogioco").getValue();
-    if (typeStatusCode !== null && typeof typeStatusCode !== "undefined") {
+    var tipoVideogiocoParent = formContext.getAttribute("acn_tipovideogioco").getValue();
+    if (tipoVideogiocoParent !== null && typeof tipoVideogiocoParent !== "undefined") {
 
-        Xrm.WebApi.retrieveMultipleRecords("acn_keygame", "?$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)").then(
-            function success(results) {
-                if (results.entities.length <= 0) {
-                    Xrm.Navigation.openAlertDialog({ text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono." });
-                } else {
-                    // Aggiungi qua la logica di acn_typepiattaforma
-                    var keyTrovata = false;
+        var num = CheckExistKeGameInVideoGame(videoGameId, typePiattaformaVG);
+        if (num === 2) {
+            if (tipoVideogiocoParent !== 746200003) { //Espansione
 
-                    for (var i = 0; i < results.entities.length; i++) {
-                        var keyGame = results.entities[i];
-                        if (keyGame.acn_typepiattaforma === typePiattaformaVG) {
-                            keyTrovata = true;
-                            break;
-                        }
-                    }
-
-                    if (!keyTrovata) {
-                        Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
-                        return;
-                    }
-                    if (typeStatusCode == 746200000 || typeStatusCode == 746200001) { // Base Game o DLC
-                        creaOrdineAcquisto(newOrder);
-                    }
+                if (tipoVideogiocoParent === 746200000 || tipoVideogiocoParent === 746200001) { // Base Game o DLC
+                    creaOrdineAcquisto(newOrder);
                 }
-            },
-            function (error) {
-                console.error("Errore nel recupero delle chiavi: " + error.message);
             }
-        );
-        if (typeStatusCode == 746200003) { // Espansione
-            CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statuscodeVG, newOrder);
+        } else if (num === 1) {
+            // Nessuna chiave per la piattaforma richiesta
+            Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+        } else if (num === -1) {
+            Xrm.Navigation.openAlertDialog({ text: "Chiavi disponibili con un video gioco non ci sono." });
+        } else if (num === -2) {
+            // Errore nella chiamata HTTP
+            Xrm.Navigation.openAlertDialog({ text: "Errore durante la verifica delle chiavi." });
+        }
+
+        if (tipoVideogiocoParent === 746200003) { // Espansione
+            CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statuscodeVG, tipoVideogiocoParent, newOrder);
         }
     }
 }
 
-function CheckExistParentChildVideoGame(videoGameId,typePiattaformaVG,statuscodeVG,newOrder) {
+function CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statuscodeVG,tipoVideogiocoParent, newOrder) {
 
 
     var fetchUrl = "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false' >" +
@@ -121,6 +110,7 @@ function CheckExistParentChildVideoGame(videoGameId,typePiattaformaVG,statuscode
                     return;
 
                 } else {
+                   // CheckExistKeGameInVideoGame(videoGameId, typePiattaformaVG, tipoVideogiocoParent, newOrder);
                     creaOrdineAcquisto(newOrder);
                 }
 
@@ -132,6 +122,51 @@ function CheckExistParentChildVideoGame(videoGameId,typePiattaformaVG,statuscode
             console.error("Errore fetch espansioni: " + error.message);
         }
     );
+}
+
+function CheckExistKeGameInVideoGame(videoGameId, typePiattaformaVG) {
+
+    var num = 0;
+    var req = new XMLHttpRequest();
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/acn_keygames?$select=acn_typepiattaforma&$filter=(_acn_videogame_value eq " + videoGameId + " and acn_statuspresentkeygame eq 746200000)", false);
+    req.setRequestHeader("OData-MaxVersion", "4.0");
+    req.setRequestHeader("OData-Version", "4.0");
+    req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    req.setRequestHeader("Accept", "application/json");
+    req.setRequestHeader("Prefer", "odata.include-annotations=*");
+    req.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            req.onreadystatechange = null;
+            if (this.status === 200) {
+                var results = JSON.parse(this.response);
+                console.log(results);
+                if (results.value.length <= 0) {
+                    //Xrm.Navigation.openAlertDialog({ text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono." });
+                    num = -1;
+                } else {
+                    var keyTrovata = false;
+                    for (var i = 0; i < results.value.length; i++) {
+                        var keyGame = results.value[i];
+                        if (keyGame["acn_typepiattaforma"] === typePiattaformaVG) {
+                            keyTrovata = true;
+                            break;
+                        }
+                    }
+                    if (!keyTrovata) {
+                        num = 1; // //Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+                    } else {
+                        num = 2; // Chiave trovata
+                    }
+                }
+
+            } else {
+                console.log(this.responseText);
+                num = -2;
+            }
+        }
+    };
+    req.send();
+    return num;
 }
 
 function creaOrdineAcquisto(newOrder) {
