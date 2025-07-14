@@ -88,6 +88,7 @@ function CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statusco
                     var videoGames = result.entities[i];
                     var statuscodeParentChild = videoGames.statuscode;
                     var typepiattaformaParentChild = videoGames.acn_typepiattaforma;
+                    var idV = videoGames.acn_videogameid;
                     if (statuscodeParentChild !== statuscodeVG) {
                         estensionVStatus = true;
                         break;
@@ -97,6 +98,7 @@ function CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statusco
                         break;
                     }
                 }
+
                 if (estensionVStatus) {
                     Xrm.Navigation.openAlertDialog({
                         text: "I contenuti di epsansioni o uno solo non e' presente nella 'DISPONIBILITA'."
@@ -109,9 +111,18 @@ function CheckExistParentChildVideoGame(videoGameId, typePiattaformaVG, statusco
                     });
                     return;
 
-                } else {
-                   // CheckExistKeGameInVideoGame(videoGameId, typePiattaformaVG, tipoVideogiocoParent, newOrder);
-                    creaOrdineAcquisto(newOrder);
+                } else {           
+
+                    var numV = CheckExistKeGameInVideoGame(idV, typepiattaformaParentChild);
+
+                    if (numV === 2) {
+                        creaOrdineAcquisto(newOrder);
+                    } else if (numV === -1) {
+                        Xrm.Navigation.openAlertDialog({ text: "CHILD: Chiavi disponibili con un video gioco non ci sono." });
+                    } else if (numV === -2) {
+                        // Errore nella chiamata HTTP
+                        Xrm.Navigation.openAlertDialog({ text: "CHILD: Errore durante la verifica delle chiavi." });
+                    }
                 }
 
             } else {
@@ -141,7 +152,6 @@ function CheckExistKeGameInVideoGame(videoGameId, typePiattaformaVG) {
                 var results = JSON.parse(this.response);
                 console.log(results);
                 if (results.value.length <= 0) {
-                    //Xrm.Navigation.openAlertDialog({ text: "keyGameArray: Chiavi disponibili con un video gioco non ci sono." });
                     num = -1;
                 } else {
                     var keyTrovata = false;
@@ -153,7 +163,7 @@ function CheckExistKeGameInVideoGame(videoGameId, typePiattaformaVG) {
                         }
                     }
                     if (!keyTrovata) {
-                        num = 1; // //Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+                        num = 1;
                     } else {
                         num = 2; // Chiave trovata
                     }
