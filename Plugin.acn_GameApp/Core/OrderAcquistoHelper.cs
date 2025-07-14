@@ -16,7 +16,7 @@ namespace Plugin.acn_GameApp.Core
         {
             QueryExpression query = new QueryExpression("acn_ordineacquisto")
             {
-                ColumnSet = new ColumnSet("acn_ordineacquistoid", "acn_keygamecode", "acn_acquistoid"),
+                ColumnSet = new ColumnSet("acn_ordineacquistoid", "acn_keygamecode", "acn_acquistoid", "acn_videogameid"),
                 Criteria = new FilterExpression()
             };
             query.Criteria.AddCondition("acn_acquistoid", ConditionOperator.Equal, targetUpdateAcquisto.Id);

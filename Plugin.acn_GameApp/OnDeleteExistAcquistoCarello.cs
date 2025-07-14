@@ -49,6 +49,8 @@ namespace Plugin.acn_GameApp
             KeyGameHelper _keyGameHelper = new KeyGameHelper();
 
 
+            //int? optionSetValue = ((OptionSetValue)targetPost.Attributes["acn_kestatusacquisto"]).Value;
+
             Entity target = service.Retrieve("acn_acquisto", targetRef.Id, new ColumnSet(true));
 
             var arrayOrderAcquisto = _oderAcquistoHelper.GetOrderAcquisto(service, target);
@@ -63,15 +65,22 @@ namespace Plugin.acn_GameApp
                 var keygameId = crmOrderAcquisto.GetAttributeValue<AliasedValue>("OrderAcquistoKeyGame.acn_keygameid");
                 if (keygameId == null) continue;
 
-                keyGameGuid = (Guid)keygameId.Value;
+                EntityReference videoGameidRef = crmOrderAcquisto.Contains("acn_videogameid") ? crmOrderAcquisto.GetAttributeValue<EntityReference>("acn_videogameid") : null;
+                Entity videoGameid = service.Retrieve(videoGameidRef.LogicalName, videoGameidRef.Id, new ColumnSet("acn_tipovideogioco"));
+                int? tipovideogioco = ((OptionSetValue)videoGameid.Attributes["acn_tipovideogioco"]).Value;
+                if (tipovideogioco.Value != 746200003)
+                { // Espansione
 
-                _keyGameHelper.UpdateKeyGame(service, keyGameGuid, 746200000); // Disponibile
-                
-                service.Delete("acn_ordineacquisto", crmOrderAcquisto.Id);
-                deletedCount++;
+                    keyGameGuid = (Guid)keygameId.Value;
+
+                    _keyGameHelper.UpdateKeyGame(service, keyGameGuid, 746200000); // Disponibile
+
+                    service.Delete("acn_ordineacquisto", crmOrderAcquisto.Id);
+                    deletedCount++;
+                }
             }
             trace.Trace($"{deletedCount} OrderAcquisto eliminati e KeyGame aggiornati.");
-            return;
+            return; 
         }
     }
 }

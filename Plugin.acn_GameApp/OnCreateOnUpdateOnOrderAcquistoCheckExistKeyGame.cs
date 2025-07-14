@@ -57,11 +57,18 @@ namespace Plugin.acn_GameApp
             entityUpdate.Id = target.Id;
             Guid acquistoIdRetrive = Guid.Empty;
             Guid videogameIdRetrive = Guid.Empty;
-            if (!target.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo) || acquistoTo == null)
+
+            if (!target.TryGetAttributeValue("acn_videogameid", out EntityReference videogameTo))
+            {
+                trace.Trace($"videogameToTo is null: {videogameTo}");
+                return;
+            }
+            Entity getVideoGameTo = service.Retrieve(videogameTo.LogicalName, videogameTo.Id, new ColumnSet(true));
+
+            if (!target.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo))
             {
                 trace.Trace($"acquistoTo is null: {acquistoTo}");
-                //List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);
-                Entity getVideoGameTo = service.Retrieve("acn_videogame", target.GetAttributeValue<EntityReference>("acn_videogameid").Id, new ColumnSet(true));
+                //List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);              
                 //TypeVideoGame(service, getVideoGameTo);
                 //var geEspansion = _videoGameHelper.GeVideoGameWithEspansion(service, getVideoGameTo, 746200003); // 746200003 -> Disponibile
                 //if (geEspansion.Count == 0) { return; }
@@ -72,7 +79,6 @@ namespace Plugin.acn_GameApp
                 {
                     Guid acquistoId = acquistiInattesa[0].GetAttributeValue<Guid>("acn_acquistoid");
                     acquistoIdRetrive = acquistoId;
-                    entityUpdate["acn_acquistoid"] = new EntityReference("acn_acquisto", acquistoId);
                 }
                 else
                 {
@@ -89,17 +95,10 @@ namespace Plugin.acn_GameApp
                 }
 
                 entityUpdate["acn_acquistoid"] = new EntityReference(Acquisto.LogicalName, acquistoIdRetrive);
-
             }
             trace.Trace($"AssignTo {acquistoTo}");
 
-            if (!target.TryGetAttributeValue("acn_videogameid", out EntityReference videogameTo) || videogameTo == null)
-            {
-                trace.Trace($"videogameToTo is null: {videogameTo}");
-                throw new Exception("videogameToTo is not valued");
-            }
-            Entity eVideogameTo = service.Retrieve(videogameTo.LogicalName, videogameTo.Id, new ColumnSet(new string[] { "acn_typepiattaforma" }));
-            int? typePiattaforma = ((OptionSetValue)eVideogameTo.Attributes["acn_typepiattaforma"]).Value;
+            int? typePiattaforma = ((OptionSetValue)getVideoGameTo.Attributes["acn_typepiattaforma"]).Value;
              
             List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000, typePiattaforma); // Disponibile
             Guid keyGameGuid = keyGameArray[0].Id;
