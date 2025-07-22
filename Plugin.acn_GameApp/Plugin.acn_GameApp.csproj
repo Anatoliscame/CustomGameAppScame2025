@@ -119,6 +119,7 @@
     <Compile Include="Core\OrderAcquistoHelper.cs" />
     <Compile Include="Core\VideoGameHelper.cs" />
     <Compile Include="Entities\Acquisto.cs" />
+    <Compile Include="Entities\OrderAcquistoEspansione.cs" />
     <Compile Include="OnCreateOnUpdateOnOrderAcquistoCheckExistKeyGame.cs" />
     <Compile Include="OnDeleteExistAcquistoCarello.cs" />
     <Compile Include="OnUpdateCheckExistOrderAcquisto.cs" />

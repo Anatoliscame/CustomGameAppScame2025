@@ -2,10 +2,7 @@
 using Microsoft.Xrm.Sdk.Query;
 using Plugin.acn_GameApp.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Plugin.acn_GameApp
 {
@@ -65,11 +62,11 @@ namespace Plugin.acn_GameApp
                 var keygameId = crmOrderAcquisto.GetAttributeValue<AliasedValue>("OrderAcquistoKeyGame.acn_keygameid");
                 if (keygameId == null) continue;
 
-                EntityReference videoGameidRef = crmOrderAcquisto.Contains("acn_videogameid") ? crmOrderAcquisto.GetAttributeValue<EntityReference>("acn_videogameid") : null;
-                Entity videoGameid = service.Retrieve(videoGameidRef.LogicalName, videoGameidRef.Id, new ColumnSet("acn_tipovideogioco"));
-                int? tipovideogioco = ((OptionSetValue)videoGameid.Attributes["acn_tipovideogioco"]).Value;
-                if (tipovideogioco.Value != 746200003)
-                { // Espansione
+                //EntityReference videoGameidRef = crmOrderAcquisto.Contains("acn_videogameid") ? crmOrderAcquisto.GetAttributeValue<EntityReference>("acn_videogameid") : null;
+                //Entity videoGameid = service.Retrieve(videoGameidRef.LogicalName, videoGameidRef.Id, new ColumnSet("acn_tipovideogioco"));
+                //int? tipovideogioco = ((OptionSetValue)videoGameid.Attributes["acn_tipovideogioco"]).Value;
+                //if (tipovideogioco.Value != 746200003)
+                //{ // Espansione
 
                     keyGameGuid = (Guid)keygameId.Value;
 
@@ -77,7 +74,7 @@ namespace Plugin.acn_GameApp
 
                     service.Delete("acn_ordineacquisto", crmOrderAcquisto.Id);
                     deletedCount++;
-                }
+                //}
             }
             trace.Trace($"{deletedCount} OrderAcquisto eliminati e KeyGame aggiornati.");
             return; 

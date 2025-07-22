@@ -5,9 +5,7 @@ using Plugin.acn_GameApp.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Services;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace Plugin.acn_GameApp
 {
@@ -68,10 +66,7 @@ namespace Plugin.acn_GameApp
             if (!target.TryGetAttributeValue("acn_acquistoid", out EntityReference acquistoTo))
             {
                 trace.Trace($"acquistoTo is null: {acquistoTo}");
-                //List<Entity> getVideoGames = _videoGameHelper.GeVideoGames(service, target);              
-                //TypeVideoGame(service, getVideoGameTo);
-                //var geEspansion = _videoGameHelper.GeVideoGameWithEspansion(service, getVideoGameTo, 746200003); // 746200003 -> Disponibile
-                //if (geEspansion.Count == 0) { return; }
+
                 Guid accountId = getVideoGameTo.GetAttributeValue<EntityReference>("acn_accountid")?.Id ?? Guid.Empty;
                 videogameIdRetrive = getVideoGameTo.GetAttributeValue<Guid>("acn_videogameid");
                 List<Entity> acquistiInattesa = _acquistoHelper.GetAcquistoInAttesa(service, accountId);
@@ -99,12 +94,43 @@ namespace Plugin.acn_GameApp
             trace.Trace($"AssignTo {acquistoTo}");
 
             int? typePiattaforma = ((OptionSetValue)getVideoGameTo.Attributes["acn_typepiattaforma"]).Value;
-             
-            List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000, typePiattaforma); // Disponibile
-            Guid keyGameGuid = keyGameArray[0].Id;
-            _keyGameHelper.UpdateKeyGame(service, keyGameGuid, 746200002);// Temporaneamente 
+            // Key Game di Game Based
+            List<Entity> keyGameArray = _keyGameHelper.ExistKeyGame(service, videogameTo, 746200000, typePiattaforma); // Disponibile;
+            if (keyGameArray.Count == 0) { return; }
 
-            entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");
+            int? tipovideogioco = getVideoGameTo.GetAttributeValue<OptionSetValue>("acn_tipovideogioco")?.Value;
+            //int? tipovideogioco = ((OptionSetValue)getVideoGameTo.Attributes["acn_tipovideogioco"]).Value;
+            if (tipovideogioco.Value == 746200003) //Espansione
+            {
+                var contentVideoGames = _videoGameHelper.GeVideoGameWithEspansion(service, getVideoGameTo, videogameTo, 746200003, typePiattaforma);  // 746200003 -> Disponibile content
+                if (contentVideoGames == null || contentVideoGames.Count <= 0)
+                {
+                    return;
+                }
+                foreach (var content in contentVideoGames)
+                {
+                    var contentVideoGameGuid = content.GetAttributeValue<Guid>("acn_videogameid");
+                    if (contentVideoGameGuid == Guid.Empty) { continue; }
+
+                    var arrayKeyGamesContent = _keyGameHelper.ExistKeyGame(service, new EntityReference("acn_videogame", contentVideoGameGuid), 746200000, typePiattaforma); // Disponibile;
+                    if (arrayKeyGamesContent == null || arrayKeyGamesContent.Count == 0){ continue;}                                                                                                                                                         //keyGameArray
+
+                    //if (keyGamesContent.GetAttributeValue<string>("acn_keygame").Equals())
+                    Entity nuovoOrderAcquistoEspansione = new Entity(OrderAcquistoEspansione.LogicalName);
+                    nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrderAcquistoEspansioneName] = "Name_"+arrayKeyGamesContent.Count + 1+"_"+ arrayKeyGamesContent[0].GetAttributeValue<string>("acn_keygame");
+                    nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.KeyGameCode] = arrayKeyGamesContent[0].GetAttributeValue<string>("acn_keygame");
+                    nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrdineAcquisto] = new EntityReference("acn_ordineacquisto", target.Id);
+                    nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.NameContentVideogame] = content.GetAttributeValue<string>("acn_key");
+                    service.Create(nuovoOrderAcquistoEspansione);
+
+                    _keyGameHelper.UpdateKeyGame(service, arrayKeyGamesContent[0].Id, 746200002);// Temporaneamente 
+                }                
+            }
+
+            _keyGameHelper.UpdateKeyGame(service, keyGameArray[0].Id, 746200002);// Temporaneamente 
+
+            entityUpdate["acn_keygamecode"] = keyGameArray[0].GetAttributeValue<string>("acn_keygame");// Padre key
+
             service.Update(entityUpdate);
             trace.Trace($"OrderAcquisto has been updated");
 

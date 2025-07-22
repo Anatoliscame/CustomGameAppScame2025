@@ -31,7 +31,7 @@ namespace Plugin.acn_GameApp.Core
             return result.Entities.ToList();
         }
 
-        public List<Entity> GeVideoGameWithEspansion(IOrganizationService service, Entity target, int statuscode)
+        public List<Entity> GeVideoGameWithEspansion(IOrganizationService service, Entity videogameID, EntityReference videogameTo, int statuscode, int? typePiattaforma)
         {
 
             QueryExpression query = new QueryExpression("acn_videogame")
@@ -39,9 +39,10 @@ namespace Plugin.acn_GameApp.Core
                 ColumnSet = new ColumnSet(true),
                 Criteria = new FilterExpression()
             };
-            query.Criteria.AddCondition("acn_parentvideogameid", ConditionOperator.Equal, target.GetAttributeValue<EntityReference>("acn_videogameid").Id);
-            query.Criteria.AddCondition("acn_videogameid", ConditionOperator.NotEqual);
-            query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, statuscode);
+            query.Criteria.AddCondition("acn_parentvideogameid", ConditionOperator.Equal, videogameTo.Id);
+            //query.Criteria.AddCondition("statuscode", ConditionOperator.Equal, statuscode);
+            //query.Criteria.AddCondition("acn_typepiattaforma", ConditionOperator.Equal, typePiattaforma);
+            //query.Criteria.AddCondition("acn_videogameid", ConditionOperator.NotEqual, videogameID.Id);
             query.NoLock = true;
             var result = service.RetrieveMultiple(query);
             if (result.Entities.Count == 0)

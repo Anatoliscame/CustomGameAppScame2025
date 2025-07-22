@@ -24,7 +24,7 @@ namespace Plugin.acn_GameApp.Core
             query.Criteria.AddCondition("acn_statuspresentkeygame", ConditionOperator.Equal, statusKeyGame);
             query.Criteria.AddCondition("acn_typepiattaforma", ConditionOperator.Equal, typePiattaforma.Value);
             query.NoLock = true;
-            query.TopCount = 1;
+            //query.TopCount = 1;
             // query.AddOrder("createdon", OrderType.Descending);
             var result = service.RetrieveMultiple(query);
             if (result.Entities.Count == 0)
