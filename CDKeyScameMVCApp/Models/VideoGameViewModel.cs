@@ -22,7 +22,7 @@ namespace CDKeyScameMVCApp.Models
         {
             Action = 746200000,
             Adventure = 746200001,
-            Horror = 746200002,
+            Horror = 746200002
         }
 
         public enum TipoVideoGioco
@@ -31,7 +31,7 @@ namespace CDKeyScameMVCApp.Models
             DLC = 746200001,
             Remastered = 746200002,
             Espansione = 746200003,
-            Altro = 746200004,
+            Altro = 746200004
         }
 
         public enum TypePiattaforma
