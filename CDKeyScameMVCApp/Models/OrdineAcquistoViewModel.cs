@@ -15,5 +15,7 @@ namespace CDKeyScameMVCApp.Models
         public string KeyGameCode { get; set; }  // Relazionato con KeyGame
         public string OrderName { get; set; }
 
+        public ICollection<OrderAcquistoEspansioneViewModel> OrderAcquistoS { get; set; } = new List<OrderAcquistoEspansioneViewModel>();
+
     }
 }

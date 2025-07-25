@@ -22,6 +22,8 @@ namespace CDKeyScameMVCApp.Models
         public Decimal IVA { get; set; }// Decimal in CRM
         public Decimal Totale { get; set; }// Decimal in CRM
 
+        public ICollection<OrdineAcquistoViewModel> OrdineAcquistoS { get; set; } = new List<OrdineAcquistoViewModel>();
+
         public enum KeStatusAcquisto
         {
             Effetuato = 746200000,

@@ -18,6 +18,8 @@ namespace CDKeyScameMVCApp.Models
         public string PG { get; set; }
         public Decimal Prezzo { get; set; }
 
+        public ICollection<KeyGameViewModel> KeyGameS { get; set; } = new List<KeyGameViewModel>();
+        public ICollection<OrdineAcquistoViewModel> OrdineAcquistoS { get; set; } = new List<OrdineAcquistoViewModel>();
         public enum Genere
         {
             Action = 746200000,
@@ -44,6 +46,9 @@ namespace CDKeyScameMVCApp.Models
             Epic_Games = 746200005,
             Scegliere_Piattaforma = 746200006
         }
-
+        public string VisVideoGame()
+        {
+            return $"{VideoGameId} - {Key} - {Account} - {DataUscita} - {PG} - {Prezzo}";
+        }
     }
 }

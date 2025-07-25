@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 
 namespace CDKeyScameMVCApp.Models
 {
@@ -9,5 +10,9 @@ namespace CDKeyScameMVCApp.Models
 	{
         public Guid OrderAcquistoEId { get; set; }
         public string Name { get; set; }
+        public string KeyGameCode { get; set; }
+        public string NameContentVideoGame { get; set; }
+        public OrdineAcquistoViewModel OrdineAcquisto { get; set; }
+
     }
 }
