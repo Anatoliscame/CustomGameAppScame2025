@@ -1,11 +1,15 @@
 ﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
+using Newtonsoft.Json;
 using Plugin.acn_GameApp.Core;
 using Plugin.acn_GameApp.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Services;
 using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 
 namespace Plugin.acn_GameApp
 {
@@ -80,10 +84,10 @@ namespace Plugin.acn_GameApp
                     int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
 
                     Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
-                    nuovoAcquisto["acn_name"] = "acquisto" + quantitaAcquisto.ToString() + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                    nuovoAcquisto["acn_account"] = new EntityReference("account", accountId); // Associa l'account
-                    nuovoAcquisto["acn_kestatusacquisto"] = new OptionSetValue(746200001); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
-                    nuovoAcquisto["acn_code"] = GeneraCodiceAcquisto();
+                    nuovoAcquisto[Acquisto.Name] = "acquisto" + quantitaAcquisto.ToString() + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                    nuovoAcquisto[Acquisto.Account] = new EntityReference("account", accountId); // Associa l'account
+                    nuovoAcquisto[Acquisto.KeStatusAcquisto] = new OptionSetValue(746200001); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
+                    nuovoAcquisto[Acquisto.Code] = GeneraCodiceAcquisto();
                     Guid acquistoId = service.Create(nuovoAcquisto);
                     acquistoIdRetrive = acquistoId;
                     trace.Trace($"Nuovo Acquisto creato: {acquistoTo}");
@@ -102,29 +106,57 @@ namespace Plugin.acn_GameApp
             //int? tipovideogioco = ((OptionSetValue)getVideoGameTo.Attributes["acn_tipovideogioco"]).Value;
             if (tipovideogioco.Value == 746200003) //Espansione
             {
-                var contentVideoGames = _videoGameHelper.GeVideoGameWithEspansion(service, getVideoGameTo, videogameTo, 746200003, typePiattaforma);  // 746200003 -> Disponibile content
+                var contentVideoGames = _videoGameHelper.GeVideoGameWithEspansion(service, videogameTo.Id);  // 746200003 -> Disponibile content
                 if (contentVideoGames == null || contentVideoGames.Count <= 0)
                 {
                     return;
                 }
+                /*var batchRequest = new ExecuteMultipleRequest
+                {
+                    Requests = new OrganizationRequestCollection(),
+                    Settings = new ExecuteMultipleSettings
+                    {
+                        ContinueOnError = false,
+                        ReturnResponses = true
+                    }
+                };*/
                 foreach (var content in contentVideoGames)
                 {
                     var contentVideoGameGuid = content.GetAttributeValue<Guid>("acn_videogameid");
                     if (contentVideoGameGuid == Guid.Empty) { continue; }
 
                     var arrayKeyGamesContent = _keyGameHelper.ExistKeyGame(service, new EntityReference("acn_videogame", contentVideoGameGuid), 746200000, typePiattaforma); // Disponibile;
-                    if (arrayKeyGamesContent == null || arrayKeyGamesContent.Count == 0){ continue;}                                                                                                                                                         //keyGameArray
+                    if (arrayKeyGamesContent == null || arrayKeyGamesContent.Count == 0){ continue;}
 
                     //if (keyGamesContent.GetAttributeValue<string>("acn_keygame").Equals())
                     Entity nuovoOrderAcquistoEspansione = new Entity(OrderAcquistoEspansione.LogicalName);
-                    nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrderAcquistoEspansioneName] = "Name_"+arrayKeyGamesContent.Count + 1+"_"+ arrayKeyGamesContent[0].GetAttributeValue<string>("acn_keygame");
+                    nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrderAcquistoEspansioneName] = "Name_"+arrayKeyGamesContent.Count + 1 +"_"+ arrayKeyGamesContent[0].GetAttributeValue<string>("acn_keygame");
                     nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.KeyGameCode] = arrayKeyGamesContent[0].GetAttributeValue<string>("acn_keygame");
                     nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrdineAcquisto] = new EntityReference("acn_ordineacquisto", target.Id);
                     nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.NameContentVideogame] = content.GetAttributeValue<string>("acn_key");
                     service.Create(nuovoOrderAcquistoEspansione);
+                    /*Entity updateKeyGame = new Entity(KeyGame.LogicalName, arrayKeyGamesContent[0].Id)
+                    {
+                        [KeyGame.StatusPresentKeyGame] = new OptionSetValue(746200002) // Temporaneamente assegnato
+                    };*/
+                    
+                   // batchRequest.Requests.Add(new UpdateRequest { Target = updateKeyGame });
+                
+                   _keyGameHelper.UpdateKeyGame(service, arrayKeyGamesContent[0].Id, 746200002);// Temporaneamente 
 
-                    _keyGameHelper.UpdateKeyGame(service, arrayKeyGamesContent[0].Id, 746200002);// Temporaneamente 
-                }                
+                   // batchRequest.Requests.Add(new CreateRequest { Target = nuovoOrderAcquistoEspansione });
+
+                }
+                /*if (batchRequest.Requests.Count > 0)
+                {
+                    var response = (ExecuteMultipleResponse)service.Execute(batchRequest);
+                    HandleBatchResponse(response, trace);
+                    trace?.Trace("Batch di creazione eseguito con successo.");
+                }
+                else
+                {
+                    trace?.Trace("Nessun nuovo record da creare (tutti esistenti).");
+                }*/
             }
 
             _keyGameHelper.UpdateKeyGame(service, keyGameArray[0].Id, 746200002);// Temporaneamente 
@@ -139,9 +171,25 @@ namespace Plugin.acn_GameApp
                 _videoGameHelper.UpdateVideoGame(service, videogameIdRetrive, 746200006); //Scegliere Piattaforma
                 trace.Trace($"VideoGame has been updated");
             }
-
         }
-
+        private void HandleBatchResponse(ExecuteMultipleResponse response, ITracingService tracingService)
+        {
+            var lstErrors = new List<string>();
+            foreach (var responseItem in response.Responses)
+            {
+                if (responseItem.Fault != null)
+                {
+                    tracingService?.Trace($"Errore nel batch: {responseItem.Fault.Message}");
+                    lstErrors.Add(responseItem.Fault.Message);
+                }
+            }
+            if (lstErrors.Count > 0)
+            {
+                var jsonLogMessages = JsonConvert.SerializeObject(lstErrors);
+                tracingService?.Trace(jsonLogMessages);
+                throw new InvalidPluginExecutionException(jsonLogMessages);
+            }
+        }
         private string GeneraCodiceAcquisto(int lunghezza = 6)
         {
             var random = new Random();

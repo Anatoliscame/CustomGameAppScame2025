@@ -35,7 +35,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>acn_GameApp.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>GameApp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -64,6 +64,9 @@
     </Reference>
     <Reference Include="Microsoft.Xrm.Sdk, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.59\lib\net462\Microsoft.Xrm.Sdk.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -119,7 +122,9 @@
     <Compile Include="Core\OrderAcquistoHelper.cs" />
     <Compile Include="Core\VideoGameHelper.cs" />
     <Compile Include="Entities\Acquisto.cs" />
+    <Compile Include="Entities\KeyGame.cs" />
     <Compile Include="Entities\OrderAcquistoEspansione.cs" />
+    <Compile Include="Entities\VideoGame.cs" />
     <Compile Include="OnCreateOnUpdateOnOrderAcquistoCheckExistKeyGame.cs" />
     <Compile Include="OnDeleteExistAcquistoCarello.cs" />
     <Compile Include="OnUpdateCheckExistOrderAcquisto.cs" />
@@ -131,9 +136,8 @@
     <Folder Include="VideoGame\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="acn_GameApp.pfx" />
     <None Include="app.config" />
-    <None Include="CDKeysScame.snk" />
+    <None Include="GameApp.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

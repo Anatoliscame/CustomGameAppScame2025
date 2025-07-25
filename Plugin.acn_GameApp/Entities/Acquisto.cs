@@ -10,6 +10,7 @@ namespace Plugin.acn_GameApp.Entities
     {
         public const string LogicalName = "acn_acquisto";
         public const string AcquistoId = "acn_acquistoid";
+        public const string Account = "acn_account";        
         public const string Name = "acn_name";
         public const string StatusReason = "statuscode";
         public const string KeStatusAcquisto = "acn_kestatusacquisto";
