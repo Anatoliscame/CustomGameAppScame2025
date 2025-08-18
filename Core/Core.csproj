@@ -41,9 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessLogic\IBusinessLayer.cs" />
+    <Compile Include="BusinessLogic\MainBusinessLayer.cs" />
     <Compile Include="Model\Account.cs" />
     <Compile Include="Model\Acquisto.cs" />
     <Compile Include="Model\KeyGame.cs" />
+    <Compile Include="Model\No_CRM\Role\AdminR.cs" />
+    <Compile Include="Model\No_CRM\Role\IRole.cs" />
+    <Compile Include="Model\No_CRM\Role\UserR.cs" />
+    <Compile Include="Model\No_CRM\User.cs" />
     <Compile Include="Model\OrderAcquistoEspansione.cs" />
     <Compile Include="Model\OrdineAcquisto.cs" />
     <Compile Include="Model\VideoGame.cs" />
