@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAppScame_WebResource"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CDKeyScameMVCApp", "CDKeyScameMVCApp\CDKeyScameMVCApp.csproj", "{7A56128F-C620-4D57-AFD2-F8E4BE3EF7E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{D5DED794-E043-4B7F-9852-D471D9404A5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,14 @@ Global
 		{7A56128F-C620-4D57-AFD2-F8E4BE3EF7E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A56128F-C620-4D57-AFD2-F8E4BE3EF7E7}.Release|x64.ActiveCfg = Release|Any CPU
 		{7A56128F-C620-4D57-AFD2-F8E4BE3EF7E7}.Release|x64.Build.0 = Release|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Debug|x64.Build.0 = Debug|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Release|x64.ActiveCfg = Release|Any CPU
+		{D5DED794-E043-4B7F-9852-D471D9404A5B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
