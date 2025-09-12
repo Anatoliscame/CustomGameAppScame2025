@@ -44,9 +44,9 @@ namespace Core.BusinessLogic
             throw new NotImplementedException();
         }
 
-        public List<VideoGame> GetVideoGames(IOrganizationService _service)
+        public List<VideoGame> GetVideoGames()
         {
-           return _videogameRepo.GetAllVideoGame(_service);
+           return _videogameRepo.GetAllVideoGame();
         }
 
         public VideoGame InsertVideoGameId(VideoGame v)

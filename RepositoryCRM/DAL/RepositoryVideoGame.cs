@@ -2,6 +2,7 @@
 using Core.RepositoryInterface;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Microsoft.Xrm.Tooling.Connector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,10 @@ namespace RepositoryCRM.DAL
 {
     public class RepositoryVideoGame : IRepositoryVideoGame
     {
-        public RepositoryVideoGame()
+        private readonly IOrganizationService _service;
+        public RepositoryVideoGame(IOrganizationService service)
         {
+            _service = service;
         }
 
         public VideoGame Add(VideoGame item)
@@ -35,7 +38,7 @@ namespace RepositoryCRM.DAL
         {
             throw new NotImplementedException();
         }
-        public List<VideoGame> GetAllVideoGame(IOrganizationService _service)
+        public List<VideoGame> GetAllVideoGame()
         {
             // Query per prendere tutti i videogame
             List<VideoGame> videogames = new List<VideoGame>();

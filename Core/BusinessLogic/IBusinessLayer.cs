@@ -15,7 +15,7 @@ namespace Core.BusinessLogic
         // VideoGame
         List<VideoGame> FetchVideoGameB(Func<VideoGame, bool> filter = null);
         VideoGame CercaVideoGameB(string videogame);
-        List<VideoGame> GetVideoGames(IOrganizationService _service);
+        List<VideoGame> GetVideoGames();
         VideoGame GetVideoGameId(int id);
         VideoGame InsertVideoGameId(VideoGame v);
         VideoGame UpdateVideoGame(VideoGame v);

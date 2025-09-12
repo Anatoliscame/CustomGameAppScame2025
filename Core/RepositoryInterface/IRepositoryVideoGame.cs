@@ -11,7 +11,7 @@ namespace Core.RepositoryInterface
     public interface IRepositoryVideoGame : IRepository<VideoGame>
     {
         string CercaVideoGame(string titolo);
-        List<VideoGame> GetAllVideoGame(IOrganizationService _service);
+        List<VideoGame> GetAllVideoGame();
         VideoGame GetById(int id);
         string RicercaUnVideoGame(string titolo);
     } 

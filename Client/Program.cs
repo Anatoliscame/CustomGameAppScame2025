@@ -1,6 +1,5 @@
 ﻿using Core.BusinessLogic;
 using Microsoft.Xrm.Tooling.Connector;
-using RepositoryCRM;
 using RepositoryCRM.DAL;
 using System;
 using System.Collections.Generic;
@@ -24,9 +23,9 @@ namespace Client
             }
 
 
-            IBusinessLayer bl = new MainBusinessLayer(new RepositoryVideoGame());
+            IBusinessLayer bl = new MainBusinessLayer(new RepositoryVideoGame(crmServiceClient));
 
-            var videogames = bl.GetVideoGames(crmServiceClient); // Assicurati che il metodo esista nel BL
+            var videogames = bl.GetVideoGames(); // Assicurati che il metodo esista nel BL
 
             // Stampa ogni videogame su console
             foreach (var vg in videogames)
