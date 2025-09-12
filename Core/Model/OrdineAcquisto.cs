@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Core.Model.VideoGame;
 
 namespace Core.Model
 {
@@ -18,5 +19,9 @@ namespace Core.Model
 
         public ICollection<OrderAcquistoEspansione> OrderAcquistoS { get; set; } = new List<OrderAcquistoEspansione>();
 
+        public string VisOrdineAcquisto()
+        {
+            return $"{OrderAcquistoId} - {Name} - {Account} - {Acquisto} - {VideoGameId} - {KeyGameCode} - {OrderName}";
+        }
     }
 }

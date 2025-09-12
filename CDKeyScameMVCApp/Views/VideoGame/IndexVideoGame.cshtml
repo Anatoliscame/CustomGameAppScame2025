@@ -1,0 +1,35 @@
+﻿﻿@model ICollection<CDKeyScameMVCApp.Models.VideoGameViewModel>
+@{
+    ViewBag.Title = "IndexVideoGame";
+}
+<h2>Elenco Videogiochi</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Key</th>
+            <th>Account</th>
+            <th>Data Uscita</th>
+            <th>Prezzo</th>
+            <th>Tipo Gioco</th>
+            <th>Piattaforma</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vg in Model)
+        {
+            <tr>
+                <td>@vg.Name</td>
+                <td>@vg.Key</td>
+                <td>@(vg.Account != null ? vg.Account.Name : "-")</td>
+                <td>@vg.DataUscita.ToShortDateString()</td>
+                <td>@vg.Prezzo</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+</table>

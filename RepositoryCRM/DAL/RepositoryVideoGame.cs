@@ -93,7 +93,6 @@ namespace RepositoryCRM.DAL
             return videogames;
 
         }
-
         public VideoGame GetById(int id)
         {
             throw new NotImplementedException();

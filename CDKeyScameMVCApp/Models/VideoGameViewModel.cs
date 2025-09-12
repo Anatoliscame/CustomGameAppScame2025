@@ -9,10 +9,13 @@ namespace CDKeyScameMVCApp.Models
 	public class VideoGameViewModel
 	{
         public Guid VideoGameId { get; set; }
+
+       // [Required]
         public string Key { get; set; } // acn_key (Name CRM)
+       // [Required]
         public string Name { get; set; } // (Name CRM)
         public AccountViewModel Account { get; set; }
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         public DateTime DataUscita { get; set; }
         //public VideoGameViewModel ParentVideoGameId { get; set; } ?? DA PENSARE
         public string PG { get; set; }
@@ -27,28 +30,14 @@ namespace CDKeyScameMVCApp.Models
             Horror = 746200002
         }
 
-        public enum TipoVideoGioco
-        {
-            Base_Game = 746200000,
-            DLC = 746200001,
-            Remastered = 746200002,
-            Espansione = 746200003,
-            Altro = 746200004
-        }
+        public int? tipoVideoGioco { get; set; }
 
-        public enum TypePiattaforma
+        public int? tipoPiattaforma { get; set; }
+
+        public int? StateCode { get; set; }
+        public string VisVideoGameView()
         {
-            Steam = 746200000,
-            EA = 746200001,
-            Ubisoft = 746200002,
-            Psn = 746200003,
-            Microsoft_Xbox = 746200004,
-            Epic_Games = 746200005,
-            Scegliere_Piattaforma = 746200006
-        }
-        public string VisVideoGame()
-        {
-            return $"{VideoGameId} - {Key} - {Account} - {DataUscita} - {PG} - {Prezzo}";
+            return $"{VideoGameId} - {Key} - {Account?.AccountId} - {DataUscita.ToShortDateString()} - {PG} - {Prezzo} - {tipoVideoGioco} - {tipoPiattaforma} - {StateCode}";
         }
     }
 }
