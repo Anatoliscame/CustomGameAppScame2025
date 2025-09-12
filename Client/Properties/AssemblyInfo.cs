@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RepositoryCRM")]
+[assembly: AssemblyTitle("Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Avanade")]
-[assembly: AssemblyProduct("RepositoryCRM")]
+[assembly: AssemblyProduct("Client")]
 [assembly: AssemblyCopyright("Copyright © Avanade 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("02236004-c556-4e13-9fd7-653904fd620a")]
+[assembly: Guid("ce5fff81-64aa-4132-a7bf-00c8739f7061")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1,5 +1,6 @@
 ﻿using Core.Model;
 using Core.RepositoryInterface;
+using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
 
@@ -17,6 +18,11 @@ namespace Core.BusinessLogic
             _acquistoRepo = acquisti;
             _videogameRepo = videogames;
 
+        }
+
+        public MainBusinessLayer(IRepositoryVideoGame videogames)
+        {
+            _videogameRepo = videogames;
         }
 
         #region VideoGame
@@ -38,9 +44,9 @@ namespace Core.BusinessLogic
             throw new NotImplementedException();
         }
 
-        public List<VideoGame> GetVideoGames()
+        public List<VideoGame> GetVideoGames(IOrganizationService _service)
         {
-            throw new NotImplementedException();
+           return _videogameRepo.GetAllVideoGame(_service);
         }
 
         public VideoGame InsertVideoGameId(VideoGame v)

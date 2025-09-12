@@ -17,6 +17,9 @@ namespace Core.Model
         public string PG { get; set; }
         public Decimal Prezzo { get; set; }
 
+        //[AttributeLogicalName("statecode")]
+        public VideoGameState? StateCode { get; set; }
+
         public ICollection<KeyGame> KeyGameS { get; set; } = new List<KeyGame>();
         public ICollection<OrdineAcquisto> OrdineAcquistoS { get; set; } = new List<OrdineAcquisto>();
         public enum Genere
@@ -26,6 +29,7 @@ namespace Core.Model
             Horror = 746200002
         }
 
+        public TipoVideoGioco tipoVideoGioco { get; set; }
         public enum TipoVideoGioco
         {
             Base_Game = 746200000,
@@ -34,6 +38,8 @@ namespace Core.Model
             Espansione = 746200003,
             Altro = 746200004
         }
+
+        public TypePiattaforma tipoPiattaforma { get; set; }
 
         public enum TypePiattaforma
         {
@@ -45,9 +51,15 @@ namespace Core.Model
             Epic_Games = 746200005,
             Scegliere_Piattaforma = 746200006
         }
+
+        public enum VideoGameState
+        {
+            Active = 0,
+            Inactive = 1
+        }
         public string VisVideoGame()
         {
-            return $"{VideoGameId} - {Key} - {Account} - {DataUscita} - {PG} - {Prezzo}";
+            return $"{VideoGameId} - {Key} - {Account?.AccountId} - {DataUscita.ToShortDateString()} - {PG} - {Prezzo} - {tipoVideoGioco} - {tipoPiattaforma}";
         }
     }
 }

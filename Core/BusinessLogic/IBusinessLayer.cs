@@ -1,4 +1,5 @@
 ﻿using Core.Model;
+using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Core.BusinessLogic
 {
-    interface IBusinessLayer
+    public interface IBusinessLayer
     {
         //User Login(string username, string password);
 
         // VideoGame
         List<VideoGame> FetchVideoGameB(Func<VideoGame, bool> filter = null);
         VideoGame CercaVideoGameB(string videogame);
-        List<VideoGame> GetVideoGames();
+        List<VideoGame> GetVideoGames(IOrganizationService _service);
         VideoGame GetVideoGameId(int id);
         VideoGame InsertVideoGameId(VideoGame v);
         VideoGame UpdateVideoGame(VideoGame v);
