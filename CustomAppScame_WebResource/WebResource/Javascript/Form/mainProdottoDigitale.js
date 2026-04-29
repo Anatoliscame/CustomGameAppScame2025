@@ -38,18 +38,19 @@ const typeProductDigital =
 
 CustomApp.mainProdottoDigitale = new function () {
     var _self = this;
+    var _redirectAlreadyDone = false;
 
     _self.onload = function (executionContext) {
         var formContext = executionContext.getFormContext();
 
         if (formContext.ui.getFormType() == FormType.Create) {
 
-            _self.OnChangeHideTypePiattaforma(executionContext);
+            formContext.data.entity.addOnPostSave(_self.OpenSpecificEntityAfterCreate);
 
         } else if (formContext.ui.getFormType() == FormType.Update) {
 
             _self.SetFieldsDisabled(executionContext);
-
+            _self.HideGridDetailsSpecifiche(executionContext);
             // _self.VisiblyMessage(executionContext);
         }
     };
@@ -63,8 +64,45 @@ CustomApp.mainProdottoDigitale = new function () {
         });
     };
 
-    _self.OnChangeHideTypePiattaforma = function (executionContext) {
+
+    _self.HideGridDetailsSpecifiche = function (executionContext) {
         var formContext = executionContext.getFormContext();
+        var videoGameGrid = formContext.getControl("Subgrid_VideoGame");
+        var licenzaSoftwareGrid = formContext.getControl("Subgrid_LicenzaSoftware");
+
+        if (videoGameGrid == null || licenzaSoftwareGrid == null) {
+            Xrm.Navigation.openAlertDialog({
+                title: "I subGrid",
+                text: "I subGrid non sono disponibili!"
+            });
+            return;
+        }
+
+        var tipoProduct = formContext.getAttribute("sc_tipoprodottodigitale").getValue();
+
+        if (tipoProduct == typeProductDigital.VideoGame) {
+
+            videoGameGrid.setVisible(true);
+            licenzaSoftwareGrid.setVisible(false);
+
+        } else if (tipoProduct == typeProductDigital.Licenza_Software) {
+            videoGameGrid.setVisible(false);
+            licenzaSoftwareGrid.setVisible(true);
+
+        } else {
+
+            videoGameGrid.setVisible(false);
+            licenzaSoftwareGrid.setVisible(false);
+        }
+    };
+
+    _self.OnChangeHideTypePiattaforma = function (executionContext) {
+
+        var formContext = executionContext.getFormContext();
+        if (formContext.ui.getFormType() != FormType.Create) {
+
+            return;
+        }
 
         var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
         var piattaformaAttr = formContext.getAttribute("sc_piattaformaprodotttodigitale");
@@ -144,14 +182,96 @@ CustomApp.mainProdottoDigitale = new function () {
         var formContext = executionContext.getFormContext();
 
         var tipoProductControl = formContext.getControl("sc_tipoprodottodigitale");
-        var piattaformaControl = formContext.getControl("sc_piattaformaprodotttodigitale");
+        //var piattaformaControl = formContext.getControl("sc_piattaformaprodotttodigitale");
 
         if (tipoProductControl != null) {
             tipoProductControl.setDisabled(true);
         }
 
-        if (piattaformaControl != null) {
+        /*if (piattaformaControl != null) {
             piattaformaControl.setDisabled(true);
+        }*/
+    };
+
+
+    _self.OpenSpecificEntityAfterCreate = function (executionContext) {
+        var formContext = executionContext.getFormContext();
+
+        if (_redirectAlreadyDone === true) {
+            return;
         }
+
+        var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
+
+
+        if (tipoProductAttr == null) {
+            Xrm.Navigation.openAlertDialog({
+                title: "Campi mancanti",
+                text: "Tipo prodotto, piattaforma o nome prodotto non disponibili."
+            });
+            return;
+        }
+
+        var tipoProduct = tipoProductAttr.getValue();
+
+        if (tipoProduct == null) {
+            return;
+        }
+
+        var prodottoDigitaleId = formContext.data.entity.getId();
+
+        if (prodottoDigitaleId == null || prodottoDigitaleId === "") {
+            return;
+        }
+
+        prodottoDigitaleId = prodottoDigitaleId.replace("{", "").replace("}", "");
+
+        var entityName = null;
+
+        if (tipoProduct == typeProductDigital.VideoGame) {
+            entityName = "sc_videogame";
+        }
+        else if (tipoProduct == typeProductDigital.Licenza_Software) {
+            entityName = "sc_licenzasoftware";
+        }
+        else {
+            return;
+        }
+
+        var data = {};
+
+        // Campi da compilare nel record figlio
+        data["sc_name"] = formContext.getAttribute("sc_prodottodigitale").getValue();
+
+        // Lookup verso Prodotto Digitale
+        // ATTENZIONE: "sc_prodottodigitales" deve essere il nome EntitySetName/plurale Web API della tabella Prodotto Digitale
+        data["sc_prodottodigitale@odata.bind"] = "/sc_prodottodigitales(" + prodottoDigitaleId + ")";
+
+        _redirectAlreadyDone = true;
+
+        Xrm.Utility.showProgressIndicator("Creazione record specifico in corso...");
+
+        Xrm.WebApi.createRecord(entityName, data).then(
+            function success(result) {
+
+                Xrm.Utility.closeProgressIndicator();
+
+                Xrm.Navigation.openForm({
+                    entityName: entityName,
+                    entityId: result.id
+                });
+            },
+            function (error) {
+
+                Xrm.Utility.closeProgressIndicator();
+
+                _redirectAlreadyDone = false;
+
+                Xrm.Navigation.openAlertDialog({
+                    title: "Errore creazione record specifico",
+                    text: error.message
+                });
+            }
+        );
     };
 };
