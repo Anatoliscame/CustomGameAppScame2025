@@ -182,15 +182,10 @@ CustomApp.mainProdottoDigitale = new function () {
         var formContext = executionContext.getFormContext();
 
         var tipoProductControl = formContext.getControl("sc_tipoprodottodigitale");
-        //var piattaformaControl = formContext.getControl("sc_piattaformaprodotttodigitale");
 
         if (tipoProductControl != null) {
             tipoProductControl.setDisabled(true);
         }
-
-        /*if (piattaformaControl != null) {
-            piattaformaControl.setDisabled(true);
-        }*/
     };
 
 
