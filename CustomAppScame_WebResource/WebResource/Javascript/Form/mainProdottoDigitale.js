@@ -61,7 +61,7 @@ CustomApp.mainProdottoDigitale = new function () {
 
             _self.SetFieldsDisabled(executionContext);
             _self.HideTypePiattaforma(executionContext);
- 
+
             if (productDetailsControl != null) {
 
                 if (productDetailsValue != null && productDetailsValue.length > 0) {
@@ -232,8 +232,8 @@ CustomApp.mainProdottoDigitale = new function () {
                         Xrm.Utility.closeProgressIndicator();
 
                         Xrm.Navigation.openForm({
-                            entityName: entityName,
-                            entityId: result.id
+                            entityName: "sc_prodottodigitale",
+                            entityId: prodottoDigitaleId
                         });
                     },
                     function (error) {
