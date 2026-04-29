@@ -43,12 +43,11 @@ CustomApp.mainProdottoDigitale = new function () {
     _self.onload = function (executionContext) {
         var formContext = executionContext.getFormContext();
 
-        var productDetailsAttr = formContext.getAttribute("sc_productdetails");
+        var productDetailsValue = formContext.getAttribute("sc_productdetails") != null
+            ? formContext.getAttribute("sc_productdetails").getValue()
+            : null;
         var productDetailsControl = formContext.getControl("sc_productdetails");
 
-        if (productDetailsControl == null) {
-            return;
-        }
 
         if (formContext.ui.getFormType() == FormType.Create) {
 
@@ -61,20 +60,15 @@ CustomApp.mainProdottoDigitale = new function () {
         } else if (formContext.ui.getFormType() == FormType.Update) {
 
             _self.SetFieldsDisabled(executionContext);
-            _self.HideGridDetailsSpecifiche(executionContext);
             _self.HideTypePiattaforma(executionContext);
+ 
+            if (productDetailsControl != null) {
 
-            if (productDetailsAttr == null) {
-                productDetailsControl.setVisible(false);
-                return;
-            }
-
-            var productDetailsValue = productDetailsAttr.getValue();
-
-            if (productDetailsValue != null && productDetailsValue.length > 0) {
-                productDetailsControl.setVisible(true);
-            } else {
-                productDetailsControl.setVisible(false);
+                if (productDetailsValue != null && productDetailsValue.length > 0) {
+                    productDetailsControl.setVisible(true);
+                } else {
+                    productDetailsControl.setVisible(false);
+                }
             }
         }
     };
