@@ -43,15 +43,39 @@ CustomApp.mainProdottoDigitale = new function () {
     _self.onload = function (executionContext) {
         var formContext = executionContext.getFormContext();
 
+        var productDetailsAttr = formContext.getAttribute("sc_productdetails");
+        var productDetailsControl = formContext.getControl("sc_productdetails");
+
+        if (productDetailsControl == null) {
+            return;
+        }
+
         if (formContext.ui.getFormType() == FormType.Create) {
 
             formContext.data.entity.addOnPostSave(_self.OpenSpecificEntityAfterCreate);
+
+            if (productDetailsControl != null) {
+                productDetailsControl.setVisible(false);
+            }
 
         } else if (formContext.ui.getFormType() == FormType.Update) {
 
             _self.SetFieldsDisabled(executionContext);
             _self.HideGridDetailsSpecifiche(executionContext);
-            // _self.VisiblyMessage(executionContext);
+            _self.HideTypePiattaforma(executionContext);
+
+            if (productDetailsAttr == null) {
+                productDetailsControl.setVisible(false);
+                return;
+            }
+
+            var productDetailsValue = productDetailsAttr.getValue();
+
+            if (productDetailsValue != null && productDetailsValue.length > 0) {
+                productDetailsControl.setVisible(true);
+            } else {
+                productDetailsControl.setVisible(false);
+            }
         }
     };
 
@@ -65,44 +89,9 @@ CustomApp.mainProdottoDigitale = new function () {
     };
 
 
-    _self.HideGridDetailsSpecifiche = function (executionContext) {
-        var formContext = executionContext.getFormContext();
-        var videoGameGrid = formContext.getControl("Subgrid_VideoGame");
-        var licenzaSoftwareGrid = formContext.getControl("Subgrid_LicenzaSoftware");
-
-        if (videoGameGrid == null || licenzaSoftwareGrid == null) {
-            Xrm.Navigation.openAlertDialog({
-                title: "I subGrid",
-                text: "I subGrid non sono disponibili!"
-            });
-            return;
-        }
-
-        var tipoProduct = formContext.getAttribute("sc_tipoprodottodigitale").getValue();
-
-        if (tipoProduct == typeProductDigital.VideoGame) {
-
-            videoGameGrid.setVisible(true);
-            licenzaSoftwareGrid.setVisible(false);
-
-        } else if (tipoProduct == typeProductDigital.Licenza_Software) {
-            videoGameGrid.setVisible(false);
-            licenzaSoftwareGrid.setVisible(true);
-
-        } else {
-
-            videoGameGrid.setVisible(false);
-            licenzaSoftwareGrid.setVisible(false);
-        }
-    };
-
-    _self.OnChangeHideTypePiattaforma = function (executionContext) {
+    _self.HideTypePiattaforma = function (executionContext) {
 
         var formContext = executionContext.getFormContext();
-        if (formContext.ui.getFormType() != FormType.Create) {
-
-            return;
-        }
 
         var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
         var piattaformaAttr = formContext.getAttribute("sc_piattaformaprodotttodigitale");
@@ -221,26 +210,13 @@ CustomApp.mainProdottoDigitale = new function () {
 
         prodottoDigitaleId = prodottoDigitaleId.replace("{", "").replace("}", "");
 
-        var entityName = null;
-
-        if (tipoProduct == typeProductDigital.VideoGame) {
-            entityName = "sc_videogame";
-        }
-        else if (tipoProduct == typeProductDigital.Licenza_Software) {
-            entityName = "sc_licenzasoftware";
-        }
-        else {
-            return;
-        }
-
         var data = {};
-
+        var entityName = "sc_productdetails";
         // Campi da compilare nel record figlio
         data["sc_name"] = formContext.getAttribute("sc_prodottodigitale").getValue();
-
+        data["sc_typeproductdetail"] = tipoProduct;
         // Lookup verso Prodotto Digitale
         // ATTENZIONE: "sc_prodottodigitales" deve essere il nome EntitySetName/plurale Web API della tabella Prodotto Digitale
-        data["sc_prodottodigitale@odata.bind"] = "/sc_prodottodigitales(" + prodottoDigitaleId + ")";
 
         _redirectAlreadyDone = true;
 
@@ -249,12 +225,35 @@ CustomApp.mainProdottoDigitale = new function () {
         Xrm.WebApi.createRecord(entityName, data).then(
             function success(result) {
 
-                Xrm.Utility.closeProgressIndicator();
+                var productDetailsId = result.id.replace("{", "").replace("}", "");
 
-                Xrm.Navigation.openForm({
-                    entityName: entityName,
-                    entityId: result.id
-                });
+                var updateProdottoDigitale = {};
+
+                // Inserisce productdetails CREATO su entita Prodotto Digitale
+                updateProdottoDigitale["sc_productdetails@odata.bind"] = "/sc_productdetailses(" + productDetailsId + ")";
+
+                Xrm.WebApi.updateRecord("sc_prodottodigitale",prodottoDigitaleId, updateProdottoDigitale).then(
+                    function successUpdate() {
+
+                        Xrm.Utility.closeProgressIndicator();
+
+                        Xrm.Navigation.openForm({
+                            entityName: entityName,
+                            entityId: result.id
+                        });
+                    },
+                    function (error) {
+
+                        Xrm.Utility.closeProgressIndicator();
+
+                        _redirectAlreadyDone = false;
+
+                        Xrm.Navigation.openAlertDialog({
+                            title: "Errore aggiornamento Prodotto Digitale",
+                            text: error.message
+                        });
+                    }
+                );
             },
             function (error) {
 
@@ -263,7 +262,7 @@ CustomApp.mainProdottoDigitale = new function () {
                 _redirectAlreadyDone = false;
 
                 Xrm.Navigation.openAlertDialog({
-                    title: "Errore creazione record specifico",
+                    title: "Errore creazione Product Details",
                     text: error.message
                 });
             }
