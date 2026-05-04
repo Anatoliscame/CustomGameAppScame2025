@@ -59,7 +59,7 @@ CustomApp.mainProdottoDigitale = new function () {
 
         } else if (formContext.ui.getFormType() == FormType.Update) {
 
-            _self.SetFieldsDisabled(executionContext);
+
             _self.HideTypePiattaforma(executionContext);
 
             if (productDetailsControl != null) {
@@ -70,6 +70,8 @@ CustomApp.mainProdottoDigitale = new function () {
                     productDetailsControl.setVisible(false);
                 }
             }
+
+            _self.SetFieldsDisabled(executionContext);
         }
     };
 
@@ -164,11 +166,10 @@ CustomApp.mainProdottoDigitale = new function () {
     _self.SetFieldsDisabled = function (executionContext) {
         var formContext = executionContext.getFormContext();
 
-        var tipoProductControl = formContext.getControl("sc_tipoprodottodigitale");
+        formContext.getControl("sc_tipoprodottodigitale").setDisabled(true);
+        formContext.getControl("sc_prodottodigitale").setDisabled(true);
+        formContext.getControl("sc_codiceprodotto").setDisabled(true);
 
-        if (tipoProductControl != null) {
-            tipoProductControl.setDisabled(true);
-        }
     };
 
 
@@ -207,7 +208,7 @@ CustomApp.mainProdottoDigitale = new function () {
         var data = {};
         var entityName = "sc_productdetails";
         // Campi da compilare nel record figlio
-        data["sc_name"] = formContext.getAttribute("sc_prodottodigitale").getValue();
+        data["sc_name"] = formContext.getAttribute("sc_prodottodigitale").getValue() + " - " + formContext.getAttribute("sc_codiceprodotto").getValue();
         data["sc_typeproductdetail"] = tipoProduct;
         // Lookup verso Prodotto Digitale
         // ATTENZIONE: "sc_prodottodigitales" deve essere il nome EntitySetName/plurale Web API della tabella Prodotto Digitale

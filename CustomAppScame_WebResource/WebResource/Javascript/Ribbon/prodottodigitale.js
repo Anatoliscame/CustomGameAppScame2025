@@ -1,0 +1,171 @@
+﻿function apriOrderAcquisto(formContext) {
+
+    var statusPD = formContext.getAttribute("sc_statoprodottodigitale").getValue();
+    if (statusPD !== 126400000) { Xrm.Navigation.openAlertDialog({ text: "Prodotto Digitale non acquistabile" }); return; }
+
+
+    var typePiattaforma = formContext.getAttribute("sc_piattaformaprodotttodigitale").getValue();
+
+    if (typePiattaforma === null) {
+        Xrm.Navigation.openAlertDialog({
+            text: "Scegli prima una piattaforma d'acquistare"
+        });
+        return;
+    }
+
+    if (formContext.data.entity.getEntityName() !== "sc_prodottodigitale") {
+        alert("Questo pulsante funziona solo su Prodottto Digitale.");
+        return;
+    }
+
+    var prodottoDigitaleId = formContext.data.entity.getId();
+    prodottoDigitaleId = prodottoDigitaleId.replace("{", "").replace("}", "");
+
+
+    var prodottoDigitaleName = formContext.getAttribute("sc_key")?.getValue(); // Name di prodotto Digitale
+    if (!prodottoDigitaleName) {
+        alert("Il nome del prodotto Digitale non è disponibile.");
+        return;
+    }
+
+    var account = formContext.getAttribute("sc_accountcliente")?.getValue();
+    if (!account || account.length === 0) {
+        alert("Account non selezionato sul Prodottto Digitale.");
+        return;
+    }
+    var accountId = account[0].id.replace("{", "").replace("}", "");
+    function generaNumeroCasuale() {
+        return Math.floor(Math.random() * 1000000) + 100000;
+    }
+
+    /*var newOrder = {
+        "sc_name": "Order-" + generaNumeroCasuale(),
+        "sc_prodottodigitaleid@odata.bind": "/sc_prodottodigitales(" + prodottoDigitaleId + ")",
+        "acn_accountid@odata.bind": "/accounts(" + accountId + ")"
+    };*/
+
+    var valueTypeExpansion = RetriveValueTypeExpansion(prodottoDigitaleId);
+
+    if (valueTypeExpansion === null || typeof valueTypeExpansion === "undefined") {
+        return;
+    }
+
+
+    var num = CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma);
+    if (num === 2) {
+        if (valueTypeExpansion !== 126400003) { //Espansione
+
+            if (valueTypeExpansion === 126400000 || valueTypeExpansion === 126400001) { // Base Game o DLC
+                Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC" });
+            }
+        } else {
+                // Espansione
+                Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
+        }
+    } else if (num === 1) {
+        // Nessuna chiave per la piattaforma richiesta
+        Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
+    } else if (num === -1) {
+        Xrm.Navigation.openAlertDialog({ text: "Chiavi disponibili con un prodotto digitale non ci sono." });
+    } else if (num === -2) {
+        // Errore nella chiamata HTTP
+        Xrm.Navigation.openAlertDialog({ text: "Errore durante la verifica delle chiavi." });
+    }
+}
+
+
+
+
+function RetriveValueTypeExpansion(prodottoDigitaleId) {
+
+    var valueTypeExpansion = null;
+
+    var req = new XMLHttpRequest();
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion)", false);
+    req.setRequestHeader("OData-MaxVersion", "4.0");
+    req.setRequestHeader("OData-Version", "4.0");
+    req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    req.setRequestHeader("Accept", "application/json");
+    req.setRequestHeader("Prefer", "odata.include-annotations=*");
+    req.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            req.onreadystatechange = null;
+            if (this.status === 200) {
+                var resultProdottoDigitale = JSON.parse(this.response);
+
+                if (resultProdottoDigitale.sc_productdetails != null) {
+
+                    var tipoPDParent = resultProdottoDigitale.sc_productdetails.sc_typeexpansion;
+
+                    if (tipoPDParent !== null && typeof tipoPDParent !== "undefined") {
+
+                        Xrm.Navigation.openAlertDialog({
+                            title: "Type Expansion",
+                            text: "Valore sc_typeexpansion: " + tipoPDParent
+                        });
+                        valueTypeExpansion = tipoPDParent;
+                    } else {
+
+                        Xrm.Navigation.openAlertDialog({
+                            text: "Il campo sc_typeexpansion è vuoto."
+                        });
+                    }
+                } else {
+                    Xrm.Navigation.openAlertDialog({
+                        text: "Product Details non è collegato al Prodotto Digitale."
+                    });
+                }
+            } else {
+                console.log(this.responseText);
+            }
+        }
+    };
+    req.send();
+    return valueTypeExpansion;
+}
+
+
+
+function CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma) {
+
+    var num = 0;
+    var req = new XMLHttpRequest();
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_keyprodottos?$select=_sc_prodottodigitaleid_value,sc_typepiattaforma&$filter=_sc_prodottodigitaleid_value eq " + prodottoDigitaleId + "  and sc_statuspresentkey eq 126400000", false);
+    req.setRequestHeader("OData-MaxVersion", "4.0");
+    req.setRequestHeader("OData-Version", "4.0");
+    req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    req.setRequestHeader("Accept", "application/json");
+    req.setRequestHeader("Prefer", "odata.include-annotations=*");
+    req.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            req.onreadystatechange = null;
+            if (this.status === 200) {
+                var results = JSON.parse(this.response);
+                console.log(results);
+                if (results.value.length <= 0) {
+                    num = -1;
+                } else {
+                    var keyTrovata = false;
+                    for (var i = 0; i < results.value.length; i++) {
+                        var keyGame = results.value[i];
+                        if (keyGame["sc_typepiattaforma"] === typePiattaforma) {
+                            keyTrovata = true;
+                            break;
+                        }
+                    }
+                    if (!keyTrovata) {
+                        num = 1;
+                    } else {
+                        num = 2; // Chiave trovata
+                    }
+                }
+
+            } else {
+                console.log(this.responseText);
+                num = -2;
+            }
+        }
+    };
+    req.send();
+    return num;
+}
