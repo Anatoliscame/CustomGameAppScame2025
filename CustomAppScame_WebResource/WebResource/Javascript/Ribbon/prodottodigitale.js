@@ -38,11 +38,11 @@
         return Math.floor(Math.random() * 1000000) + 100000;
     }
 
-    /*var newOrder = {
+    var newOrder = {
         "sc_name": "Order-" + generaNumeroCasuale(),
         "sc_prodottodigitaleid@odata.bind": "/sc_prodottodigitales(" + prodottoDigitaleId + ")",
-        "acn_accountid@odata.bind": "/accounts(" + accountId + ")"
-    };*/
+        "sc_accountcliente@odata.bind": "/accounts(" + accountId + ")"
+    };
 
     var valueTypeExpansion = RetriveValueTypeExpansion(prodottoDigitaleId);
 
@@ -56,6 +56,7 @@
         if (valueTypeExpansion !== 126400003) { //Espansione
 
             if (valueTypeExpansion === 126400000 || valueTypeExpansion === 126400001) { // Base Game o DLC
+                creaOrdineAcquisto(newOrder);
                 Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC" });
             }
         } else {
@@ -168,4 +169,40 @@ function CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma) {
     };
     req.send();
     return num;
+}
+
+
+function creaOrdineAcquisto(newOrder) {
+
+    // Step 1: crea OrderAcquisto
+    Xrm.WebApi.createRecord("sc_ordineacquisto", newOrder).then(
+        function (result) {
+            var orderId = result.id;
+            // Step 2: recupera l’OrderAcquisto appena creato (con il campo acn_acquistoid popolato dal plugin)
+            Xrm.WebApi.retrieveRecord("sc_ordineacquisto", orderId, "?$select=sc_ordineacquistoid,_sc_acquisto_value&$expand=sc_acquisto($select=sc_acquistoid)").then(
+                function (order) {
+                    //if (order["_sc_acquisto_value"]) {
+                        //var acquistoId = order["_sc_acquisto_value"];
+                    if (order.sc_acquisto && order.sc_acquisto.sc_acquistoid) {
+                        var acquistoId = order.sc_acquisto.sc_acquistoid;
+                        // Step 3: naviga verso la pagina dell’Acquisto
+                        Xrm.Navigation.openForm({
+                            entityName: "sc_acquisto",
+                            entityId: acquistoId
+                        });
+                        Xrm.Navigation.openAlertDialog({ text: "Ordine creato" });
+
+                    } else {
+                        Xrm.Navigation.openAlertDialog({ text: "Ordine creato, ma non è stato possibile identificare l'Acquisto associato." });
+                    }
+                },
+                function (error) {
+                    console.error("Errore nel recupero dell’OrderAcquisto: " + error.message);
+                }
+            );
+        },
+        function (error) {
+            console.error("Errore nella creazione dell'OrderAcquisto: " + error.message);
+        }
+    );
 }
