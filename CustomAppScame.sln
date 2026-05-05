@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryCRM", "RepositoryCRM\RepositoryCRM.csproj", "{02236004-C556-4E13-9FD7-653904FD620A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.sc_ProductDetails", "Plugin.sc_ProductDetails\Plugin.sc_ProductDetails.csproj", "{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,14 @@ Global
 		{02236004-C556-4E13-9FD7-653904FD620A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02236004-C556-4E13-9FD7-653904FD620A}.Release|x64.ActiveCfg = Release|Any CPU
 		{02236004-C556-4E13-9FD7-653904FD620A}.Release|x64.Build.0 = Release|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|x64.Build.0 = Debug|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|x64.ActiveCfg = Release|Any CPU
+		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
