@@ -3,6 +3,7 @@ using Microsoft.Xrm.Sdk.Query;
 using Plugin.sc_ProductDetails.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,18 @@ namespace Plugin.sc_ProductDetails.Helper
             acquistiQ.Criteria.AddCondition(Acquisto.AcquistoId, ConditionOperator.NotEqual, targetNew.Id);
             return service.RetrieveMultiple(acquistiQ);
         }
+
+        public Guid CreateAcquisto(IOrganizationService service, int quantitaAcquisto, Guid accountId, int KestatusAcquistoValue, string generatedCode)
+        {
+            Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
+            nuovoAcquisto[Acquisto.Name] = $"acquisto" + quantitaAcquisto.ToString() + " " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            nuovoAcquisto[Acquisto.AccountId] = new EntityReference("account", accountId); // Associa l'account
+            nuovoAcquisto[Acquisto.KestatusAcquisto] = new OptionSetValue(KestatusAcquistoValue); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
+            nuovoAcquisto[Acquisto.Code] = generatedCode;
+            Guid acquistoId = service.Create(nuovoAcquisto);
+            return acquistoId;
+        }
+
 
         public List<Entity> GetAcquistoTargetAndInAttesa(IOrganizationService service, Entity entity)
         {

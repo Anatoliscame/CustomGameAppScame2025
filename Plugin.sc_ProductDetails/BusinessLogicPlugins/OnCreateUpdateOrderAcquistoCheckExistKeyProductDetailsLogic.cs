@@ -67,13 +67,10 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                 {
                     int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
 
-                    Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
-                    nuovoAcquisto[Acquisto.Name] = "acquisto" + quantitaAcquisto.ToString() + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-                    nuovoAcquisto[Acquisto.AccountId] = new EntityReference("account", accountId); // Associa l'account
-                    nuovoAcquisto[Acquisto.KestatusAcquisto] = new OptionSetValue(126400001); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
-                    nuovoAcquisto[Acquisto.Code] = GeneraCodiceAcquisto();
-                    Guid acquistoId = service.Create(nuovoAcquisto);
+                    Guid acquistoId = _acquistoHelper.CreateAcquisto(service, quantitaAcquisto, accountId, 126400001, GeneraCodiceAcquisto());
+                    if (acquistoId == Guid.Empty){throw new InvalidPluginExecutionException($"Errore durante la creazione dell'Acquisto.");}
                     acquistoIdRetrive = acquistoId;
+
                     trace?.Trace($"Nuovo Acquisto creato: {acquistoTo}");
                 }
 
