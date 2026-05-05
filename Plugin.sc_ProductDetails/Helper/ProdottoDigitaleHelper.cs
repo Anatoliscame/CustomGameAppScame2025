@@ -32,7 +32,7 @@ namespace Plugin.sc_ProductDetails.Helper
             return result.Entities.ToList();
         }
 
-        public void UpdatekeyProdottoDigitale(IOrganizationService service, Guid keyProdottoDigitale, int typePiattaforma)
+        public void UpdateKeyProdottoDigitale(IOrganizationService service, Guid keyProdottoDigitale, int typePiattaforma)
         {
             Entity entityUpdatePD = new Entity(ProdottoDigitale.LogicalName);
             entityUpdatePD.Id = keyProdottoDigitale;

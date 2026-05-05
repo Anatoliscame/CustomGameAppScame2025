@@ -1,0 +1,108 @@
+﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
+using Plugin.sc_ProductDetails.Entities;
+using Plugin.sc_ProductDetails.Helper;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
+{
+    public class OnPreDeleteOrderAcquistoReleaseKeysLogic
+    {
+        public void ExecuteLogic(IOrganizationService service, Entity preImage, ITracingService trace)
+        {
+            trace?.Trace("OrderAcquisto (message Create, Update and Delete) is successfully.");
+            if (preImage != null)
+            {
+                ExecuteOrderAcquistoDelete(service, preImage, trace);
+            }
+            else
+            {
+                trace?.Trace("Ordine Acquisto PRE is null");
+                return;
+            }
+        }
+
+        public void ExecuteOrderAcquistoDelete(IOrganizationService service, Entity preImage, ITracingService trace)
+        {
+            OrderAcquistoHelper _oderAcquistoHelper = new OrderAcquistoHelper();
+            KeyProdottoHelper _keyProductHelper = new KeyProdottoHelper();
+            ProdottoDigitaleHelper _prodottoDigitaleHelper = new ProdottoDigitaleHelper();
+
+
+            var arrayOrderAcquisto = _oderAcquistoHelper.GetOrderAcquisto(service, preImage);
+            if (arrayOrderAcquisto.Count <= 0) {trace?.Trace($"arrayOrderAcquisto e' vuoto: {arrayOrderAcquisto.Count} "); return; }
+
+            Guid keyProductGuid = Guid.Empty;
+            int deletedCount = 0;
+            trace?.Trace($"Recupero la lista di OrdineAcquisto: {arrayOrderAcquisto.Count} ");
+
+
+            foreach (var crmOrderAcquisto in arrayOrderAcquisto)
+            {
+                if (crmOrderAcquisto == null) continue;
+                var keyPDId = crmOrderAcquisto.GetAttributeValue<AliasedValue>($"OrderAcquistoKeyProduct.{KeyProdotto.KeyProdottoId}");
+                if (keyPDId == null) continue;
+                trace?.Trace($"Viene ciclato Ogni OrdineAcquisto");
+
+                // Prodotto Digitale
+                var pdId = crmOrderAcquisto.GetAttributeValue<EntityReference>(OrderAcquisto.ProdottoDigitaleId);
+                Entity getProdDigitTo = service.Retrieve(ProdottoDigitale.LogicalName, pdId.Id, new ColumnSet(true));
+                trace?.Trace($"Prodotto Digitale di OrdineAcquisto recuperato: {getProdDigitTo.Id.ToString()}");
+                int? typePiattaforma = ((OptionSetValue)getProdDigitTo.Attributes[ProdottoDigitale.TypePiattaforma]).Value;
+
+                // Prodottto Details
+                var prodDetailsId = getProdDigitTo.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails);
+                Entity getProdDetailsTo = service.Retrieve("sc_productdetails", prodDetailsId.Id, new ColumnSet(true));
+                int? typeexpansion = getProdDetailsTo.GetAttributeValue<OptionSetValue>("sc_typeexpansion")?.Value;
+                
+                trace?.Trace($"Tipo Video Game di Prodottto Details: {typeexpansion.Value} \n Tipo Piattaforma di Prodotto Digitale: {typePiattaforma.Value}");
+
+                /*
+                if (typeexpansion.Value == 126400003)//Espansione
+                { 
+                    trace?.Trace($"Hai scelto VideoGame di tipo Espansione");
+                    var contentVideoGames = _prodottoDigitaleHelper.GeVideoGameWithEspansion(service, getProdDigitTo.Id);  // 746200003 -> Disponibile content
+                    if (contentVideoGames == null || contentVideoGames.Count <= 0)
+                    {
+                        return;
+                    }
+                    trace?.Trace($"Recupero di tutti contenuti di videogame base: N -> {contentVideoGames.Count}");
+                    foreach (var content in contentVideoGames)
+                    {
+                        //trace?.Trace($"");
+                        var videoGameId = content.GetAttributeValue<Guid>(VideoGame.VideogameId);
+                        if (videoGameId == Guid.Empty)
+                        { //continue;
+                            throw new InvalidPluginExecutionException($"Non esiste videgame: {videoGameId.ToString()} ");
+                        }
+                        trace?.Trace($"Il contenuto di VideoGame: {videoGameId}");
+                        // Da risolvere -->
+                        var arrayKeyGamesContent = _keyGameHelper.ExistKeyGame(service, new EntityReference("acn_videogame", videoGameId), 746200002, typePiattaforma); // Temporaneamente;
+                        trace?.Trace($"Un elenco di KeyGame (chiavi di contenuti disponibili): {arrayKeyGamesContent.Count}");
+                        if (arrayKeyGamesContent.Count == 0)
+                        { //continue;
+                            throw new InvalidPluginExecutionException($"La lista di KeyGamesContent: {arrayKeyGamesContent.Count} \n Mentre DLC esiste {videoGameId}, e il numero di DLC sono: {contentVideoGames.Count} ");
+                        }
+
+                        _prodottoDigitaleHelper.UpdateKeyProdottoDigitale(service, arrayKeyGamesContent[0].Id, 746200000);// Disponibile 
+
+                    }
+                }
+                */
+                keyProductGuid = (Guid)keyPDId.Value;
+
+                _keyProductHelper.UpdateKeyProduct(service, keyProductGuid, 126400000); // Disponibile
+                trace?.Trace($"Effetuata un UPDATE di stato acn_keygame genitore");
+                service.Delete(OrderAcquisto.LogicalName, crmOrderAcquisto.Id);
+                deletedCount++;
+            }
+            trace.Trace($"{deletedCount} OrderAcquisto eliminati e KeyGame aggiornati.");
+            return;
+        }
+    }
+}
