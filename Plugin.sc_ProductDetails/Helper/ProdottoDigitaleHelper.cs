@@ -63,15 +63,24 @@ namespace Plugin.sc_ProductDetails.Helper
             service.Update(entityUpdatePD);
         }
 
-        public void UpdateNameCodiceProdottoDigitale(IOrganizationService service, Guid idProdDigital, string nameTo, int? value)
+        public void UpdateNameCodiceProdottoDigitale(IOrganizationService service, Guid idProdDigital, string nameTo, int? value, int? typeProdDigit)
         {
+            string nameSave = string.Empty;
             Entity updateProdottoDigitale = new Entity(ProdottoDigitale.LogicalName)
             {
                 Id = idProdDigital
             };
 
+            if (typeProdDigit == 126400000) // Video Game
+            {
+                nameSave = GetNameVerifyTypeExpansion(value);
+            }
+            if (typeProdDigit == 126400001) // Licenza Software
+            {
+                nameSave = GetNameVerifyTypeLicenzeSfotware(value);
+            }
             updateProdottoDigitale.Attributes[ProdottoDigitale.Name] = $"{nameTo}";
-            updateProdottoDigitale.Attributes[ProdottoDigitale.Codice] = $"{Utilities.GeneraCodice()}" + " - " + $"{GetNameVerifyTypeExpansion(value)}";
+            updateProdottoDigitale.Attributes[ProdottoDigitale.Codice] = $"{Utilities.GeneraCodice()}" + " - " + $"{nameSave}";
 
             service.Update(updateProdottoDigitale);
         }
@@ -94,6 +103,37 @@ namespace Plugin.sc_ProductDetails.Helper
             if (value == 126400003) // Espansione
             {
                 name = "Espansione";
+            }
+            return name;
+        }
+
+        public string GetNameVerifyTypeLicenzeSfotware(int? value)
+        {
+            string name = string.Empty;
+
+            if (value == 126400000) // Perpetua
+            {
+                name = "Perpetua";
+            }
+            if (value == 126400001) // Mensile
+            {
+                name = "Mensile";
+            }
+            if (value == 126400002) // Annuale
+            {
+                name = "Annuale";
+            }
+            if (value == 126400003) // Trial
+            {
+                name = "Trial";
+            }
+            if (value == 126400004) // Lifetime
+            {
+                name = "Lifetime";
+            }
+            if (value == 126400005) // Enterprise
+            {
+                name = "Enterprise";
             }
             return name;
         }
