@@ -59,12 +59,26 @@
 
             if (valueTypeExpOrLicSoft !== 126400003) { // diverso da Espansione
 
-                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400001 || valueTypeExpOrLicSoft === 126400002) { // Base Game o DLC e Remastered
+                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400002)
+                { // Base Game o DLC e Remastered
                     creaOrdineAcquisto(newOrder);
-                    Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC e Remastered" });
+                    Xrm.Navigation.openAlertDialog({ text: "Base Game o Remastered" });
+                }else
+                if (valueTypeExpOrLicSoft === 126400001)
+                {
+                    var parentprodottodigitaleid = formContext.getAttribute("sc_parentprodottodigitaleid") != null
+                        ? formContext.getAttribute("sc_parentprodottodigitaleid").getValue()
+                        : null;
+                    if (parentprodottodigitaleid == null) {
+                        Xrm.Navigation.openAlertDialog({ text: "Il valore non e' stato impostato di prodotto digitale di parent e di  DLC" });
+                        return; 
+                    } else {
+                        creaOrdineAcquisto(newOrder);
+                        Xrm.Navigation.openAlertDialog({ text: "DLC" });
+                    }
                 }
-
             } else {
+
                 // Espansione
                 Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
                 //CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
@@ -107,7 +121,7 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
     var path = "?fetchXml=" + encodeURIComponent(fetchUrl);
 
 
-    Xrm.WebApi.retrieveMultipleRecords("acn_videogame", path).then(
+    Xrm.WebApi.retrieveMultipleRecords("sc_prodottodigitale", path).then(
         function success(result) {
             if (result.entities.length > 0) {
                 var estensionPDStatus = false;
@@ -150,7 +164,7 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
                         creaOrdineAcquisto(newOrder);
                         Xrm.Navigation.openAlertDialog({ text: "creaOrdineAcquisto e' stato creato" });
                     } else if (numV === -1) {
-                        Xrm.Navigation.openAlertDialog({ text: "CHILD: Chiavi disponibili con un video gioco non ci sono." });
+                        Xrm.Navigation.openAlertDialog({ text: "CHILD: Chiavi disponibili con un video game non ci sono." });
                     } else if (numV === -2) {
                         // Errore nella chiamata HTTP
                         Xrm.Navigation.openAlertDialog({ text: "CHILD: Errore durante la verifica delle chiavi." });
