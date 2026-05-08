@@ -44,26 +44,38 @@
         "sc_accountcliente@odata.bind": "/accounts(" + accountId + ")"
     };
 
-    var valueTypeExpansion = RetriveValueTypeExpansion(prodottoDigitaleId);
+    var valueTypeExpOrLicSoft = RetriveValueTypeExpOrLicSoft(prodottoDigitaleId);
 
-    if (valueTypeExpansion === null || typeof valueTypeExpansion === "undefined") {
+    if (valueTypeExpOrLicSoft === null || typeof valueTypeExpOrLicSoft === "undefined") {
         return;
     }
-
+    var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
 
     var num = CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma);
     if (num === 2) { // Chiavi di prodotto digitale DISPONIBILI
-        if (valueTypeExpansion !== 126400003) { // diverso da Espansione
 
-            if (valueTypeExpansion === 126400000 || valueTypeExpansion === 126400001) { // Base Game o DLC
-                creaOrdineAcquisto(newOrder);
-                Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC" });
-            }
-        } else {
+        if (tipoProductAttr.getValue() == 126400000) // VideoGame
+        {
+
+            if (valueTypeExpOrLicSoft !== 126400003) { // diverso da Espansione
+
+                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400001) { // Base Game o DLC
+                    creaOrdineAcquisto(newOrder);
+                    Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC" });
+                }
+
+            } else {
                 // Espansione
-            Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
-            //CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
+                Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
+                //CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
+            }
         }
+        if (tipoProductAttr.getValue() == 126400001) // Licenza Software
+        {
+            creaOrdineAcquisto(newOrder);
+            Xrm.Navigation.openAlertDialog({ text: "Licenza Software" });
+        }
+
     } else if (num === 1) {
         // Nessuna chiave per la piattaforma richiesta
         Xrm.Navigation.openAlertDialog({ text: "Non ci sono chiavi disponibili per questa piattaforma." });
@@ -155,12 +167,12 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
     );
 }
 */
-function RetriveValueTypeExpansion(prodottoDigitaleId) {
+function RetriveValueTypeExpOrLicSoft(prodottoDigitaleId) {
 
-    var valueTypeExpansion = null;
+    var valueTypeExpOrLicSoft = null;
 
     var req = new XMLHttpRequest();
-    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion)", false);
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion,sc_tipolicenza)", false);
     req.setRequestHeader("OData-MaxVersion", "4.0");
     req.setRequestHeader("OData-Version", "4.0");
     req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
@@ -175,6 +187,7 @@ function RetriveValueTypeExpansion(prodottoDigitaleId) {
                 if (resultProdottoDigitale.sc_productdetails != null) {
 
                     var tipoPDParent = resultProdottoDigitale.sc_productdetails.sc_typeexpansion;
+                    var tipoLicenzaSoftParent = resultProdottoDigitale.sc_productdetails.sc_tipolicenza;
 
                     if (tipoPDParent !== null && typeof tipoPDParent !== "undefined") {
 
@@ -182,13 +195,28 @@ function RetriveValueTypeExpansion(prodottoDigitaleId) {
                             title: "Type Expansion",
                             text: "Valore sc_typeexpansion: " + tipoPDParent
                         });
-                        valueTypeExpansion = tipoPDParent;
+                        valueTypeExpOrLicSoft = tipoPDParent;
                     } else {
 
                         Xrm.Navigation.openAlertDialog({
                             text: "Il campo sc_typeexpansion è vuoto."
                         });
                     }
+
+                    if (tipoLicenzaSoftParent !== null && typeof tipoLicenzaSoftParent !== "undefined")
+                    {
+                        Xrm.Navigation.openAlertDialog({
+                            title: "Tipo di Licenza Software",
+                            text: "Valore sc_tipolicenza: " + tipoLicenzaSoftParent
+                        });
+                        valueTypeExpOrLicSoft = tipoLicenzaSoftParent;
+                    } else {
+
+                        Xrm.Navigation.openAlertDialog({
+                            text: "Il campo sc_tipolicenza è vuoto."
+                        });
+                    }
+
                 } else {
                     Xrm.Navigation.openAlertDialog({
                         text: "Product Details non è collegato al Prodotto Digitale."
@@ -200,7 +228,7 @@ function RetriveValueTypeExpansion(prodottoDigitaleId) {
         }
     };
     req.send();
-    return valueTypeExpansion;
+    return valueTypeExpOrLicSoft;
 }
 
 
