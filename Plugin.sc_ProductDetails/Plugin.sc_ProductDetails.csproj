@@ -96,23 +96,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessLogicPlugins\OnCreateUpdateOrderAcquistoCheckExistKeyProductDetailsLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnCreateUpdateProdottoDigitaleCheckLogic.cs" />
     <Compile Include="BusinessLogicPlugins\OnPreDeleteOrderAcquistoReleaseKeysLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnUpdateProductDetailsCheckColumnsLogic.cs" />
+    <Compile Include="CorePlugins\Utilities.cs" />
     <Compile Include="Entities\Acquisto.cs" />
     <Compile Include="Entities\KeyProdotto.cs" />
     <Compile Include="Entities\OrderAcquisto.cs" />
     <Compile Include="Entities\ProdottoDigitale.cs" />
+    <Compile Include="Entities\ProductDetails.cs" />
     <Compile Include="Helper\AcquistoHelper.cs" />
     <Compile Include="Helper\KeyProdottoHelper.cs" />
     <Compile Include="Helper\OrderAcquistoHelper.cs" />
     <Compile Include="Helper\ProdottoDigitaleHelper.cs" />
+    <Compile Include="Helper\ProductDetailsHelper.cs" />
     <Compile Include="OnCreateUpdateOrderAcquistoCheckExistKeyProductDetails.cs" />
+    <Compile Include="OnCreateUpdateProdottoDigitaleCheck.cs" />
     <Compile Include="OnPreDeleteOrderAcquistoReleaseKeys.cs" />
+    <Compile Include="OnUpdateProductDetailsCheckColumns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="sc_ProductDetails.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\Request\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

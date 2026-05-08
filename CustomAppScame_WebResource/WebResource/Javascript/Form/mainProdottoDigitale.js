@@ -48,7 +48,6 @@ CustomApp.mainProdottoDigitale = new function () {
             : null;
         var productDetailsControl = formContext.getControl("sc_productdetails");
 
-
         if (formContext.ui.getFormType() == FormType.Create) {
 
             formContext.data.entity.addOnPostSave(_self.OpenSpecificEntityAfterCreate);
@@ -56,6 +55,8 @@ CustomApp.mainProdottoDigitale = new function () {
             if (productDetailsControl != null) {
                 productDetailsControl.setVisible(false);
             }
+            formContext.getControl("sc_parentprodottodigitaleid").setVisible(false);
+            formContext.getControl("sc_accountcliente").setVisible(false);
 
         } else if (formContext.ui.getFormType() == FormType.Update) {
 
@@ -72,6 +73,45 @@ CustomApp.mainProdottoDigitale = new function () {
             }
 
             _self.SetFieldsDisabled(executionContext);
+
+            var prodottoDigitaleId = formContext.data.entity.getId();
+            prodottoDigitaleId = prodottoDigitaleId.replace("{", "").replace("}", "");
+
+            var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
+
+            var valueTypeExpansion = _self.RetriveValueTypeExpansion(executionContext, prodottoDigitaleId);
+            if (valueTypeExpansion == 0)
+            {
+                Xrm.Navigation.openAlertDialog({text: "Il campo sc_typeexpansion non e' entrato nel metodo"});
+                return;
+            }
+            if (valueTypeExpansion == -1)
+            {
+                //var parentAttr = formContext.getAttribute("sc_parentprodottodigitaleid");
+                Xrm.Navigation.openAlertDialog({text: "Il campo sc_typeexpansion è vuoto."});
+            }
+            if (valueTypeExpansion == -2) {
+                Xrm.Navigation.openAlertDialog({
+                    text: "Product Details non è collegato al Prodotto Digitale."
+                });
+            }
+
+            var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
+
+            if (tipoProductAttr.getValue() == typeProductDigital.VideoGame) {
+
+                if (valueTypeExpansion == 126400000 //BaseGame
+                 || valueTypeExpansion == 126400002 //Remastered
+                 || valueTypeExpansion == 126400003 //Espansione
+                ) {
+
+                    formContext.getControl("sc_parentprodottodigitaleid").setVisible(false);
+                    //formContext.getControl("sc_accountcliente").setVisible(true);
+                } else {
+                    formContext.getControl("sc_parentprodottodigitaleid").setVisible(true);
+                    //formContext.getControl("sc_accountcliente").setVisible(false);
+                }
+            }
         }
     };
 
@@ -166,11 +206,54 @@ CustomApp.mainProdottoDigitale = new function () {
     _self.SetFieldsDisabled = function (executionContext) {
         var formContext = executionContext.getFormContext();
 
+        //formContext.getControl("header_sc_tipoprodottodigitale").setDisabled(true);
         formContext.getControl("sc_tipoprodottodigitale").setDisabled(true);
         formContext.getControl("sc_prodottodigitale").setDisabled(true);
         formContext.getControl("sc_codiceprodotto").setDisabled(true);
 
     };
+
+
+    _self.RetriveValueTypeExpansion = function (executionContext, prodottoDigitaleId) {
+        var formContext = executionContext.getFormContext();
+
+        var valueTypeExpansion = 0;
+
+        var req = new XMLHttpRequest();
+        req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion)", false);
+        req.setRequestHeader("OData-MaxVersion", "4.0");
+        req.setRequestHeader("OData-Version", "4.0");
+        req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+        req.setRequestHeader("Accept", "application/json");
+        req.setRequestHeader("Prefer", "odata.include-annotations=*");
+        req.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                req.onreadystatechange = null;
+                if (this.status === 200) {
+                    var resultProdottoDigitale = JSON.parse(this.response);
+
+                    if (resultProdottoDigitale.sc_productdetails != null) {
+
+                        var tipoPDParent = resultProdottoDigitale.sc_productdetails.sc_typeexpansion;
+
+                        if (tipoPDParent !== null && typeof tipoPDParent !== "undefined") {
+                            /*Xrm.Navigation.openAlertDialog({ title: "Type Expansion",text: "Valore sc_typeexpansion: " + tipoPDParent});*/
+                            valueTypeExpansion = tipoPDParent;
+                        } else {
+                            valueTypeExpansion = -1;                           
+                        }
+                    } else {
+                        valueTypeExpansion = -2;
+                    }
+                } else {
+                    console.log(this.responseText);
+                }
+            }
+        };
+        req.send();
+        return valueTypeExpansion;
+    }
+
 
 
     _self.OpenSpecificEntityAfterCreate = function (executionContext) {
@@ -208,7 +291,7 @@ CustomApp.mainProdottoDigitale = new function () {
         var data = {};
         var entityName = "sc_productdetails";
         // Campi da compilare nel record figlio
-        data["sc_name"] = formContext.getAttribute("sc_prodottodigitale").getValue() + " - " + formContext.getAttribute("sc_codiceprodotto").getValue();
+        data["sc_name"] = formContext.getAttribute("sc_prodottodigitale").getValue();
         data["sc_typeproductdetail"] = tipoProduct;
         // Lookup verso Prodotto Digitale
         // ATTENZIONE: "sc_prodottodigitales" deve essere il nome EntitySetName/plurale Web API della tabella Prodotto Digitale

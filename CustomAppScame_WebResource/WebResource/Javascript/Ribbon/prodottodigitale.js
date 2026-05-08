@@ -52,8 +52,8 @@
 
 
     var num = CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma);
-    if (num === 2) {
-        if (valueTypeExpansion !== 126400003) { //Espansione
+    if (num === 2) { // Chiavi di prodotto digitale DISPONIBILI
+        if (valueTypeExpansion !== 126400003) { // diverso da Espansione
 
             if (valueTypeExpansion === 126400000 || valueTypeExpansion === 126400001) { // Base Game o DLC
                 creaOrdineAcquisto(newOrder);
@@ -61,7 +61,8 @@
             }
         } else {
                 // Espansione
-                Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
+            Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
+            //CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
         }
     } else if (num === 1) {
         // Nessuna chiave per la piattaforma richiesta
@@ -76,7 +77,84 @@
 
 
 
+// Video Game Parent Child
+/*
+function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder) {
 
+
+    var fetchUrl = "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false' >" +
+        "<entity name='sc_prodottodigitale'>" +
+        "<filter type='and'>" +
+        "<condition attribute='sc_parentprodottodigitaleid' operator='eq' value='" + prodottoDigitaleId + "' />" +
+        "</filter>" +
+        "<attribute name='sc_prodottodigitaleid' />" +
+        "<attribute name='sc_piattaformaprodotttodigitale' />" +
+        "<attribute name='sc_statoprodottodigitale' />" +
+        "</entity>" +
+        "</fetch>";
+    var path = "?fetchXml=" + encodeURIComponent(fetchUrl);
+
+
+    Xrm.WebApi.retrieveMultipleRecords("acn_videogame", path).then(
+        function success(result) {
+            if (result.entities.length > 0) {
+                var estensionPDStatus = false;
+                var estensionPDTypePiattaf = false;
+
+                for (var i = 0; i < result.entities.length; i++) {
+                    var prodotiDigitale = result.entities[i];
+
+                    var statuscodeParentChild = prodotiDigitale.sc_statoprodottodigitale;
+                    var typepiattaformaParentChild = prodotiDigitale.sc_piattaformaprodotttodigitale;
+                    var idV = prodotiDigitale.sc_prodottodigitaleid;
+
+                    if (statuscodeParentChild !== statusPD) {
+                        estensionPDStatus = true;
+                        break;
+                    }
+                    if (typepiattaformaParentChild !== typePiattaforma) {
+                        estensionPDTypePiattaf = true;
+                        break;
+                    }
+                }
+
+                if (estensionPDStatus) {
+                    Xrm.Navigation.openAlertDialog({
+                        text: "I contenuti di epsansioni o uno solo non e' presente nella 'DISPONIBILITA'."
+                    });
+                    return;
+
+                } else if (estensionPDTypePiattaf) {
+                    Xrm.Navigation.openAlertDialog({
+                        text: "Piattaforma non corrispondente o mancante per le espansioni di Parent Child."
+                    });
+                    return;
+
+                } else {
+
+                    var numV = CheckExistKeyProduct(idV, typepiattaformaParentChild);
+
+                    if (numV === 2) {
+                        creaOrdineAcquisto(newOrder);
+                        Xrm.Navigation.openAlertDialog({ text: "creaOrdineAcquisto e' stato creato" });
+                    } else if (numV === -1) {
+                        Xrm.Navigation.openAlertDialog({ text: "CHILD: Chiavi disponibili con un video gioco non ci sono." });
+                    } else if (numV === -2) {
+                        // Errore nella chiamata HTTP
+                        Xrm.Navigation.openAlertDialog({ text: "CHILD: Errore durante la verifica delle chiavi." });
+                    }
+                }
+
+            } else {
+                console.log("Nessuna espansione trovata.");
+            }
+        },
+        function (error) {
+            console.error("Errore fetch espansioni: " + error.message);
+        }
+    );
+}
+*/
 function RetriveValueTypeExpansion(prodottoDigitaleId) {
 
     var valueTypeExpansion = null;

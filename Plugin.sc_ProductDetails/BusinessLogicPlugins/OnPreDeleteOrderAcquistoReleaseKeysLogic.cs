@@ -58,42 +58,52 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                 // Prodottto Details
                 var prodDetailsId = getProdDigitTo.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails);
                 Entity getProdDetailsTo = service.Retrieve("sc_productdetails", prodDetailsId.Id, new ColumnSet(true));
-                int? typeexpansion = getProdDetailsTo.GetAttributeValue<OptionSetValue>("sc_typeexpansion")?.Value;
-                
-                trace?.Trace($"Tipo Video Game di Prodottto Details: {typeexpansion.Value} \n Tipo Piattaforma di Prodotto Digitale: {typePiattaforma.Value}");
+                        
+                int? typeProdDigValue = getProdDigitTo.GetAttributeValue<OptionSetValue>(ProdottoDigitale.TypeProdottoDigitale)?.Value;
+                switch (typeProdDigValue)
+                {
+                    case 126400000:// VideoGame
+                        int? typeexpansion = getProdDetailsTo.GetAttributeValue<OptionSetValue>("sc_typeexpansion")?.Value;
+                        trace?.Trace($"Tipo Video Game di Prodottto Details: {typeexpansion.Value} \n Tipo Piattaforma di Prodotto Digitale: {typePiattaforma.Value}");
+                        /*
+                        if (typeexpansion.Value == 126400003)//Espansione
+                        {
+                            trace?.Trace($"Hai scelto VideoGame di tipo Espansione");
+                            var contentVideoGames = _prodottoDigitaleHelper.GeVideoGameWithEspansion(service, getProdDigitTo.Id);  // 746200003 -> Disponibile content
+                            if (contentVideoGames == null || contentVideoGames.Count <= 0)
+                            {
+                                return;
+                            }
+                            trace?.Trace($"Recupero di tutti contenuti di videogame base: N -> {contentVideoGames.Count}");
+                            foreach (var content in contentVideoGames)
+                            {
+                                //trace?.Trace($"");
+                                var videoGameId = content.GetAttributeValue<Guid>(VideoGame.VideogameId);
+                                if (videoGameId == Guid.Empty)
+                                { //continue;
+                                    throw new InvalidPluginExecutionException($"Non esiste videgame: {videoGameId.ToString()} ");
+                                }
+                                trace?.Trace($"Il contenuto di VideoGame: {videoGameId}");
+                                // Da risolvere -->
+                                var arrayKeyGamesContent = _keyGameHelper.ExistKeyGame(service, new EntityReference("acn_videogame", videoGameId), 746200002, typePiattaforma); // Temporaneamente;
+                                trace?.Trace($"Un elenco di KeyGame (chiavi di contenuti disponibili): {arrayKeyGamesContent.Count}");
+                                if (arrayKeyGamesContent.Count == 0)
+                                { //continue;
+                                    throw new InvalidPluginExecutionException($"La lista di KeyGamesContent: {arrayKeyGamesContent.Count} \n Mentre DLC esiste {videoGameId}, e il numero di DLC sono: {contentVideoGames.Count} ");
+                                }
 
-                /*
-                if (typeexpansion.Value == 126400003)//Espansione
-                { 
-                    trace?.Trace($"Hai scelto VideoGame di tipo Espansione");
-                    var contentVideoGames = _prodottoDigitaleHelper.GeVideoGameWithEspansion(service, getProdDigitTo.Id);  // 746200003 -> Disponibile content
-                    if (contentVideoGames == null || contentVideoGames.Count <= 0)
-                    {
-                        return;
-                    }
-                    trace?.Trace($"Recupero di tutti contenuti di videogame base: N -> {contentVideoGames.Count}");
-                    foreach (var content in contentVideoGames)
-                    {
-                        //trace?.Trace($"");
-                        var videoGameId = content.GetAttributeValue<Guid>(VideoGame.VideogameId);
-                        if (videoGameId == Guid.Empty)
-                        { //continue;
-                            throw new InvalidPluginExecutionException($"Non esiste videgame: {videoGameId.ToString()} ");
-                        }
-                        trace?.Trace($"Il contenuto di VideoGame: {videoGameId}");
-                        // Da risolvere -->
-                        var arrayKeyGamesContent = _keyGameHelper.ExistKeyGame(service, new EntityReference("acn_videogame", videoGameId), 746200002, typePiattaforma); // Temporaneamente;
-                        trace?.Trace($"Un elenco di KeyGame (chiavi di contenuti disponibili): {arrayKeyGamesContent.Count}");
-                        if (arrayKeyGamesContent.Count == 0)
-                        { //continue;
-                            throw new InvalidPluginExecutionException($"La lista di KeyGamesContent: {arrayKeyGamesContent.Count} \n Mentre DLC esiste {videoGameId}, e il numero di DLC sono: {contentVideoGames.Count} ");
-                        }
+                                _prodottoDigitaleHelper.UpdateKeyProdottoDigitale(service, arrayKeyGamesContent[0].Id, 746200000);// Disponibile 
 
-                        _prodottoDigitaleHelper.UpdateKeyProdottoDigitale(service, arrayKeyGamesContent[0].Id, 746200000);// Disponibile 
+                            }
+                        }*/
+                        break;
 
-                    }
+                    case 126400001:// Licenza Software
+
+                        break;
+                    default:
+                        break;
                 }
-                */
                 keyProductGuid = (Guid)keyPDId.Value;
 
                 _keyProductHelper.UpdateKeyProduct(service, keyProductGuid, 126400000); // Disponibile

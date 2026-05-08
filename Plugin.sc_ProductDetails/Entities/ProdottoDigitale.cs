@@ -19,12 +19,13 @@ namespace Plugin.sc_ProductDetails.Entities
         public const string TypePiattaforma = "sc_piattaformaprodotttodigitale";// Optionset 
         public const string Key = "sc_key";// String 
         public const string PrezzVendita = "sc_prezzovendita";// Money 
+        public const string StateCode = "statecode";
 
         public const string RequisitinoteAttivazione = "sc_requisitinoteattivazione";//
         public const string StockDisponibile = "sc_stockdisponibile";// Money 
         public const string Descrizione = "sc_descrizione";// Memo 
 
-        public const string ParentProdottoDigitaleId = "sc_parentprodottodigitale";// Non esiste
+        public const string ParentProdottoDigitaleId = "sc_parentprodottodigitaleid";//
         
     }
 }  

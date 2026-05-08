@@ -15,6 +15,14 @@ const typeProductDigital =
     VideoGame: 126400000,
     Licenza_Software: 126400001
 };
+const TypeExpansion =
+{
+    Base: 126400000,
+    DLC: 126400001,
+    Remastered: 126400002,
+    Espansione: 126400003
+};
+
 
 CustomApp.mainProductDetails = new function () {
     var _self = this;
@@ -28,13 +36,19 @@ CustomApp.mainProductDetails = new function () {
         } else if (formContext.ui.getFormType() == FormType.Update) {
 
             _self.HideColumnsProductDetails(executionContext);
-            formContext.getControl("sc_typeproductdetail").setDisabled(true);
-
-            var typeProductDetailControl = formContext.getControl("sc_typeproductdetail");
+            var typeProductDetailControl = formContext.getControl("header_sc_typeproductdetail");
 
             if (typeProductDetailControl != null) {
                 typeProductDetailControl.setDisabled(true);
             }
+
+            var typeExpansionAttr = formContext.getAttribute("sc_typeexpansion");
+
+            if (typeExpansionAttr != null) {
+                typeExpansionAttr.addOnChange(_self.HideColumnsTypeExpansion);
+            }
+            _self.HideColumnsTypeExpansion(executionContext);
+
             /*Xrm.Navigation.openAlertDialog({
                 title: "Benvenuti a Product Details",
                 text: "Ciao, siamo disponibili!"
@@ -42,6 +56,38 @@ CustomApp.mainProductDetails = new function () {
         }
     };
 
+
+
+    _self.HideColumnsTypeExpansion = function (executionContext) {
+
+        var formContext = executionContext.getFormContext();
+
+        var typeexpansionValue = formContext.getAttribute("sc_typeexpansion").getValue();
+        var typeexpansionControl = formContext.getControl("sc_typeexpansion");
+
+        if (typeexpansionControl == null) {
+            return;
+        }
+
+        if (typeexpansionValue === null) {
+            Xrm.Navigation.openAlertDialog({
+                text: "Scegli prima una typeexpansion d'acquistare"
+            });
+            return;
+        }
+
+        if (typeexpansionValue == TypeExpansion.Base
+            || typeexpansionValue == TypeExpansion.Espansione) {
+
+            typeexpansionControl.removeOption(TypeExpansion.DLC);
+            typeexpansionControl.removeOption(TypeExpansion.Remastered);
+
+        } else {
+
+            typeexpansionControl.removeOption(TypeExpansion.Base);
+            typeexpansionControl.removeOption(TypeExpansion.Espansione);
+        }
+    }
 
     _self.HideColumnsProductDetails = function (executionContext) {
 
