@@ -81,7 +81,7 @@
 
                 // Espansione
                 Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
-                //CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
+                CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
             }
         }
         if (tipoProductAttr.getValue() == 126400001) // Licenza Software
@@ -104,7 +104,7 @@
 
 
 // Video Game Parent Child
-/*
+
 function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder) {
 
 
@@ -180,7 +180,7 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
         }
     );
 }
-*/
+
 function RetriveValueTypeExpOrLicSoft(prodottoDigitaleId) {
 
     var valueTypeExpOrLicSoft = null;
