@@ -50,7 +50,7 @@
         return;
     }
     var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
-
+ 
     var num = CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma);
     if (num === 2) { // Chiavi di prodotto digitale DISPONIBILI
 
@@ -59,9 +59,9 @@
 
             if (valueTypeExpOrLicSoft !== 126400003) { // diverso da Espansione
 
-                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400001) { // Base Game o DLC
+                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400001 || valueTypeExpOrLicSoft === 126400002) { // Base Game o DLC e Remastered
                     creaOrdineAcquisto(newOrder);
-                    Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC" });
+                    Xrm.Navigation.openAlertDialog({ text: "Base Game o DLC e Remastered" });
                 }
 
             } else {

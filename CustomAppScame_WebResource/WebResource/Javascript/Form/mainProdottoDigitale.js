@@ -76,9 +76,6 @@ CustomApp.mainProdottoDigitale = new function () {
 
             var prodottoDigitaleId = formContext.data.entity.getId();
             prodottoDigitaleId = prodottoDigitaleId.replace("{", "").replace("}", "");
-
-            var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
-
             var valueTypeExpansion = _self.RetriveValueTypeExpansion(executionContext, prodottoDigitaleId);
             if (valueTypeExpansion == 0)
             {
