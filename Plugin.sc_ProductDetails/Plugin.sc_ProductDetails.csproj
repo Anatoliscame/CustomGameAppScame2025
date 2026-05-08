@@ -103,6 +103,7 @@
     <Compile Include="Entities\Acquisto.cs" />
     <Compile Include="Entities\KeyProdotto.cs" />
     <Compile Include="Entities\OrderAcquisto.cs" />
+    <Compile Include="Entities\OrderAcquistoEspansione.cs" />
     <Compile Include="Entities\ProdottoDigitale.cs" />
     <Compile Include="Entities\ProductDetails.cs" />
     <Compile Include="Helper\AcquistoHelper.cs" />

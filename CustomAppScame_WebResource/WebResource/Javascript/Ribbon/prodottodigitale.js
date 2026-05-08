@@ -251,7 +251,7 @@ function CheckExistKeyProduct(prodottoDigitaleId, typePiattaforma) {
 
     var num = 0;
     var req = new XMLHttpRequest();
-    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_keyprodottos?$select=_sc_prodottodigitaleid_value,sc_typepiattaforma&$filter=_sc_prodottodigitaleid_value eq " + prodottoDigitaleId + "  and sc_statuspresentkey eq 126400000", false);
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_keyprodottos?$select=_sc_prodottodigitaleid_value,sc_typepiattaforma&$filter=_sc_prodottodigitaleid_value eq " + prodottoDigitaleId + "  and sc_statuspresentkey eq 126400000", false); // Disponibile
     req.setRequestHeader("OData-MaxVersion", "4.0");
     req.setRequestHeader("OData-Version", "4.0");
     req.setRequestHeader("Content-Type", "application/json; charset=utf-8");

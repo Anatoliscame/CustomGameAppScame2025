@@ -78,12 +78,48 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 
             }
             trace?.Trace($"AssignTo {acquistoTo}");
+              
 
-            _keyProductHelper.UpdateKeyProduct(service, keyProductArray[0].Id, 126400004);// Temporaneamente 
+            EntityReference prdPD_Child = getPDToTo.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails);
+            Entity getPrdPD_Child = service.Retrieve(ProductDetails.LogicalName, prdPD_Child.Id, new ColumnSet(true));
+            int? tipoExpansion = getPrdPD_Child.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
 
-            entityUpdate[OrderAcquisto.KeyProdottoDigitale] = keyProductArray[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);// Padre key
+            if (tipoExpansion == 126400003) //Espansione
+            {
+                var contentVideoGames = _prodottoDigitaleHelper.GeVideoGameWithEspansion(service, prodottodigitaleTo.Id);  // 746200003 -> Disponibile content
+                if (contentVideoGames == null || contentVideoGames.Count <= 0)
+                {
+                    return;
+                }
+                foreach (var content in contentVideoGames)
+                {
+                    Entity getPrdPD_ChildContent = service.Retrieve(ProductDetails.LogicalName, content.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails).Id, new ColumnSet(true));
+                    var valueExpansionChild = getPrdPD_ChildContent.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion);
+                    if (valueExpansionChild.Value == 126400001) // DLC
+                    {                      
+                    var contentVideoGameGuid = content.GetAttributeValue<Guid>(ProdottoDigitale.ProdottoDigitaleId);
+                    //if (contentVideoGameGuid == Guid.Empty) { continue; }
 
-            service.Update(entityUpdate);
+                    var arrayKeyGamesContent = _keyProductHelper.ExistKeyProduct(service, new EntityReference(ProdottoDigitale.LogicalName, contentVideoGameGuid), 126400000, typePiattaforma); // Disponibile;
+                    if (arrayKeyGamesContent == null || arrayKeyGamesContent.Count == 0) { continue; }
+
+                        Entity nuovoOrderAcquistoEspansione = new Entity(OrderAcquistoEspansione.LogicalName);
+                        nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrderAcquistoEspansioneName] = "Name_" + arrayKeyGamesContent.Count + 1 + "_" + arrayKeyGamesContent[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);
+                        nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.KeyProdottoDigitale] = arrayKeyGamesContent[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);
+                        nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.OrdineAcquisto] = new EntityReference(OrderAcquisto.LogicalName, target.Id);
+                        nuovoOrderAcquistoEspansione[OrderAcquistoEspansione.NameContentProdottoDigitale] = content.GetAttributeValue<string>(ProdottoDigitale.Key);
+                        service.Create(nuovoOrderAcquistoEspansione);
+
+                        _keyProductHelper.UpdateKeyProduct(service, arrayKeyGamesContent[0].Id, 126400004);// Temporaneamente 
+
+                    }
+                }
+                _keyProductHelper.UpdateKeyProduct(service, keyProductArray[0].Id, 126400004);// Temporaneamente 
+
+                entityUpdate[OrderAcquisto.KeyProdottoDigitale] = keyProductArray[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);// Padre key
+
+                service.Update(entityUpdate);
+            }
         }
 
         private string GeneraCodiceAcquisto(int lunghezza = 6)
