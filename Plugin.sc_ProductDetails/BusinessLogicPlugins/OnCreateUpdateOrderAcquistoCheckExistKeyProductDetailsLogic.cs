@@ -114,12 +114,13 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 
                     }
                 }
-                _keyProductHelper.UpdateKeyProduct(service, keyProductArray[0].Id, 126400004);// Temporaneamente 
-
-                entityUpdate[OrderAcquisto.KeyProdottoDigitale] = keyProductArray[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);// Padre key
-
-                service.Update(entityUpdate);
             }
+
+            _keyProductHelper.UpdateKeyProduct(service, keyProductArray[0].Id, 126400004);// Temporaneamente 
+
+            entityUpdate[OrderAcquisto.KeyProdottoDigitale] = keyProductArray[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);// Padre key
+
+            service.Update(entityUpdate);
         }
 
         private string GeneraCodiceAcquisto(int lunghezza = 6)
