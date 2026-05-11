@@ -34,7 +34,7 @@ namespace Plugin.sc_ProductDetails.Helper
             }
             return result.Entities.ToList();
         }
-        public List<Entity> GeVideoGameWithEspansion(IOrganizationService service, Guid prdID)
+        public List<Entity> GeVideoGameWithEspansionDisponib(IOrganizationService service, Guid prdID)
         {
 
             QueryExpression query = new QueryExpression(ProdottoDigitale.LogicalName)
@@ -43,7 +43,7 @@ namespace Plugin.sc_ProductDetails.Helper
                 Criteria = new FilterExpression()
             };
             query.Criteria.AddCondition(ProdottoDigitale.ParentProdottoDigitaleId, ConditionOperator.Equal, prdID);
-            //query.Criteria.AddCondition(ProdottoDigitale.TypeProdottoDigitale, ConditionOperator.Equal, 746200001);
+            query.Criteria.AddCondition(ProdottoDigitale.StatoProdottoDigitale, ConditionOperator.Equal, 126400000); // Disponibile
             query.NoLock = true;
             var result = service.RetrieveMultiple(query);
             if (result.Entities.Count == 0)

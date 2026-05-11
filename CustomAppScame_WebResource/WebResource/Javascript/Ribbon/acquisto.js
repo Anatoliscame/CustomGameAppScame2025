@@ -1,8 +1,8 @@
 ﻿function checkAcquistoStatusVisibility(formContext) {
-    var kestatusacquisto = formContext.getAttribute("acn_kestatusacquisto").getValue(); // Stato dell'acquisto
+    var kestatusacquisto = formContext.getAttribute("sc_kestatusacquisto").getValue(); // Stato dell'acquisto
 
         // Verifica se lo stato è "In attesa" (746200002) e rende visibile il pulsante
-        if (kestatusacquisto === 746200001) { // 746200002 è "In attesa"
+    if (kestatusacquisto === 126400001) { // 746200002 è "In attesa"
             return true;  // Rende visibile il pulsante
         }
         return false;  // Rende invisibile il pulsante se lo stato è diverso
@@ -13,35 +13,35 @@ function completaAcquistoFattura(formContext) {
     acquistoId = acquistoId.replace("{", "").replace("}", "");
     // Esempio: cambiamo lo statuscode a "Effettuato"
 
-    var statusAcquisto = formContext.getAttribute("acn_kestatusacquisto").getValue();
+    var statusAcquisto = formContext.getAttribute("sc_kestatusacquisto").getValue();
 
     // 746200002 è "In attesa"
-    if (statusAcquisto !== 746200001) { Xrm.Navigation.openAlertDialog({ text: "Acquisto Carrello non deve essere manuelmente cambiato per rispettare le regole" }); return; }
+    if (statusAcquisto !== 126400001) { Xrm.Navigation.openAlertDialog({ text: "Acquisto Carrello non deve essere manuelmente cambiato per rispettare le regole" }); return; }
 
-    var accountidLookup = formContext.getAttribute("acn_account");
+    var accountidLookup = formContext.getAttribute("sc_account");
 
     if (!accountidLookup || !accountidLookup.getValue() || accountidLookup.getValue().length === 0) { Xrm.Navigation.openAlertDialog({ text: "accountidLookup è nullo o vuoto" }); return; }
 
     var fetchUrl = "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false' >" +
-        "<entity name='acn_ordineacquisto'>" +
+        "<entity name='sc_ordineacquisto'>" +
         "<filter type='and'>" +
-        "<condition attribute='acn_acquistoid' operator='eq' value='" + acquistoId + "' />" +
+        "<condition attribute='sc_acquisto' operator='eq' value='" + acquistoId + "' />" +
         "</filter>" +
-        "<attribute name='acn_keygamecode' />" +
+        "<attribute name='sc_keyprodottodigitale' />" +
         "</entity>" +
         "</fetch>";
 
     var path = "?fetchXml=" + fetchUrl;
     var keygamecode = null;
     // Esegui la chiamata asincrona per recuperare i record
-    Xrm.WebApi.retrieveMultipleRecords("acn_ordineacquisto", path).then(
+    Xrm.WebApi.retrieveMultipleRecords("sc_ordineacquisto", path).then(
         function success(result) {
             if (result.entities.length > 0) {
                 // Cicla attraverso i record di ordineacquisto recuperati
                 for (var i = 0; i < result.entities.length; i++) {
                     var ordineAcquisto = result.entities[i];
                     //console.log("Ordine Acquisto ID: " + ordineAcquisto.acn_ordineacquistoid);
-                    keygamecode = ordineAcquisto.acn_keygamecode;
+                    keygamecode = ordineAcquisto.sc_keyprodottodigitale;
 
                     // Verifica se 'acn_keygamecode' è vuoto o nullo
                     if (!keygamecode || keygamecode.trim() === "") {
@@ -53,24 +53,23 @@ function completaAcquistoFattura(formContext) {
                         //console.log("KeyGame Name: " + keygamecode);
                         Xrm.Navigation.openAlertDialog({ text: "KeyGame Name:", keygamecode });
                         var updateData = {
-                            "acn_kestatusacquisto": 746200000 // Metti il valore corretto per "Effettuato"
+                            "sc_kestatusacquisto": 126400000 // Metti il valore corretto per "Effettuato"
                         };
 
-                        Xrm.WebApi.updateRecord("acn_acquisto", acquistoId, updateData).then(
+                        Xrm.WebApi.updateRecord("sc_acquisto", acquistoId, updateData).then(
                             function success() {
                                 console.log("Acquisto aggiornato, plugin dovrebbe partire.");
 
-                                var prodottobrand = formContext.getControl("acn_prodottobrand");
-                                if (prodottobrand) {
-                                    prodottobrand.setDisabled(true);
+                                var fattura = formContext.getControl("sc_fattura");
+                                if (fattura) {
+                                    fattura.setDisabled(true);
                                 }
-                               /* formContext.getControl("acn_name").setDisabled(true);
-                                formContext.getControl("acn_code").setDisabled(true);
-                                formContext.getControl("acn_account").setDisabled(true);
-                                formContext.getControl("acn_iva").setDisabled(true);
-                                formContext.getControl("acn_fattura").setDisabled(true);
-                                formContext.getControl("acn_dataacquisto").setDisabled(true);
-                                formContext.getControl("acn_totale").setDisabled(true);*/
+                               /* formContext.getControl("sc_name").setDisabled(true);
+                                formContext.getControl("sc_code").setDisabled(true);
+                                formContext.getControl("sc_iva").setDisabled(true);
+                                formContext.getControl("sc_fattura").setDisabled(true);
+                                formContext.getControl("sc_dataacquisto").setDisabled(true);
+                                formContext.getControl("sc_totale").setDisabled(true);*/
                                 Xrm.Navigation.openAlertDialog({ text: "Acquisto completato." });
                             },
                             function (error) {

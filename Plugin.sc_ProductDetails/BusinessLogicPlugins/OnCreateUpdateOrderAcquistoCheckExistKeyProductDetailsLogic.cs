@@ -86,7 +86,7 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 
             if (tipoExpansion == 126400003) //Espansione
             {
-                var contentVideoGames = _prodottoDigitaleHelper.GeVideoGameWithEspansion(service, prodottodigitaleTo.Id);  // 746200003 -> Disponibile content
+                var contentVideoGames = _prodottoDigitaleHelper.GeVideoGameWithEspansionDisponib(service, prodottodigitaleTo.Id);  // 746200003 -> Disponibile content
                 if (contentVideoGames == null || contentVideoGames.Count <= 0)
                 {
                     return;
