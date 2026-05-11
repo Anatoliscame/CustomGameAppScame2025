@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 {
@@ -93,8 +94,19 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                                 }
 
                                 _keyProductHelper.UpdateKeyProduct(service, arrayKeyGamesContent[0].Id, 126400000);// Disponibile 
-
                             }
+
+                            var crmOrderAcquistoEsp = crmOrderAcquisto.GetAttributeValue<Guid>(OrderAcquisto.OrdineAcquistoId);
+                            List<Entity> orderAcquistoEspansions = _oderAcquistoHelper.GetOrderAcquistoEspansion(service, crmOrderAcquistoEsp);
+                            int deletedCountEspnsion = 0;
+                            foreach (var orderAcquistoEspansion in orderAcquistoEspansions)
+                            {
+                                if (orderAcquistoEspansion == null) continue;
+
+                                service.Delete(OrderAcquistoEspansione.LogicalName, orderAcquistoEspansion.Id);
+                                deletedCountEspnsion++;
+                            }
+                            trace?.Trace($"Numero di OrdineAcquisto di Espansione rimossi + {deletedCountEspnsion}");
                         }
                         break;
 

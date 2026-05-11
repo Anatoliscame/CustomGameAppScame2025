@@ -46,5 +46,22 @@ namespace Plugin.sc_ProductDetails.Helper
             }
             return result.Entities.ToList();
         }
+
+        public List<Entity> GetOrderAcquistoEspansion(IOrganizationService service, Guid target)
+        {
+            QueryExpression query = new QueryExpression(OrderAcquistoEspansione.LogicalName)
+            {
+                ColumnSet = new ColumnSet(false),
+                Criteria = new FilterExpression()
+            };
+            query.Criteria.AddCondition(OrderAcquistoEspansione.OrdineAcquisto, ConditionOperator.Equal, target);
+            query.NoLock = true;
+            var result = service.RetrieveMultiple(query);
+            if (result.Entities.Count == 0)
+            {
+                return new List<Entity>();
+            }
+            return result.Entities.ToList();
+        }
     }
 }
