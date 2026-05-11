@@ -113,6 +113,8 @@
     <Compile Include="Helper\ProductDetailsHelper.cs" />
     <Compile Include="OnCreateUpdateOrderAcquistoCheckExistKeyProductDetails.cs" />
     <Compile Include="OnCreateUpdateProdottoDigitaleCheck.cs" />
+    <Compile Include="OnPostUpdateAcquistoSetKeyProductDigitalsAcquistato.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPostUpdateAcquistoSetKeyProductDigitalsAcquistatoLogic.cs" />
     <Compile Include="OnPreDeleteOrderAcquistoReleaseKeys.cs" />
     <Compile Include="OnUpdateProductDetailsCheckColumns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
