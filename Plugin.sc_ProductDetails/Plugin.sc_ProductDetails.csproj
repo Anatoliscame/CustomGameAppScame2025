@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{02F65588-D870-4552-BCCC-B691A134017E}</ProjectGuid>
+    <ProjectGuid>{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Plugin.acn_GameApp</RootNamespace>
-    <AssemblyName>Plugin.acn_GameApp</AssemblyName>
+    <RootNamespace>Plugin.sc_ProductDetails</RootNamespace>
+    <AssemblyName>Plugin.sc_ProductDetails</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,25 +34,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>GameApp.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
+    <AssemblyOriginatorKeyFile>sc_ProductDetails.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -66,7 +47,7 @@
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.59\lib\net462\Microsoft.Xrm.Sdk.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -117,28 +98,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\AcquistoHelper.cs" />
-    <Compile Include="Core\KeyGameHelper.cs" />
-    <Compile Include="Core\OrderAcquistoHelper.cs" />
-    <Compile Include="Core\VideoGameHelper.cs" />
+    <Compile Include="BusinessLogicPlugins\OnCreateUpdateOrderAcquistoCheckExistKeyProductDetailsLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnCreateUpdateProdottoDigitaleCheckLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPreDeleteOrderAcquistoReleaseKeysLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnUpdateProductDetailsCheckColumnsLogic.cs" />
+    <Compile Include="CorePlugins\Utilities.cs" />
     <Compile Include="Entities\Acquisto.cs" />
-    <Compile Include="Entities\KeyGame.cs" />
+    <Compile Include="Entities\KeyProdotto.cs" />
+    <Compile Include="Entities\OrderAcquisto.cs" />
     <Compile Include="Entities\OrderAcquistoEspansione.cs" />
-    <Compile Include="Entities\VideoGame.cs" />
-    <Compile Include="OnCreateOnUpdateOnOrderAcquistoCheckExistKeyGame.cs" />
-    <Compile Include="OnDeleteExistAcquistoCarello.cs" />
-    <Compile Include="OnUpdateCheckExistOrderAcquisto.cs" />
+    <Compile Include="Entities\ProdottoDigitale.cs" />
+    <Compile Include="Entities\ProductDetails.cs" />
+    <Compile Include="Helper\AcquistoHelper.cs" />
+    <Compile Include="Helper\KeyProdottoHelper.cs" />
+    <Compile Include="Helper\OrderAcquistoHelper.cs" />
+    <Compile Include="Helper\ProdottoDigitaleHelper.cs" />
+    <Compile Include="Helper\ProductDetailsHelper.cs" />
+    <Compile Include="Model\Request\CountryConfig.cs" />
+    <Compile Include="OnCreateUpdateOrderAcquistoCheckExistKeyProductDetails.cs" />
+    <Compile Include="OnCreateUpdateProdottoDigitaleCheck.cs" />
+    <Compile Include="OnPostUpdateAcquistoSetKeyProductDigitalsAcquistato.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPostUpdateAcquistoSetKeyProductDigitalsAcquistatoLogic.cs" />
+    <Compile Include="OnPreDeleteOrderAcquistoReleaseKeys.cs" />
+    <Compile Include="OnUpdateProductDetailsCheckColumns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Acquisto\" />
-    <Folder Include="Steam\" />
-    <Folder Include="VideoGame\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
-    <None Include="GameApp.snk" />
     <None Include="packages.config" />
+    <None Include="sc_ProductDetails.pfx" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Plugin.acn_GameApp
+namespace Core.Model.No_CRM.Role
 {
-    public class Class1
+    public interface IRole
     {
+        string roleName { get; set; }
+        string nomeR();
+
     }
 }
