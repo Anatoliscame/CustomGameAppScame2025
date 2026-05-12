@@ -22,13 +22,14 @@ namespace Plugin.sc_ProductDetails.Helper
             return service.RetrieveMultiple(acquistiQ);
         }
 
-        public Guid CreateAcquisto(IOrganizationService service, int quantitaAcquisto, Guid accountId, int KestatusAcquistoValue, string generatedCode)
+        public Guid CreateAcquisto(IOrganizationService service, int quantitaAcquisto, Guid accountId, int KestatusAcquistoValue, string generatedCode, decimal totaleRiga)
         {
             Entity nuovoAcquisto = new Entity(Acquisto.LogicalName);
             nuovoAcquisto[Acquisto.Name] = $"acquisto" + quantitaAcquisto.ToString() + " " + DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             nuovoAcquisto[Acquisto.AccountId] = new EntityReference("account", accountId); // Associa l'account
             nuovoAcquisto[Acquisto.KestatusAcquisto] = new OptionSetValue(KestatusAcquistoValue); // Stato "In Attesa" (Assumendo che il valore sia 100000000)
             nuovoAcquisto[Acquisto.Code] = generatedCode;
+            nuovoAcquisto[Acquisto.Totale] = totaleRiga;
             Guid acquistoId = service.Create(nuovoAcquisto);
             return acquistoId;
         }

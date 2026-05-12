@@ -64,12 +64,13 @@ function completaAcquistoFattura(formContext) {
                                 if (fattura) {
                                     fattura.setDisabled(true);
                                 }
-                               /* formContext.getControl("sc_name").setDisabled(true);
-                                formContext.getControl("sc_code").setDisabled(true);
-                                formContext.getControl("sc_iva").setDisabled(true);
-                                formContext.getControl("sc_fattura").setDisabled(true);
-                                formContext.getControl("sc_dataacquisto").setDisabled(true);
-                                formContext.getControl("sc_totale").setDisabled(true);*/
+                                formContext.getControl("sc_name").setDisabled(false);
+                                formContext.getControl("sc_code").setDisabled(false);
+                                formContext.getControl("sc_account").setDisabled(false);
+                                formContext.getControl("sc_dataacquisto").setDisabled(false);
+                                formContext.getControl("sc_fattura").setDisabled(false);
+                                formContext.getControl("sc_iva").setDisabled(false);
+                                formContext.getControl("sc_totale").setDisabled(false);
                                 Xrm.Navigation.openAlertDialog({ text: "Acquisto completato." });
                             },
                             function (error) {

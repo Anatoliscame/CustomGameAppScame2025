@@ -72,7 +72,6 @@
     <Content Include="WebResource\Javascript\TEST\acn_videogameTest.js" />
     <Content Include="WebResource\Javascript\TEST\acn_videogameVersion1.js" />
     <Content Include="WebResource\Javascript\Ribbon\acquisto.js" />
-    <Content Include="WebResource\Javascript\Ribbon\acn_videogame.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

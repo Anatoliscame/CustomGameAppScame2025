@@ -18,7 +18,7 @@ namespace Plugin.sc_ProductDetails.Entities
         public const string TypeProdottoDigitale = "sc_tipoprodottodigitale";// Optionset 
         public const string TypePiattaforma = "sc_piattaformaprodotttodigitale";// Optionset 
         public const string Key = "sc_key";// String 
-        public const string PrezzVendita = "sc_prezzovendita";// Money 
+        public const string PrezzoBase = "sc_prezzobase";// Money 
         public const string StateCode = "statecode";
 
         public const string RequisitinoteAttivazione = "sc_requisitinoteattivazione";//

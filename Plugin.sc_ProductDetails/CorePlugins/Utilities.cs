@@ -1,15 +1,69 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Newtonsoft.Json;
+using Plugin.sc_ProductDetails.Model.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Plugin.sc_ProductDetails.CorePlugins
 {
-    public static class Utilities
+    public static class Utilities 
     {
+        public static Dictionary<string, CountryInfo> GetDeserializeCountryConfig(IOrganizationService service, ITracingService trace, string key)
+        {
+            try
+            {
+                var priveConfig = GetPrivateConfig(service, key);
+                if (priveConfig == null) { trace?.Trace($"PriveConfig non trovata."); return null; }
+                string description = priveConfig.GetAttributeValue<string>("sc_description");
+
+                // Verifica il valore di acn_description, se esiste o no
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    trace?.Trace($"Configurazione con chiave '{key}' non trovata o vuota.");
+                    return null;
+                }
+                // Deserializza Json in oggetto
+                return JsonConvert.DeserializeObject<CountryConfig>(description)?.Countries;
+            }
+            catch (Exception ex)
+            {
+                trace?.Trace("Formato JSON non valido in acn_description: " + ex.Message);
+                return null;
+            }
+        }
+        public static Entity GetPrivateConfig(IOrganizationService service, string key)
+        {
+            QueryExpression queryMessage = new QueryExpression();
+            queryMessage.EntityName = "sc_privateconfiguration";
+            queryMessage.ColumnSet.AddColumns("sc_description", "sc_value");
+            queryMessage.Criteria.AddCondition("sc_key", ConditionOperator.Equal, key);
+
+            var resultQuery = service.RetrieveMultiple(queryMessage);
+
+            if (resultQuery.Entities.Count == 0)
+            {
+                return null; 
+            }
+
+            return resultQuery.Entities[0];
+        }
+
+        public static bool CheckCountryPrivateConfig(IOrganizationService service, Dictionary<string, CountryInfo> countryConfig, Guid countryTo)
+        {
+            var foundCountryInConfig = countryConfig.FirstOrDefault(c => c.Value.Id == countryTo.ToString());
+
+            if (foundCountryInConfig.Key != null)
+            {
+                return true;
+            }
+            return false; 
+        }
+
         public static Entity MergeEntities(Entity preImage, Entity target)
         {
             foreach (var attr in preImage.Attributes)

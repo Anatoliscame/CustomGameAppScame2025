@@ -44,7 +44,7 @@
         "sc_accountcliente@odata.bind": "/accounts(" + accountId + ")"
     };
 
-    var valueTypeExpOrLicSoft = RetriveValueTypeExpOrLicSoft(prodottoDigitaleId);
+    var valueTypeExpOrLicSoft = RetriveValueTypeExpOrLicSoftCountry(prodottoDigitaleId);
 
     if (valueTypeExpOrLicSoft === null || typeof valueTypeExpOrLicSoft === "undefined") {
         return;
@@ -181,12 +181,13 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
     );
 }
 
-function RetriveValueTypeExpOrLicSoft(prodottoDigitaleId) {
+function RetriveValueTypeExpOrLicSoftCountry(prodottoDigitaleId) {
 
     var valueTypeExpOrLicSoft = null;
+    var valueCountry = false;
 
     var req = new XMLHttpRequest();
-    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion,sc_tipolicenza)", false);
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion,sc_tipolicenza,_sc_country_value)", false);
     req.setRequestHeader("OData-MaxVersion", "4.0");
     req.setRequestHeader("OData-Version", "4.0");
     req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
@@ -200,41 +201,36 @@ function RetriveValueTypeExpOrLicSoft(prodottoDigitaleId) {
 
                 if (resultProdottoDigitale.sc_productdetails != null) {
 
-                    var tipoPDParent = resultProdottoDigitale.sc_productdetails.sc_typeexpansion;
-                    var tipoLicenzaSoftParent = resultProdottoDigitale.sc_productdetails.sc_tipolicenza;
+                    var productDetails = resultProdottoDigitale.sc_productdetails;
 
+                    var tipoPDParent = productDetails["sc_typeexpansion"];
+                    var tipoLicenzaSoftParent = productDetails["sc_tipolicenza"];
+                    var country = productDetails["_sc_country_value"];
+                    
                     if (tipoPDParent !== null && typeof tipoPDParent !== "undefined") {
 
-                        Xrm.Navigation.openAlertDialog({
-                            title: "Type Expansion",
-                            text: "Valore sc_typeexpansion: " + tipoPDParent
-                        });
+                        Xrm.Navigation.openAlertDialog({title: "Type Expansion",text: "Valore sc_typeexpansion: " + tipoPDParent});
                         valueTypeExpOrLicSoft = tipoPDParent;
-                    } else {
-
-                        Xrm.Navigation.openAlertDialog({
-                            text: "Il campo sc_typeexpansion è vuoto."
-                        });
                     }
-
-                    if (tipoLicenzaSoftParent !== null && typeof tipoLicenzaSoftParent !== "undefined")
+                    else if (tipoLicenzaSoftParent !== null && typeof tipoLicenzaSoftParent !== "undefined")
                     {
-                        Xrm.Navigation.openAlertDialog({
-                            title: "Tipo di Licenza Software",
-                            text: "Valore sc_tipolicenza: " + tipoLicenzaSoftParent
-                        });
+                        Xrm.Navigation.openAlertDialog({title: "Tipo di Licenza Software",text: "Valore sc_tipolicenza: " + tipoLicenzaSoftParent});
                         valueTypeExpOrLicSoft = tipoLicenzaSoftParent;
-                    } else {
-
-                        Xrm.Navigation.openAlertDialog({
-                            text: "Il campo sc_tipolicenza è vuoto."
-                        });
                     }
+                    else {
+                        Xrm.Navigation.openAlertDialog({text: "Il campo sc_tipolicenza è vuoto o sc_typeexpansion."});
+                    }
+                    if (country !== null && typeof country !== "undefined") {
+                        Xrm.Navigation.openAlertDialog({title: "country",text: "Country e' valorizzato: " + country});
+                        valueCountry = true;
+                    } else {
+                        Xrm.Navigation.openAlertDialog({text: "Il campo country è vuoto."});
+                    }
+
+                    if (valueCountry === false) { return null;}
 
                 } else {
-                    Xrm.Navigation.openAlertDialog({
-                        text: "Product Details non è collegato al Prodotto Digitale."
-                    });
+                    Xrm.Navigation.openAlertDialog({text: "Product Details non è collegato al Prodotto Digitale."});
                 }
             } else {
                 console.log(this.responseText);

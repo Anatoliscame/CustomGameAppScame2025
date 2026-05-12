@@ -1,22 +1,23 @@
-﻿'use STRICT';
-if (typeof (CustomAppVideoGame) === "undefined") { CustomAppVideoGame = { __namespace: true }; }
-//if (typeof (CustomAppVideoGame.mainAcquisto) == "undefined") { CustomAppVideoGame.mainAcquisto = { __namespace: true }; }
-//if (typeof (CustomAppVideoGame.mainAcquisto.OnLoadAcquisto) == "undefined") { CustomAppVideoGame.mainAcquisto.OnLoadAcquisto = { __namespace: true }; }
+﻿'use strict';
+
+if (typeof CustomApp === "undefined") {
+    var CustomApp = { __namespace: true };
+}
 
 var FormType =
 {
     Create: 1,
     Update: 2
-}
+};
 
 const typeAcquisto =
 {
-    Effetuato: 746200000,
-    In_attesa: 746200001,
-    Annullato: 746200002
+    Effetuato: 126400000,
+    In_attesa: 126400001,
+    Annullato: 126400002
 }
 
-CustomAppVideoGame.mainAcquisto = new function () {
+CustomApp.mainAcquisto = new function () {
     var _self = this;
 
     _self.onload = function (executionContext) {
@@ -30,10 +31,10 @@ CustomAppVideoGame.mainAcquisto = new function () {
             //var acquistoId = formContext.data.entity.getId().replace("{", "").replace("}", "");
 
             //formContext.getAttribute("acn_kestatusacquisto").addOnChange(function () { _self.StatusHideEffettuato(executionContext) });
-           // _self.StatusHideEffettuato(executionContext);
-          //  _self.StatusHideEffettuato(executionContext);
 
-            //formContext.getAttribute("acn_kestatusacquisto").addOnChange(_self.OnChangeAcquistoDisableEffetuato);
+            //formContext.getAttribute("sc_kestatusacquisto").addOnChange(_self.OnChangeAcquistoDisableEffetuato);
+            //_self.StatusHideEffettuato(executionContext);
+
             _self.OnChangeAcquistoDisableEffetuato(executionContext);
 
         }
@@ -42,37 +43,36 @@ CustomAppVideoGame.mainAcquisto = new function () {
     _self.OnChangeAcquistoDisableEffetuato = function (executionContext) {
         var formContext = executionContext.getFormContext();
 
-        var typeStatusCode = formContext.getAttribute("acn_kestatusacquisto").getValue();
+        var typeStatusCode = formContext.getAttribute("sc_kestatusacquisto").getValue();
 
         if (typeStatusCode == typeAcquisto.Effetuato) {
-            //formContext.getControl("new_paesescelto").setVisible(true);
-            //formContext.getAttribute("new_paesescelto").setValue("Italia");
-            formContext.getControl("acn_name").setDisabled(true);
-            formContext.getControl("acn_code").setDisabled(true);
-            formContext.getControl("acn_account").setDisabled(true);
-            formContext.getControl("acn_prodottobrand").setDisabled(true);
-            formContext.getControl("acn_iva").setDisabled(true);
-            formContext.getControl("acn_fattura").setDisabled(true);
-            formContext.getControl("acn_dataacquisto").setDisabled(true);
-            formContext.getControl("acn_totale").setDisabled(true);
+
+            formContext.getControl("sc_name").setDisabled(true);
+            formContext.getControl("sc_code").setDisabled(true);
+            formContext.getControl("sc_account").setDisabled(true);
+            formContext.getControl("sc_dataacquisto").setDisabled(true);
+            formContext.getControl("sc_fattura").setDisabled(true);
+            formContext.getControl("sc_iva").setDisabled(true);
+            formContext.getControl("sc_totale").setDisabled(true);
+
         } else {
-            formContext.getControl("acn_name").setDisabled(false);
-            formContext.getControl("acn_code").setDisabled(false);
-            formContext.getControl("acn_account").setDisabled(false);
-            formContext.getControl("acn_prodottobrand").setDisabled(false);
-            formContext.getControl("acn_iva").setDisabled(false);
-            formContext.getControl("acn_fattura").setDisabled(false);
-            formContext.getControl("acn_dataacquisto").setDisabled(false);
-            formContext.getControl("acn_totale").setDisabled(false);
+
+            formContext.getControl("sc_name").setDisabled(false);
+            formContext.getControl("sc_code").setDisabled(false);
+            formContext.getControl("sc_account").setDisabled(false);
+            formContext.getControl("sc_dataacquisto").setDisabled(false);
+            formContext.getControl("sc_fattura").setDisabled(false);
+            formContext.getControl("sc_iva").setDisabled(false);
+            formContext.getControl("sc_totale").setDisabled(false);
         }
     }
-
+    /*
     _self.StatusHideEffettuato = function (executionContext) {
         var formContext = executionContext.getFormContext();
-        var status = formContext.getAttribute("acn_kestatusacquisto").getValue();
+        var status = formContext.getAttribute("sc_kestatusacquisto").getValue();
 
         if (status !== null) {
-            var StatusOptionSet = formContext.getControl("acn_kestatusacquisto");
+            var StatusOptionSet = formContext.getControl("sc_kestatusacquisto");
 
             if (status !== typeAcquisto.Effetuato) {
                 StatusOptionSet.removeOption(typeAcquisto.Effetuato);
@@ -82,5 +82,5 @@ CustomAppVideoGame.mainAcquisto = new function () {
                 StatusOptionSet.removeOption(typeAcquisto.Annullato);
             }
         }
-    }
+    }*/
 }

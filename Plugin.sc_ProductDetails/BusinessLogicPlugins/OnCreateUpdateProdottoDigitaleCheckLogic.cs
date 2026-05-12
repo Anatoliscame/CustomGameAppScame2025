@@ -101,9 +101,18 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                     trace?.Trace($"Name di Prodotto Digitale non valido e non corrisponde a PrivateConfiguration: {nameTo}");
                     throw new InvalidPluginExecutionException($"Il nome '{nameTo}' non è presente nella Private Configuration.");
                 }
+                prodottoDigitale[ProdottoDigitale.PrezzoBase] = new Money(0); ;
                 prodottoDigitale[ProdottoDigitale.Name] = $"{nameTo}" + " - " + "Specifica tipo di prodotto digitale";
                 prodottoDigitale[ProdottoDigitale.Codice] = $"{nameTo}" + " - " + Utilities.GeneraCodice();
 
+            }
+            if (messageName.ToLower() == "update") 
+            {
+                Money prezzoBaseMoney = prodottoDigitale.GetAttributeValue<Money>(ProdottoDigitale.PrezzoBase);
+                if (prezzoBaseMoney == null || prezzoBaseMoney.Value <= 0)
+                {
+                    throw new InvalidPluginExecutionException("Prezzo base del Prodotto Digitale non valorizzato.");
+                }
             }
         }
 

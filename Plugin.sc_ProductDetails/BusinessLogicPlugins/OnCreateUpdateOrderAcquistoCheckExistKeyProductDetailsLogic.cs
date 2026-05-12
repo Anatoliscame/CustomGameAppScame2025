@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using Plugin.sc_ProductDetails.CorePlugins;
 using Plugin.sc_ProductDetails.Entities;
 using Plugin.sc_ProductDetails.Helper;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Services;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,6 +52,44 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                 trace?.Trace($"Le chiavi non sono disponibile: {keyProductArray.Count}");
                 return;
             }
+            EntityReference prdPD_Child = getPDToTo.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails);
+            Entity getPrdDetails = service.Retrieve(ProductDetails.LogicalName, prdPD_Child.Id, new ColumnSet(true));
+
+            ////////////////////////////////////////////////
+
+            var countryConfig = Utilities.GetDeserializeCountryConfig(service, trace, "CountryConfig");
+            if (countryConfig == null) { return; }
+            // Se il valore keye_country corisponde a uno di valori CountryConfig, continua il flusso.
+
+            var country = getPrdDetails.GetAttributeValue<EntityReference>(ProductDetails.Country);
+
+            var foundCountryInConfig = countryConfig.FirstOrDefault(c => c.Value.Id == country.Id.ToString());
+            trace?.Trace(foundCountryInConfig.Key);
+            decimal thresholdCountry = foundCountryInConfig.Value.Threshold;
+            trace?.Trace($"Threshold Country %: {thresholdCountry}.");
+
+
+            var prezzoBase = getPDToTo.GetAttributeValue<Money>(ProdottoDigitale.PrezzoBase);
+            decimal percentComis = getPrdDetails.GetAttributeValue<decimal>(ProductDetails.PercentualeCommissioneApp);
+
+            decimal importoIva = 0m;
+            decimal importoCommissione = 0m;
+            decimal totaleRiga = 0m;
+
+            if (thresholdCountry == 0)
+            {
+                importoCommissione = prezzoBase.Value * percentComis / 100;
+                totaleRiga = prezzoBase.Value + importoCommissione;
+            }
+            else
+            {
+                importoIva = prezzoBase.Value * thresholdCountry / 100;
+                importoCommissione = prezzoBase.Value * percentComis / 100;
+                totaleRiga = prezzoBase.Value + importoIva + importoCommissione;
+            }
+
+
+            ///////////////////////////////////////////////////
 
             if (!target.TryGetAttributeValue(OrderAcquisto.AcquistoId, out EntityReference acquistoTo))
             {
@@ -67,7 +107,7 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                 {
                     int quantitaAcquisto = _acquistoHelper.GetAcquisto(service, target).Entities.Count + 1;
 
-                    Guid acquistoId = _acquistoHelper.CreateAcquisto(service, quantitaAcquisto, accountId, 126400001, GeneraCodiceAcquisto());
+                    Guid acquistoId = _acquistoHelper.CreateAcquisto(service, quantitaAcquisto, accountId, 126400001, GeneraCodiceAcquisto(), totaleRiga);
                     if (acquistoId == Guid.Empty){throw new InvalidPluginExecutionException($"Errore durante la creazione dell'Acquisto.");}
                     acquistoIdRetrive = acquistoId;
 
@@ -79,10 +119,7 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
             }
             trace?.Trace($"AssignTo {acquistoTo}");
               
-
-            EntityReference prdPD_Child = getPDToTo.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails);
-            Entity getPrdPD_Child = service.Retrieve(ProductDetails.LogicalName, prdPD_Child.Id, new ColumnSet(true));
-            int? tipoExpansion = getPrdPD_Child.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
+            int? tipoExpansion = getPrdDetails.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
 
             if (tipoExpansion == 126400003) //Espansione
             {
@@ -93,8 +130,8 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
                 }
                 foreach (var content in contentVideoGames)
                 {
-                    Entity getPrdPD_ChildContent = service.Retrieve(ProductDetails.LogicalName, content.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails).Id, new ColumnSet(true));
-                    var valueExpansionChild = getPrdPD_ChildContent.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion);
+                    Entity getPrdDetailsContent = service.Retrieve(ProductDetails.LogicalName, content.GetAttributeValue<EntityReference>(ProdottoDigitale.ProductDetails).Id, new ColumnSet(true));
+                    var valueExpansionChild = getPrdDetailsContent.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion);
                     if (valueExpansionChild.Value == 126400001) // DLC
                     {                      
                     var contentVideoGameGuid = content.GetAttributeValue<Guid>(ProdottoDigitale.ProdottoDigitaleId);
@@ -119,6 +156,11 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
             _keyProductHelper.UpdateKeyProduct(service, keyProductArray[0].Id, 126400004);// Temporaneamente 
 
             entityUpdate[OrderAcquisto.KeyProdottoDigitale] = keyProductArray[0].GetAttributeValue<string>(KeyProdotto.KeyDigitale);// Padre key
+
+            entityUpdate[OrderAcquisto.PrezzoVendita] = new Money(prezzoBase.Value);
+            entityUpdate[OrderAcquisto.ImportoIVA] = new Money(importoIva);
+            entityUpdate[OrderAcquisto.ImportoCommissione] = new Money(importoCommissione);
+            entityUpdate[OrderAcquisto.TotaleRiga] = new Money(totaleRiga);
 
             service.Update(entityUpdate);
         }

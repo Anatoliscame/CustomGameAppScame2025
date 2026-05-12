@@ -46,6 +46,9 @@
     <Reference Include="Microsoft.Xrm.Sdk, Version=9.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.9.0.2.59\lib\net462\Microsoft.Xrm.Sdk.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -111,6 +114,7 @@
     <Compile Include="Helper\OrderAcquistoHelper.cs" />
     <Compile Include="Helper\ProdottoDigitaleHelper.cs" />
     <Compile Include="Helper\ProductDetailsHelper.cs" />
+    <Compile Include="Model\Request\CountryConfig.cs" />
     <Compile Include="OnCreateUpdateOrderAcquistoCheckExistKeyProductDetails.cs" />
     <Compile Include="OnCreateUpdateProdottoDigitaleCheck.cs" />
     <Compile Include="OnPostUpdateAcquistoSetKeyProductDigitalsAcquistato.cs" />
@@ -124,8 +128,6 @@
     <None Include="packages.config" />
     <None Include="sc_ProductDetails.pfx" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Request\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

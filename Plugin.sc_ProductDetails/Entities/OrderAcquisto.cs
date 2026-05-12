@@ -15,5 +15,11 @@ namespace Plugin.sc_ProductDetails.Entities
         public const string ProdottoDigitaleId = "sc_prodottodigitaleid";
         public const string AcquistoId = "sc_acquisto";
         public const string KeyProdottoDigitale = "sc_keyprodottodigitale";
+
+        public const string PrezzoVendita = "sc_prezzovendita";
+        public const string ImportoCommissione = "sc_importocommissione";
+        public const string ImportoIVA = "sc_importoiva"; 
+        public const string TotaleRiga = "sc_totaleriga";
+        
     }
 }

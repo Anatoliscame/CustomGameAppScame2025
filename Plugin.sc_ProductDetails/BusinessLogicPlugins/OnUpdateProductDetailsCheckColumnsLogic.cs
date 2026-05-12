@@ -34,13 +34,22 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
             ProductDetailsHelper _productDetailsHelper = new ProductDetailsHelper();
 
             List<Entity> prodottiDigitale = _prodottoDigitaleHelper.GeProdottiDigitaleActived(service, postImage);
-            if (prodottiDigitale.Count == 0) { throw new InvalidPluginExecutionException("Non esiste un prodotto digitale attivo."); }
+            if (prodottiDigitale.Count == 0) 
+            { 
+                throw new InvalidPluginExecutionException("Non esiste un prodotto digitale attivo."); 
+            }
             Guid idProdDigital = prodottiDigitale[0].GetAttributeValue<Guid>(ProdottoDigitale.ProdottoDigitaleId);
+            
             string nameTo = GetNameBeforeDash(prodottiDigitale[0].GetAttributeValue<string>(ProdottoDigitale.Name));
+            
+            decimal percCommissione = postImage.GetAttributeValue<decimal>(ProductDetails.PercentualeCommissioneApp);
+            if (percCommissione <= 0)
+            {
+                throw new InvalidPluginExecutionException("percCommissione non e' valorizzato, inserisci un valore.");
+            }
 
             int? typeproductdetail = postImage.GetAttributeValue<OptionSetValue>(ProductDetails.TypeProductDetail)?.Value;
-            //VideoGame
-            if (typeproductdetail == 126400000)
+            if (typeproductdetail == 126400000) //VideoGame
             {
                 trace?.Trace($"Valore di Tipo di Prodotto Digitale e' recuperato 'Video Game': {typeproductdetail.Value}");
    
@@ -57,7 +66,6 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 
                 _prodottoDigitaleHelper.UpdateNameCodiceProdottoDigitale(service, idProdDigital, nameTo, typeexpansion, typeproductdetail);
             }
-
             if (typeproductdetail == 126400001) //Licenza Software
             {
                 trace?.Trace($"Valore di Tipo di Prodotto Digitale e' recuperato 'Licenza Software': {typeproductdetail.Value}");
@@ -75,6 +83,21 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 
                 _prodottoDigitaleHelper.UpdateNameCodiceProdottoDigitale(service, idProdDigital, nameTo, tipoLicenza, typeproductdetail);
             }
+
+            var countryLookup = postImage.GetAttributeValue<EntityReference>(ProductDetails.Country);
+            if (countryLookup == null)
+            {
+                trace?.Trace("Country non valorizzato.");
+                return;
+                //throw new InvalidPluginExecutionException("Country non valorizzato.");
+            }
+
+            //-----------------TEMPORANEO, DA BLOCCARE COUNTRY NON CORRISPONDENTE SU PRIVE CONFIG---------------------//
+
+            VerifyCountryProductDetailsWitchPriveConfig(service, countryLookup.Id, trace);
+
+
+            ///--------------------------------------------------------------------------///
         }
 
         private string GetNameBeforeDash(string nameTo)
@@ -88,5 +111,19 @@ namespace Plugin.sc_ProductDetails.BusinessLogicPlugins
 
             return nameTo;
         }
+
+
+        public void VerifyCountryProductDetailsWitchPriveConfig(IOrganizationService service, Guid countrid, ITracingService trace) 
+        {
+            var countryConfig = Utilities.GetDeserializeCountryConfig(service, trace, "CountryConfig");
+            if (countryConfig == null) { return; }
+
+            bool isCountry = Utilities.CheckCountryPrivateConfig(service, countryConfig, countrid);
+            if (!isCountry)
+            {
+                trace?.Trace($"Il paese del prodotto digitale non è tra quelli autorizzati per generare l’approvazione.");
+                throw new InvalidPluginExecutionException("Il paese del prodotto digitale non è tra quelli autorizzati per generare l’approvazione.");
+            }
+        }
     }
-}
+} 

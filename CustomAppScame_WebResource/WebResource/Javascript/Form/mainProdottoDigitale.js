@@ -76,18 +76,17 @@ CustomApp.mainProdottoDigitale = new function () {
 
             var prodottoDigitaleId = formContext.data.entity.getId();
             prodottoDigitaleId = prodottoDigitaleId.replace("{", "").replace("}", "");
-            var valueTypeExpansion = _self.RetriveValueTypeExpansion(executionContext, prodottoDigitaleId);
-            if (valueTypeExpansion == 0)
+            var valueTypeProduct = _self.RetriveValueTypeProduct(executionContext, prodottoDigitaleId);
+            if (valueTypeProduct == 0)
             {
                 Xrm.Navigation.openAlertDialog({text: "Il campo sc_typeexpansion non e' entrato nel metodo"});
                 return;
             }
-            if (valueTypeExpansion == -1)
+            if (valueTypeProduct == -1)
             {
-                //var parentAttr = formContext.getAttribute("sc_parentprodottodigitaleid");
-                Xrm.Navigation.openAlertDialog({text: "Il campo sc_typeexpansion è vuoto."});
+                Xrm.Navigation.openAlertDialog({ text: "Il campo sc_typeexpansion o sc_tipolicenza e' vuoto."});
             }
-            if (valueTypeExpansion == -2) {
+            if (valueTypeProduct == -2) {
                 Xrm.Navigation.openAlertDialog({
                     text: "Product Details non è collegato al Prodotto Digitale."
                 });
@@ -95,11 +94,12 @@ CustomApp.mainProdottoDigitale = new function () {
 
             var tipoProductAttr = formContext.getAttribute("sc_tipoprodottodigitale");
 
-            if (tipoProductAttr.getValue() == typeProductDigital.VideoGame) {
+            if (tipoProductAttr.getValue() == typeProductDigital.VideoGame)
+            {
 
-                if (valueTypeExpansion == 126400000 //BaseGame
-                 || valueTypeExpansion == 126400002 //Remastered
-                 || valueTypeExpansion == 126400003 //Espansione
+                if (valueTypeProduct == 126400000 //BaseGame
+                    || valueTypeProduct == 126400002 //Remastered
+                    || valueTypeProduct == 126400003 //Espansione
                 ) {
 
                     formContext.getControl("sc_parentprodottodigitaleid").setVisible(false);
@@ -107,6 +107,20 @@ CustomApp.mainProdottoDigitale = new function () {
                 } else {
                     formContext.getControl("sc_parentprodottodigitaleid").setVisible(true);
                     //formContext.getControl("sc_accountcliente").setVisible(false);
+                }
+            }
+            else if (tipoProductAttr.getValue() == typeProductDigital.Licenza_Software)
+            {
+                if (valueTypeProduct == 126400000 //Perpetua
+                    || valueTypeProduct == 126400001 //Mensile
+                    || valueTypeProduct == 126400002 //Annuale
+                    || valueTypeProduct == 126400003 //Trial
+                    || valueTypeProduct == 126400004 //Lifetime
+                    || valueTypeProduct == 126400005 //Enterprise                 
+                ) {
+                    formContext.getControl("sc_parentprodottodigitaleid").setVisible(false);
+                } else {
+                    formContext.getControl("sc_parentprodottodigitaleid").setVisible(true);
                 }
             }
         }
@@ -211,13 +225,13 @@ CustomApp.mainProdottoDigitale = new function () {
     };
 
 
-    _self.RetriveValueTypeExpansion = function (executionContext, prodottoDigitaleId) {
+    _self.RetriveValueTypeProduct = function (executionContext, prodottoDigitaleId) {
         var formContext = executionContext.getFormContext();
 
-        var valueTypeExpansion = 0;
+        var valueTypeProduct = 0;
 
         var req = new XMLHttpRequest();
-        req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion)", false);
+        req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_prodottodigitales(" + prodottoDigitaleId + ")?$select=sc_prodottodigitaleid&$expand=sc_productdetails($select=sc_typeexpansion,sc_tipolicenza)", false);
         req.setRequestHeader("OData-MaxVersion", "4.0");
         req.setRequestHeader("OData-Version", "4.0");
         req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
@@ -231,16 +245,18 @@ CustomApp.mainProdottoDigitale = new function () {
 
                     if (resultProdottoDigitale.sc_productdetails != null) {
 
-                        var tipoPDParent = resultProdottoDigitale.sc_productdetails.sc_typeexpansion;
+                        var tipoExpansion = resultProdottoDigitale.sc_productdetails.sc_typeexpansion;
+                        var tipoLicenza = resultProdottoDigitale.sc_productdetails.sc_tipolicenza;
 
-                        if (tipoPDParent !== null && typeof tipoPDParent !== "undefined") {
-                            /*Xrm.Navigation.openAlertDialog({ title: "Type Expansion",text: "Valore sc_typeexpansion: " + tipoPDParent});*/
-                            valueTypeExpansion = tipoPDParent;
+                        if (tipoExpansion !== null && typeof tipoExpansion !== "undefined") {                           
+                            valueTypeProduct = tipoExpansion;
+                        } else if (tipoLicenza !== null && typeof tipoLicenza !== "undefined") {
+                            valueTypeProduct = tipoLicenza;
                         } else {
-                            valueTypeExpansion = -1;                           
+                            valueTypeProduct = -1;
                         }
                     } else {
-                        valueTypeExpansion = -2;
+                        valueTypeProduct = -2;
                     }
                 } else {
                     console.log(this.responseText);
@@ -248,7 +264,7 @@ CustomApp.mainProdottoDigitale = new function () {
             }
         };
         req.send();
-        return valueTypeExpansion;
+        return valueTypeProduct;
     }
 
 
