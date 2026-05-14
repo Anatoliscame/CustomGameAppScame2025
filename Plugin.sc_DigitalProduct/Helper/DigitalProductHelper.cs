@@ -62,8 +62,8 @@ namespace Plugin.sc_DigitalProduct.Helper
                 ColumnSet = new ColumnSet(true),
                 Criteria = new FilterExpression()
             };
-            query.Criteria.AddCondition(DigitalProduct.StateCode, ConditionOperator.Equal, 0);//Active
             query.Criteria.AddCondition(DigitalProduct.ProductDetails, ConditionOperator.Equal, target.Id);
+            query.Criteria.AddCondition(DigitalProduct.StateCode, ConditionOperator.Equal, 0);//Active
             query.NoLock = true;
             query.TopCount = 1;
             var result = service.RetrieveMultiple(query);

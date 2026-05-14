@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using Plugin.sc_DigitalProduct.CorePlugins;
 using Plugin.sc_DigitalProduct.Entities;
 using Plugin.sc_DigitalProduct.Helper;
@@ -113,7 +114,27 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                 {
                     throw new InvalidPluginExecutionException("Prezzo base del Prodotto Digitale non valorizzato.");
                 }
-            }
+
+                var entityDigDetailsParentTo = service.Retrieve(ProductDetails.LogicalName, prodottoDigitale.GetAttributeValue<EntityReference>(DigitalProduct.ProductDetails).Id, new ColumnSet(true));
+                var typeExpansionParent = entityDigDetailsParentTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
+                if (typeExpansionParent == 126400001) // DLC
+                {
+
+                    var parentDigitProdLookupTo = prodottoDigitale.GetAttributeValue<EntityReference>(DigitalProduct.ParentDigitalProductId);
+                    if (parentDigitProdLookupTo == null)
+                    {
+                        trace?.Trace($"Non e' possibile verificare il prodotto digitale padre."); return;
+                    }
+                    var padreDigitProdTo = service.Retrieve(DigitalProduct.LogicalName, parentDigitProdLookupTo.Id, new ColumnSet(true));
+                    var entityDigDetailsTo = service.Retrieve(ProductDetails.LogicalName, padreDigitProdTo.GetAttributeValue<EntityReference>(DigitalProduct.ProductDetails).Id, new ColumnSet(true));
+
+                    var typeExpansionPadre = entityDigDetailsTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
+                    if (typeExpansionPadre != 126400003) // Espansione
+                    {
+                        throw new InvalidPluginExecutionException("DLC deve essere solo associato al prodotto gigitale di tipo Espansione");
+                    }
+                }
+            } 
         }
 
         public bool IsNameValid(string nameTo, List<string> prodottoDigitaleArray)

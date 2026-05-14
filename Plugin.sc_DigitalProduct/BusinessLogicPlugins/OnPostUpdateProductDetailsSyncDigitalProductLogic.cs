@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using Plugin.sc_DigitalProduct.CorePlugins;
 using Plugin.sc_DigitalProduct.Entities;
 using Plugin.sc_DigitalProduct.Helper;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
 {
@@ -34,7 +36,7 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
             List<Entity> prodottiDigitale = _prodottoDigitaleHelper.GeProdottiDigitaleActived(service, postImage);
             if (prodottiDigitale.Count == 0)
             {
-                throw new InvalidPluginExecutionException("Non esiste un prodotto digitale attivo.");
+                throw new InvalidPluginExecutionException("Non esiste un prodotto digitale attivo relazionato con Product Details.");
             }
             Guid idProdDigital = prodottiDigitale[0].GetAttributeValue<Guid>(DigitalProduct.DigitalProductId);
 
@@ -59,6 +61,19 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                 {
                     trace?.Trace("sc_typeexpansion non valorizzato o non presente nella PostImage.");
                     throw new InvalidPluginExecutionException("Il campo Type Expansion è obbligatorio. Seleziona un valore prima di salvare.");
+                }
+                if (typeexpansion != 126400001) // ! DLC
+                {
+                    var parentDigitProd = prodottiDigitale[0].GetAttributeValue<EntityReference>(DigitalProduct.ParentDigitalProductId);
+                    if (parentDigitProd != null)
+                    {
+                        Entity updateDigitalProd = new Entity(DigitalProduct.LogicalName)
+                        {
+                            Id = prodottiDigitale[0].GetAttributeValue<Guid>(DigitalProduct.DigitalProductId)
+                        };
+                        updateDigitalProd[DigitalProduct.ParentDigitalProductId] = null;
+                        service.Update(updateDigitalProd);
+                    }
                 }
                 _productDetailsHelper.UpdateNameProductDetails(service, postImage, nameTo);
 
@@ -109,8 +124,6 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
 
             return nameTo;
         }
-
-
         public void VerifyCountryProductDetailsWitchPriveConfig(IOrganizationService service, Guid countrid, ITracingService trace)
         {
             var countryConfig = Utilities.GetDeserializeCountryConfig(service, trace, "CountryConfig");
