@@ -230,11 +230,5 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Plugin.acn_GameApp\Plugin.acn_GameApp.csproj">
-      <Project>{02F65588-D870-4552-BCCC-B691A134017E}</Project>
-      <Name>Plugin.acn_GameApp</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

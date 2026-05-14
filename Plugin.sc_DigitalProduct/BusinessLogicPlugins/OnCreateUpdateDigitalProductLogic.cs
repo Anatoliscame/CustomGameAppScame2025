@@ -1,0 +1,135 @@
+﻿using Microsoft.Xrm.Sdk;
+using Plugin.sc_DigitalProduct.CorePlugins;
+using Plugin.sc_DigitalProduct.Entities;
+using Plugin.sc_DigitalProduct.Helper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
+{
+    public class OnCreateUpdateDigitalProductLogic
+    {
+        public void ExecuteLogic(IOrganizationService service, Entity prodottoDigitale, string messageName, ITracingService trace)
+        {
+            trace?.Trace("Prodotto Digitale (message Create, Update and Delete) is successfully.");
+            if (prodottoDigitale != null)
+            {
+                ExecuteProdottoDigitale(service, prodottoDigitale, messageName, trace);
+            }
+            else
+            {
+                trace?.Trace("Product Digitale is null");
+                return;
+            }
+        }
+
+        public void ExecuteProdottoDigitale(IOrganizationService service, Entity prodottoDigitale, string messageName, ITracingService trace)
+        {
+            DigitalProductHelper _prodottoDigitaleHelper = new DigitalProductHelper();
+
+            if (messageName.ToLower() == "create")
+            {
+                List<string> prodottoDigitaleArray = null;
+                string arraynomiProdDig = "";
+                /*
+                if (!prodottoDigitale.TryGetAttributeValue(ProdottoDigitale.Codice, out string codiceTo) || codiceTo.Trim() == "")
+                {
+                    trace?.Trace("Codice di Prodotto Digitale: il campo è assente o il valore è nullo.");
+                    throw new InvalidPluginExecutionException("Codice di Prodotto Digitale: il campo è assente o il valore è nullo.");
+                }*/
+                var codiceTo = prodottoDigitale.GetAttributeValue<string>(DigitalProduct.Codice);
+
+                if (!prodottoDigitale.TryGetAttributeValue(DigitalProduct.Name, out string nameTo))
+                {
+                    trace?.Trace("Name di Prodotto Digitale: il campo è assente.");
+                    throw new InvalidPluginExecutionException("Name di Prodotto Digitale: il campo è assente.");
+                }
+
+                int? typePD = prodottoDigitale.Contains(DigitalProduct.TypeDigitalProduct)
+                     ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.TypeDigitalProduct)?.Value
+                     : null;
+                int? typePiattaformaPD = prodottoDigitale.Contains(DigitalProduct.TypePlatform)
+                    ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.TypePlatform)?.Value
+                     : null;
+                int? statoePD = prodottoDigitale.Contains(DigitalProduct.StatoDigitalProduct)
+                     ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.StatoDigitalProduct)?.Value
+                     : null;
+
+                if (typePD == null || typePiattaformaPD == null) { throw new InvalidPluginExecutionException("Tipo di Prodotto Digitale o Tipo di Piattaforma non e' stato compilato. per favore inserisce il valore ."); }
+                if (statoePD == null) { throw new InvalidPluginExecutionException("Stato di Prodotto Digitale non e' stato compilato. per favore inserisce il valore ."); }
+
+                if (typePD == 126400000)
+                {
+                    // Video Game
+                    arraynomiProdDig = Utilities.GetNameCodiceForProdottoDigitalePrivateConfig(service, "NamesForProdottoDigitaleVideoGame");
+
+                }
+                else if (typePD == 126400001)
+                {
+                    // Software
+                    arraynomiProdDig = Utilities.GetNameCodiceForProdottoDigitalePrivateConfig(service, "NamesForProdottoDigitaleLicenzaSoftware");
+                }
+                else
+                {
+                    trace?.Trace("TypeProdottoDigitale: il valore non è valido.");
+                    throw new InvalidPluginExecutionException("TypeProdottoDigitale: il valore non è valido.");
+                }
+
+                if (string.IsNullOrWhiteSpace(arraynomiProdDig)) //arraynomiProdDig.Trim() == ""
+                {
+                    trace?.Trace("Private Configuration vuota o non trovata per key: NameCodiceForProdottoDigitale.");
+                    throw new InvalidPluginExecutionException("Configurazione mancante: NameCodiceForProdottoDigitale.");
+                }
+
+                List<Entity> prodottiDigitaleAll = _prodottoDigitaleHelper.GeNamesProdottiDigitaleActived(service, nameTo, typePD);
+                if (prodottiDigitaleAll.Count > 0) { throw new InvalidPluginExecutionException("Esiste il prodotto digitale con stesso Nome"); }
+
+                prodottoDigitaleArray = Utilities.GetPrivateConfigurationValueSplit(arraynomiProdDig);
+                if (prodottoDigitaleArray.Count == 0)
+                {
+                    trace?.Trace("prodottoDigitaleArray : il campo non è valorizzato.");
+                    throw new InvalidPluginExecutionException("prodottoDigitaleArray : il campo non è valorizzato.");
+                }
+
+                bool nameTrovato = IsNameValid(nameTo, prodottoDigitaleArray);
+
+                if (!nameTrovato)
+                {
+                    trace?.Trace($"Name di Prodotto Digitale non valido e non corrisponde a PrivateConfiguration: {nameTo}");
+                    throw new InvalidPluginExecutionException($"Il nome '{nameTo}' non è presente nella Private Configuration.");
+                }
+                prodottoDigitale[DigitalProduct.BasePrice] = new Money(0); ;
+                prodottoDigitale[DigitalProduct.Name] = $"{nameTo}" + " - " + "Specifica tipo di prodotto digitale";
+                prodottoDigitale[DigitalProduct.Codice] = $"{nameTo}" + " - " + Utilities.GeneraCodice();
+
+            }
+            if (messageName.ToLower() == "update")
+            {
+                Money prezzoBaseMoney = prodottoDigitale.GetAttributeValue<Money>(DigitalProduct.BasePrice);
+                if (prezzoBaseMoney == null || prezzoBaseMoney.Value <= 0)
+                {
+                    throw new InvalidPluginExecutionException("Prezzo base del Prodotto Digitale non valorizzato.");
+                }
+            }
+        }
+
+        public bool IsNameValid(string nameTo, List<string> prodottoDigitaleArray)
+        {
+            foreach (var prodottoDigitaleName in prodottoDigitaleArray)
+            {
+                if (!string.IsNullOrEmpty(prodottoDigitaleName))
+                {
+                    if (prodottoDigitaleName.Equals(nameTo))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+}
+

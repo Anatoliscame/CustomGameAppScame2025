@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.acn_GameApp", "Plugin.acn_GameApp\Plugin.acn_GameApp.csproj", "{02F65588-D870-4552-BCCC-B691A134017E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginTestConsole", "PluginTestConsole\PluginTestConsole.csproj", "{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAppScame_WebResource", "CustomAppScame_WebResource\CustomAppScame_WebResource.csproj", "{87B73995-D376-4B11-9F57-8C74C5AEBC72}"
@@ -19,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryCRM", "Repository
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.sc_ProductDetails", "Plugin.sc_ProductDetails\Plugin.sc_ProductDetails.csproj", "{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.sc_DigitalProduct", "Plugin.sc_DigitalProduct\Plugin.sc_DigitalProduct.csproj", "{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResource.sc_DigitalProduct", "WebResource.sc_DigitalProduct\WebResource.sc_DigitalProduct.csproj", "{133F4BE2-AA21-4279-975C-DEDA764CDD04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,12 +29,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{02F65588-D870-4552-BCCC-B691A134017E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02F65588-D870-4552-BCCC-B691A134017E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{02F65588-D870-4552-BCCC-B691A134017E}.Debug|x64.Build.0 = Debug|Any CPU
-		{02F65588-D870-4552-BCCC-B691A134017E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02F65588-D870-4552-BCCC-B691A134017E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{02F65588-D870-4552-BCCC-B691A134017E}.Release|x64.ActiveCfg = Release|x64
 		{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6E503AC-B9ED-4F9C-8DA6-0E37BAB71339}.Debug|x64.ActiveCfg = Debug|x64
@@ -87,6 +83,22 @@ Global
 		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|x64.ActiveCfg = Release|Any CPU
 		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|x64.Build.0 = Release|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|x64.Build.0 = Debug|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Release|x64.ActiveCfg = Release|Any CPU
+		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Release|x64.Build.0 = Release|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Debug|x64.Build.0 = Debug|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Release|x64.ActiveCfg = Release|Any CPU
+		{133F4BE2-AA21-4279-975C-DEDA764CDD04}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
