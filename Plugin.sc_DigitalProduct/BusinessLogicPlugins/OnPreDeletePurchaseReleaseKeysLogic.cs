@@ -24,7 +24,7 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                 trace?.Trace("Ordine Acquisto PRE is null");
                 return;
             }
-        }
+        } 
 
         public void ExecuteOrderAcquistoDelete(IOrganizationService service, Entity preImage, ITracingService trace)
         {
@@ -44,7 +44,7 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
             foreach (var crmOrderAcquisto in arrayOrderAcquisto)
             {
                 if (crmOrderAcquisto == null) continue;
-                var keyPDId = crmOrderAcquisto.GetAttributeValue<AliasedValue>($"OrderAcquistoKeyProduct.{KeyDigitalProduct.KeyDigitalProductId}");
+                var keyPDId = crmOrderAcquisto.GetAttributeValue<AliasedValue>($"PurchaseOrderLineKeyProduct.{KeyDigitalProduct.KeyDigitalProductId}");
                 if (keyPDId == null) continue;
                 trace?.Trace($"Viene ciclato Ogni OrdineAcquisto");
 
@@ -64,7 +64,7 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                     case 126400000:// VideoGame
                         int? typeexpansion = getProdDetailsTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
                         trace?.Trace($"Tipo Video Game di Prodottto Details: {typeexpansion.Value} \n Tipo Piattaforma di Prodotto Digitale: {typePiattaforma.Value}");
-
+                        
                         if (typeexpansion.Value == 126400003)//Espansione
                         {
                             trace?.Trace($"Hai scelto VideoGame di tipo Espansione");
