@@ -59,18 +59,21 @@
 
             if (valueTypeExpOrLicSoft !== 126400003) { // diverso da Espansione
 
-                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400002) { // Base Game o DLC e Remastered
+                if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400002) { // Base Game o Remastered
                     creaOrdineAcquisto(newOrder);
                     Xrm.Navigation.openAlertDialog({ text: "Base Game o Remastered" });
                 } else
-                    if (valueTypeExpOrLicSoft === 126400001) {
+                    if (valueTypeExpOrLicSoft === 126400001) { // DLC
                         var parentprodottodigitaleid = formContext.getAttribute("sc_parentdigitalproductid") != null
                             ? formContext.getAttribute("sc_parentdigitalproductid").getValue()
                             : null;
-                        if (parentprodottodigitaleid == null) {
-                            Xrm.Navigation.openAlertDialog({ text: "Il valore non e' stato impostato di prodotto digitale di parent e di  DLC" });
+                        if (parentprodottodigitaleid !== null) {
+                            // DLC indipendente da Padre                         
+                            Xrm.Navigation.openAlertDialog({ text: "Esiste il prodotto digitale Padre, non puoi creare l'ordine di acquisto " });
                             return;
                         } else {
+                            Xrm.Navigation.openAlertDialog({ text: "Il valore non e' stato impostato di prodotto digitale di parent e di  DLC" });
+                            // DLC dipendente da Padre
                             creaOrdineAcquisto(newOrder);
                             Xrm.Navigation.openAlertDialog({ text: "DLC" });
                         }
@@ -78,7 +81,15 @@
             } else {
 
                 // Espansione
-                Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." });
+                var existDLCdigitProduct = CheckExpansionHasDlcChild(prodottoDigitaleId);
+
+                if (existDLCdigitProduct === false) {
+                    Xrm.Navigation.openAlertDialog({
+                        text: "Questa Espansione non ha nessun DLC collegato. Creazione ordine interrotta."
+                    });
+                    return;
+                }
+                Xrm.Navigation.openAlertDialog({ text: "Procedi con l'espansione." }); 
                 CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattaforma, statusPD, newOrder);
             }
         }
@@ -177,6 +188,51 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
             console.error("Errore fetch espansioni: " + error.message);
         }
     );
+}
+
+
+function CheckExpansionHasDlcChild(prodottoDigitaleId) {
+
+    var existDLCdigitProduct = false;
+
+    var fetchUrl =
+        "<fetch mapping='logical' version='1.0' output-format='xml-platform' distinct='false'>" +
+        "  <entity name='sc_digitalproduct'>" +
+        "    <attribute name='sc_digitalproductid' />" +
+        "    <filter type='and'>" +
+        "      <condition attribute='sc_parentdigitalproductid' operator='eq' value='" + prodottoDigitaleId + "' />" +
+        "    </filter>" +
+        "    <link-entity name='sc_productdetails' from='sc_productdetailsid' to='sc_productdetailsid' alias='pd'>" +
+        "      <filter type='and'>" +
+        "        <condition attribute='sc_typeexpansion' operator='eq' value='126400001' />" + // DLC
+        "      </filter>" +
+        "    </link-entity>" +
+        "  </entity>" +
+        "</fetch>";
+
+    var req = new XMLHttpRequest();
+    req.open("GET", Xrm.Utility.getGlobalContext().getClientUrl() + "/api/data/v9.2/sc_digitalproducts?fetchXml=" + encodeURIComponent(fetchUrl), false);   req.setRequestHeader("OData-MaxVersion", "4.0");
+    req.setRequestHeader("OData-Version", "4.0");
+    req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    req.setRequestHeader("Accept", "application/json");
+    req.setRequestHeader("Prefer", "odata.include-annotations=*");
+    req.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            req.onreadystatechange = null;
+            if (this.status === 200) {
+                var results = JSON.parse(this.response);
+                console.log(results);
+                if (results.value.length > 0) {
+                    existDLCdigitProduct = true;
+                } 
+
+            } else {
+                console.log(this.responseText);
+            }
+        }
+    };
+    req.send();
+    return existDLCdigitProduct;
 }
 
 function RetriveValueTypeExpOrLicSoftCountry(prodottoDigitaleId) {

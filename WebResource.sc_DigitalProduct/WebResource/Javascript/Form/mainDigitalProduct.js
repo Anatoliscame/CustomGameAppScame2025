@@ -103,6 +103,7 @@ CustomApp.mainDigitalProduct = new function () {
                     formContext.getControl("sc_parentdigitalproductid").setVisible(false);
                     //formContext.getControl("sc_accountcliente").setVisible(true);
                 } else {
+                    _self.HideBasePriceIfDlcWithParent(executionContext, valueTypeProduct);
                     formContext.getControl("sc_parentdigitalproductid").setVisible(true);
                     //formContext.getControl("sc_accountcliente").setVisible(false);
                 }
@@ -130,6 +131,34 @@ CustomApp.mainDigitalProduct = new function () {
             title: "Aggiornamento",
             text: "Ciao, questo è un alert!"
         });
+    };
+
+
+
+    _self.HideBasePriceIfDlcWithParent = function (executionContext, valueTypeProduct) {
+        var formContext = executionContext.getFormContext();
+
+        var basePriceControl = formContext.getControl("sc_baseprice");
+        var parentDigitalProductAttr = formContext.getAttribute("sc_parentdigitalproductid");
+
+        if (basePriceControl === null || parentDigitalProductAttr === null) {
+            return;
+        }
+
+        var parentDigitalProductValue = parentDigitalProductAttr.getValue();
+
+        if (valueTypeProduct === 126400001)// DLC
+        {
+            var hasParentDigitalProduct = parentDigitalProductValue !== null && parentDigitalProductValue.length > 0;
+
+            if (hasParentDigitalProduct) {
+                basePriceControl.setVisible(false);
+            } else {
+                basePriceControl.setVisible(true);
+            }
+        } else {
+            basePriceControl.setVisible(true); // In rari casi
+        }
     };
 
 
