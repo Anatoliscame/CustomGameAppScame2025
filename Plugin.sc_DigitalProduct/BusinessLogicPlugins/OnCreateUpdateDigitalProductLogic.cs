@@ -31,6 +31,10 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
         {
             DigitalProductHelper _prodottoDigitaleHelper = new DigitalProductHelper();
 
+            int? typePD = prodottoDigitale.Contains(DigitalProduct.TypeDigitalProduct)
+                ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.TypeDigitalProduct)?.Value
+                : null;
+
             if (messageName.ToLower() == "create")
             {
                 List<string> prodottoDigitaleArray = null;
@@ -49,9 +53,6 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                     throw new InvalidPluginExecutionException("Name di Prodotto Digitale: il campo è assente.");
                 }
 
-                int? typePD = prodottoDigitale.Contains(DigitalProduct.TypeDigitalProduct)
-                     ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.TypeDigitalProduct)?.Value
-                     : null;
                 int? typePiattaformaPD = prodottoDigitale.Contains(DigitalProduct.TypePlatform)
                     ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.TypePlatform)?.Value
                      : null;
@@ -109,32 +110,45 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
             }
             if (messageName.ToLower() == "update")
             {
-                Money prezzoBaseMoney = prodottoDigitale.GetAttributeValue<Money>(DigitalProduct.BasePrice);
-                if (prezzoBaseMoney == null || prezzoBaseMoney.Value <= 0)
-                {
-                    throw new InvalidPluginExecutionException("Prezzo base del Prodotto Digitale non valorizzato.");
-                }
 
-                var entityDigDetailsParentTo = service.Retrieve(ProductDetails.LogicalName, prodottoDigitale.GetAttributeValue<EntityReference>(DigitalProduct.ProductDetails).Id, new ColumnSet(true));
-                var typeExpansionParent = entityDigDetailsParentTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
-                if (typeExpansionParent == 126400001) // DLC
+                if (typePD == 126400000) // Video Game
                 {
 
+                    var entityDigDetailsParentTo = service.Retrieve(ProductDetails.LogicalName, prodottoDigitale.GetAttributeValue<EntityReference>(DigitalProduct.ProductDetails).Id, new ColumnSet(true));
+                    var typeExpansionParent = entityDigDetailsParentTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
                     var parentDigitProdLookupTo = prodottoDigitale.GetAttributeValue<EntityReference>(DigitalProduct.ParentDigitalProductId);
-                    if (parentDigitProdLookupTo == null)
-                    {
-                        trace?.Trace($"Non e' possibile verificare il prodotto digitale padre."); return;
-                    }
-                    var padreDigitProdTo = service.Retrieve(DigitalProduct.LogicalName, parentDigitProdLookupTo.Id, new ColumnSet(true));
-                    var entityDigDetailsTo = service.Retrieve(ProductDetails.LogicalName, padreDigitProdTo.GetAttributeValue<EntityReference>(DigitalProduct.ProductDetails).Id, new ColumnSet(true));
 
-                    var typeExpansionPadre = entityDigDetailsTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
-                    if (typeExpansionPadre != 126400003) // Espansione
+                    if (typeExpansionParent == 126400001) // DLC
                     {
-                        throw new InvalidPluginExecutionException("DLC deve essere solo associato al prodotto gigitale di tipo Espansione");
+
+                        if (parentDigitProdLookupTo == null)
+                        {
+                            trace?.Trace($"Non e' possibile verificare il prodotto digitale padre."); return;
+                        }
+
+                        prodottoDigitale[DigitalProduct.BasePrice] = new Money(0);
+
+                        var padreDigitProdTo = service.Retrieve(DigitalProduct.LogicalName, parentDigitProdLookupTo.Id, new ColumnSet(true));
+                        var entityDigDetailsTo = service.Retrieve(ProductDetails.LogicalName, padreDigitProdTo.GetAttributeValue<EntityReference>(DigitalProduct.ProductDetails).Id, new ColumnSet(true));
+
+                        var typeExpansionPadre = entityDigDetailsTo.GetAttributeValue<OptionSetValue>(ProductDetails.TypeExpansion)?.Value;
+                        if (typeExpansionPadre != 126400003) // Espansione
+                        {
+                            throw new InvalidPluginExecutionException("DLC deve essere solo associato al prodotto gigitale di tipo Espansione");
+                        }
+                    }
+                    else if (typeExpansionParent != 126400001) // DLC
+                    {
+                        Money prezzoBaseMoney = prodottoDigitale.GetAttributeValue<Money>(DigitalProduct.BasePrice);
+
+                        if (prezzoBaseMoney == null || prezzoBaseMoney.Value <= 0)
+                        {
+                            throw new InvalidPluginExecutionException("Prezzo base del Prodotto Digitale non valorizzato.");
+                        }
+
                     }
                 }
-            } 
+            }
         }
 
         public bool IsNameValid(string nameTo, List<string> prodottoDigitaleArray)

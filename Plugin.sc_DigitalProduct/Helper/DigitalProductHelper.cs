@@ -82,6 +82,22 @@ namespace Plugin.sc_DigitalProduct.Helper
             service.Update(entityUpdatePD);
         }
 
+        public void UpdateRemoveValueDigitalProduct(IOrganizationService service, Guid idProdDigital, EntityReference parentDigitProd, int? typeExpansion)
+        {
+            if (typeExpansion != 126400001) // ! DLC
+            {
+                if (parentDigitProd != null)
+                {
+                    Entity updateDigitalProd = new Entity(DigitalProduct.LogicalName)
+                    {
+                        Id = idProdDigital
+                    };
+                    updateDigitalProd[DigitalProduct.ParentDigitalProductId] = null;
+                    service.Update(updateDigitalProd);
+                }
+            }
+        }
+
         public void UpdateNameCodiceProdottoDigitale(IOrganizationService service, Guid idProdDigital, string nameTo, int? value, int? typeProdDigit)
         {
             string nameSave = string.Empty;

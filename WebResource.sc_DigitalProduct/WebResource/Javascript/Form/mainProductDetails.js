@@ -77,15 +77,15 @@ CustomApp.mainProductDetails = new function () {
         }
 
         if (typeexpansionValue == TypeExpansion.Base
-            || typeexpansionValue == TypeExpansion.Espansione) {
+            || typeexpansionValue == TypeExpansion.Espansione
+              || typeexpansionValue == TypeExpansion.Remastered) {
 
             typeexpansionControl.removeOption(TypeExpansion.DLC);
-            typeexpansionControl.removeOption(TypeExpansion.Remastered);
-
         } else {
 
             typeexpansionControl.removeOption(TypeExpansion.Base);
             typeexpansionControl.removeOption(TypeExpansion.Espansione);
+            typeexpansionControl.removeOption(TypeExpansion.Remastered);
         }
     }
 

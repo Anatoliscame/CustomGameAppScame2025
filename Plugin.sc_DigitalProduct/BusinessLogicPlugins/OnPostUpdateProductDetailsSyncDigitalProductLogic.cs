@@ -62,20 +62,13 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                     trace?.Trace("sc_typeexpansion non valorizzato o non presente nella PostImage.");
                     throw new InvalidPluginExecutionException("Il campo Type Expansion è obbligatorio. Seleziona un valore prima di salvare.");
                 }
-                if (typeexpansion != 126400001) // ! DLC
-                {
-                    var parentDigitProd = prodottiDigitale[0].GetAttributeValue<EntityReference>(DigitalProduct.ParentDigitalProductId);
-                    if (parentDigitProd != null)
-                    {
-                        Entity updateDigitalProd = new Entity(DigitalProduct.LogicalName)
-                        {
-                            Id = prodottiDigitale[0].GetAttributeValue<Guid>(DigitalProduct.DigitalProductId)
-                        };
-                        updateDigitalProd[DigitalProduct.ParentDigitalProductId] = null;
-                        service.Update(updateDigitalProd);
-                    }
-                }
-                _productDetailsHelper.UpdateNameProductDetails(service, postImage, nameTo);
+            
+                EntityReference parentDigitProd = prodottiDigitale[0].GetAttributeValue<EntityReference>(DigitalProduct.ParentDigitalProductId);
+               
+                /////// NON E' DA CONTROLLARE QUESTO FUNCTION
+                _prodottoDigitaleHelper.UpdateRemoveValueDigitalProduct(service, idProdDigital, parentDigitProd, typeexpansion);
+                ///////
+                 _productDetailsHelper.UpdateNameProductDetails(service, postImage, nameTo);
 
                 _prodottoDigitaleHelper.UpdateNameCodiceProdottoDigitale(service, idProdDigital, nameTo, typeexpansion, typeproductdetail);
             }
