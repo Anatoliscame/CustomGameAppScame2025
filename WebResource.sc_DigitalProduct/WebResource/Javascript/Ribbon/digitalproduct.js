@@ -60,6 +60,10 @@
             if (valueTypeExpOrLicSoft !== 126400003) { // diverso da Espansione
 
                 if (valueTypeExpOrLicSoft === 126400000 || valueTypeExpOrLicSoft === 126400002) { // Base Game o Remastered
+
+                    var isBasePriceValid = CheckBasePriceGreaterThanZero(formContext);
+                    if (isBasePriceValid === false) { return; }
+
                     creaOrdineAcquisto(newOrder);
                     Xrm.Navigation.openAlertDialog({ text: "Base Game o Remastered" });
                 } else
@@ -74,6 +78,9 @@
                         } else {
                             Xrm.Navigation.openAlertDialog({ text: "Il valore non e' stato impostato di prodotto digitale di parent e di  DLC" });
                             // DLC dipendente da Padre
+                            var isBasePriceValid = CheckBasePriceGreaterThanZero(formContext);
+                            if (isBasePriceValid === false) { return; }
+
                             creaOrdineAcquisto(newOrder);
                             Xrm.Navigation.openAlertDialog({ text: "DLC" });
                         }
@@ -81,6 +88,9 @@
             } else {
 
                 // Espansione
+                var isBasePriceValid = CheckBasePriceGreaterThanZero(formContext);
+                if (isBasePriceValid === false) { return; }
+
                 var existDLCdigitProduct = CheckExpansionHasDlcChild(prodottoDigitaleId);
 
                 if (existDLCdigitProduct === false) {
@@ -190,6 +200,26 @@ function CheckExistParentChildProdottoDigitale(prodottoDigitaleId, typePiattafor
     );
 }
 
+function CheckBasePriceGreaterThanZero(formContext) {
+
+    var basePriceAttr = formContext.getAttribute("sc_baseprice");
+
+    if (basePriceAttr === null)
+    {
+        Xrm.Navigation.openAlertDialog({ text: "Il campo Base Price non è presente sul form." });
+        return false;
+    }
+
+    var basePrice = basePriceAttr.getValue();
+
+    if (basePrice === null || basePrice <= 0)
+    {
+        Xrm.Navigation.openAlertDialog({text: "Base Price deve essere maggiore di 0. Non puoi procedere con l'acquisto."});
+        return false;
+    }
+
+    return true;
+}
 
 function CheckExpansionHasDlcChild(prodottoDigitaleId) {
 
