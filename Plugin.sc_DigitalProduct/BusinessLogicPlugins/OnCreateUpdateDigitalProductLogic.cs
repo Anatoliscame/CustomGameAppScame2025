@@ -30,6 +30,7 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
         public void ExecuteProdottoDigitale(IOrganizationService service, Entity prodottoDigitale, string messageName, ITracingService trace)
         {
             DigitalProductHelper _prodottoDigitaleHelper = new DigitalProductHelper();
+            ProductDetailsHelper _productDetailsHelper = new ProductDetailsHelper();
 
             int? typePD = prodottoDigitale.Contains(DigitalProduct.TypeDigitalProduct)
                 ? prodottoDigitale.GetAttributeValue<OptionSetValue>(DigitalProduct.TypeDigitalProduct)?.Value
@@ -74,11 +75,6 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                     // Software
                     arraynomiProdDig = Utilities.GetNameCodiceForProdottoDigitalePrivateConfig(service, "NamesForProdottoDigitaleLicenzaSoftware");
                 }
-                else
-                {
-                    trace?.Trace("TypeProdottoDigitale: il valore non è valido.");
-                    throw new InvalidPluginExecutionException("TypeProdottoDigitale: il valore non è valido.");
-                }
 
                 if (string.IsNullOrWhiteSpace(arraynomiProdDig)) //arraynomiProdDig.Trim() == ""
                 {
@@ -103,6 +99,14 @@ namespace Plugin.sc_DigitalProduct.BusinessLogicPlugins
                     trace?.Trace($"Name di Prodotto Digitale non valido e non corrisponde a PrivateConfiguration: {nameTo}");
                     throw new InvalidPluginExecutionException($"Il nome '{nameTo}' non è presente nella Private Configuration.");
                 }
+
+                // Creazione ProductDigital
+
+                 Guid prodDigitID = _productDetailsHelper.CreateProductDetails(service, nameTo, typePD.Value);
+                if (prodDigitID == Guid.Empty) { throw new InvalidPluginExecutionException($"Errore durante la creazione dell'prodDigitID."); }
+                
+                prodottoDigitale[DigitalProduct.ProductDetails] = new EntityReference(ProductDetails.LogicalName, prodDigitID);
+
                 prodottoDigitale[DigitalProduct.BasePrice] = new Money(0); ;
                 prodottoDigitale[DigitalProduct.Name] = $"{nameTo}" + " - " + "Specifica tipo di prodotto digitale";
                 prodottoDigitale[DigitalProduct.Codice] = $"{nameTo}" + " - " + Utilities.GeneraCodice();

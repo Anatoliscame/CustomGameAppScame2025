@@ -28,6 +28,12 @@ namespace Plugin.sc_DigitalProduct
                 if (trace == null)
                     throw new InvalidPluginExecutionException("Failed to retrieve the tracing service.");
 
+                if (context.Depth > 1)
+                {
+                    trace.Trace("Plugin interrotto per evitare loop.");
+                    return;
+                }
+
                 Entity prodottoDigitale =
                             (context.MessageName.ToLower() == "create") ? (Entity)context.InputParameters["Target"] :
                             (context.MessageName.ToLower() == "update") ? Utilities.MergeEntities(context.PreEntityImages["sc_digitalproduct_pre"], (Entity)context.InputParameters["Target"]) : null;

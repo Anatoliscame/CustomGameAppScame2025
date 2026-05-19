@@ -42,12 +42,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="WebResource\Javascript\Power Pages\DigitalProductEditForm.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WebResource\Javascript\Form\mainDigitalProduct.js" />
     <Content Include="WebResource\Javascript\Form\mainKeyDigitalProduct.js" />
     <Content Include="WebResource\Javascript\Form\mainProductDetails.js" />
     <Content Include="WebResource\Javascript\Form\mainPurchase.js" />
+    <Content Include="WebResource\Javascript\Power Pages\DigitalProductNewForm.js" />
     <Content Include="WebResource\Javascript\Ribbon\digitalproduct.js" />
     <Content Include="WebResource\Javascript\Ribbon\purchase.js" />
   </ItemGroup>

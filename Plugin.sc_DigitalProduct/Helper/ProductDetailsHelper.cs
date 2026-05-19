@@ -22,5 +22,14 @@ namespace Plugin.sc_DigitalProduct.Helper
             updateTarget[ProductDetails.Name] = $"{nameTo}";
             service.Update(updateTarget);
         }
+
+        public Guid CreateProductDetails(IOrganizationService service, string nameTo, int typeDigitProd)
+        {
+            Entity nuovoProdDigit = new Entity(ProductDetails.LogicalName);
+            nuovoProdDigit[ProductDetails.Name] = $"{nameTo}";
+            nuovoProdDigit[ProductDetails.TypeDigitalProduct] = new OptionSetValue(typeDigitProd);
+            Guid nuovoProdDigitId = service.Create(nuovoProdDigit);
+            return nuovoProdDigitId;
+        }
     }
 }
