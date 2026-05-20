@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryCRM", "RepositoryCRM\RepositoryCRM.csproj", "{02236004-C556-4E13-9FD7-653904FD620A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.sc_ProductDetails", "Plugin.sc_ProductDetails\Plugin.sc_ProductDetails.csproj", "{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.sc_DigitalProduct", "Plugin.sc_DigitalProduct\Plugin.sc_DigitalProduct.csproj", "{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResource.sc_DigitalProduct", "WebResource.sc_DigitalProduct\WebResource.sc_DigitalProduct.csproj", "{133F4BE2-AA21-4279-975C-DEDA764CDD04}"
@@ -75,14 +73,6 @@ Global
 		{02236004-C556-4E13-9FD7-653904FD620A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02236004-C556-4E13-9FD7-653904FD620A}.Release|x64.ActiveCfg = Release|Any CPU
 		{02236004-C556-4E13-9FD7-653904FD620A}.Release|x64.Build.0 = Release|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Debug|x64.Build.0 = Debug|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|x64.ActiveCfg = Release|Any CPU
-		{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}.Release|x64.Build.0 = Release|Any CPU
 		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}.Debug|x64.ActiveCfg = Debug|Any CPU
