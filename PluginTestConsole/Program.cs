@@ -1,14 +1,11 @@
-﻿using Microsoft.PowerPlatform.Dataverse.Client;
+﻿
+
+using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Tooling.Connector;
 using PluginTestConsole.Wrapper;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Services.Description;
 
 namespace PluginTestConsole
 {
@@ -43,7 +40,7 @@ namespace PluginTestConsole
             }
 
 
-            OnCreateOnUpdateCheckExistOrderAcquistoWrapper wrapper = new OnCreateOnUpdateCheckExistOrderAcquistoWrapper();
+            OnPostUpdatePurchaseFinalizeKeysWrapper wrapper = new OnPostUpdatePurchaseFinalizeKeysWrapper();
 
             string guid = "45d11387-e916-f011-998a-000d3abdaa8d";
             

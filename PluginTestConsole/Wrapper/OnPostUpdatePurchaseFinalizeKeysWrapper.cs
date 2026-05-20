@@ -1,7 +1,6 @@
-﻿using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Query;
-using Microsoft.Xrm.Tooling.Connector;
-using Plugin.acn_GameApp;
+﻿
+using Microsoft.Xrm.Sdk;
+using Plugin.sc_DigitalProduct;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PluginTestConsole.Wrapper
 {
-    class OnCreateOnUpdateCheckExistOrderAcquistoWrapper
+    class OnPostUpdatePurchaseFinalizeKeysWrapper
     {
         public void Execute(IOrganizationService service, string guid)
         {
@@ -19,9 +18,9 @@ namespace PluginTestConsole.Wrapper
 
             ITracingService tracingService = service as ITracingService;
 
-            OnUpdateCheckExistOrderAcquisto plugin = new OnUpdateCheckExistOrderAcquisto();
+            OnPostUpdatePurchaseFinalizeKeys plugin = new OnPostUpdatePurchaseFinalizeKeys();
 
-            plugin.ExecuteAcquistoUpdate(service, target, tracingService);
+            //plugin.Execute(service, target, tracingService);
 
         }
 
