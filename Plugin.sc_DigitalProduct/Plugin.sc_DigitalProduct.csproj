@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4B11FCE2-A2D4-4EC9-9BC0-7DAE372AEE0C}</ProjectGuid>
+    <ProjectGuid>{F2B87148-E59B-4E6A-9AA2-B33231CDB65C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Plugin.sc_ProductDetails</RootNamespace>
-    <AssemblyName>Plugin.sc_ProductDetails</AssemblyName>
+    <RootNamespace>Plugin.sc_DigitalProduct</RootNamespace>
+    <AssemblyName>Plugin.sc_DigitalProduct</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -34,8 +34,10 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>sc_DigitalProduct.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -99,35 +101,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BusinessLogicPlugins\OnCreateUpdateOrderAcquistoCheckExistKeyProductDetailsLogic.cs" />
-    <Compile Include="BusinessLogicPlugins\OnCreateUpdateProdottoDigitaleCheckLogic.cs" />
-    <Compile Include="BusinessLogicPlugins\OnPreDeleteOrderAcquistoReleaseKeysLogic.cs" />
-    <Compile Include="BusinessLogicPlugins\OnUpdateProductDetailsCheckColumnsLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnCreateUpdateDigitalProductLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPostCreatePurchaseOrderLineProcessDigitalProductPurchaseLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPostUpdateProductDetailsSyncDigitalProductLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPostUpdatePurchaseFinalizeKeysLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPreDeletePurchaseReleaseKeysLogic.cs" />
+    <Compile Include="BusinessLogicPlugins\OnPreUpdateDigitalProductVerifyColumnsLogic.cs" />
     <Compile Include="CorePlugins\Utilities.cs" />
-    <Compile Include="Entities\Acquisto.cs" />
-    <Compile Include="Entities\KeyProdotto.cs" />
-    <Compile Include="Entities\OrderAcquisto.cs" />
-    <Compile Include="Entities\OrderAcquistoEspansione.cs" />
-    <Compile Include="Entities\ProdottoDigitale.cs" />
+    <Compile Include="Entities\DigitalProduct.cs" />
+    <Compile Include="Entities\KeyDigitalProduct.cs" />
     <Compile Include="Entities\ProductDetails.cs" />
-    <Compile Include="Helper\AcquistoHelper.cs" />
-    <Compile Include="Helper\KeyProdottoHelper.cs" />
-    <Compile Include="Helper\OrderAcquistoHelper.cs" />
-    <Compile Include="Helper\ProdottoDigitaleHelper.cs" />
+    <Compile Include="Entities\Purchase.cs" />
+    <Compile Include="Entities\PurchaseOrderLine.cs" />
+    <Compile Include="Entities\PurchaseOrderLineExpansion.cs" />
+    <Compile Include="Helper\DigitalProductHelper.cs" />
+    <Compile Include="Helper\KeyDigitalProductHelper.cs" />
     <Compile Include="Helper\ProductDetailsHelper.cs" />
-    <Compile Include="Model\Request\CountryConfig.cs" />
-    <Compile Include="OnCreateUpdateOrderAcquistoCheckExistKeyProductDetails.cs" />
-    <Compile Include="OnCreateUpdateProdottoDigitaleCheck.cs" />
-    <Compile Include="OnPostUpdateAcquistoSetKeyProductDigitalsAcquistato.cs" />
-    <Compile Include="BusinessLogicPlugins\OnPostUpdateAcquistoSetKeyProductDigitalsAcquistatoLogic.cs" />
-    <Compile Include="OnPreDeleteOrderAcquistoReleaseKeys.cs" />
-    <Compile Include="OnUpdateProductDetailsCheckColumns.cs" />
+    <Compile Include="Helper\PurchaseHelper.cs" />
+    <Compile Include="Helper\PurchaseOrderlineHelper.cs" />
+    <Compile Include="Model\Request\CountryInfo.cs" />
+    <Compile Include="OnCreateUpdateDigitalProduct.cs" />
+    <Compile Include="OnPostCreatePurchaseOrderLineProcessDigitalProductPurchase.cs" />
+    <Compile Include="OnPostUpdateProductDetailsSyncDigitalProduct.cs" />
+    <Compile Include="OnPostUpdatePurchaseFinalizeKeys.cs" />
+    <Compile Include="OnPreDeletePurchaseReleaseKeys.cs" />
+    <Compile Include="OnPreUpdateDigitalProductVerifyColumns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="sc_DigitalProduct.pfx" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

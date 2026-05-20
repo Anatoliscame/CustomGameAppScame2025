@@ -1,14 +1,11 @@
-﻿using Microsoft.PowerPlatform.Dataverse.Client;
+﻿
+
+using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Tooling.Connector;
 using PluginTestConsole.Wrapper;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Services.Description;
 
 namespace PluginTestConsole
 {
@@ -31,7 +28,7 @@ namespace PluginTestConsole
         {
             // var service = CrmRepository("CRM_CREDENTIALS");
 
-            var connectionString = System.Configuration.ConfigurationManager.AppSettings["CRM_CustomeAppScameCDKeysVersion2"];
+            var connectionString = System.Configuration.ConfigurationManager.AppSettings["TestDigitalProductScameVersion2"];
             CrmServiceClient crmServiceClient = new CrmServiceClient(connectionString);
              // string connectionString = ConfigurationManager.ConnectionStrings["CRM_CREDENTIALS"].ConnectionString;
 
@@ -43,9 +40,9 @@ namespace PluginTestConsole
             }
 
 
-            OnCreateOnUpdateCheckExistOrderAcquistoWrapper wrapper = new OnCreateOnUpdateCheckExistOrderAcquistoWrapper();
+            OnPostUpdatePurchaseFinalizeKeysWrapper wrapper = new OnPostUpdatePurchaseFinalizeKeysWrapper();
 
-            string guid = "45d11387-e916-f011-998a-000d3abdaa8d";
+            string guid = "8430fefd-a54f-f111-bec7-7ced8d2f0304";
             
             wrapper.Execute(crmServiceClient, guid);
 
