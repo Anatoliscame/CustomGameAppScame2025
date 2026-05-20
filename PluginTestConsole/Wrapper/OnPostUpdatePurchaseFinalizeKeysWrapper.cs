@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Xrm.Sdk;
 using Plugin.sc_DigitalProduct;
+using Plugin.sc_DigitalProduct.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace PluginTestConsole.Wrapper
 
         private Entity GetTarget(IOrganizationService service, string guid)
         {
-            var targetEntity = service.Retrieve("acn_acquisto", new Guid(guid), new Microsoft.Xrm.Sdk.Query.ColumnSet(true));
+            var targetEntity = service.Retrieve(DigitalProduct.LogicalName, new Guid(guid), new Microsoft.Xrm.Sdk.Query.ColumnSet(true));
             return targetEntity;
         }
     }
